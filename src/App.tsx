@@ -63,7 +63,6 @@ rvCLient.on("ready", async () => {
   setUser("username", rvCLient.user?.username)
   setUser("user_id", rvCLient.user?._id)
   console.info(`Logged In as ${rvCLient.user?.username}`)
-  rvCLient.user?.update({status: {presence: "Online", text:"Logged In from Solenoid Beta | solenoid.vercel.app"}})
   fetchServers();
 })
 
@@ -153,6 +152,7 @@ setInterval(() => {
       if(servers.current_channel) {
         getMessagesFromChannel();
       }
+      rvCLient.user?.update({status: {presence: "Online", text:"Logged In from Solenoid Beta | solenoid.vercel.app"}})
     })
   }
   
