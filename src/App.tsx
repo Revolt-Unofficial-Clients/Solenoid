@@ -129,7 +129,6 @@ async function fetchServers() { try {
 }
 
 // TODO: Automatic Login
-if (rvCLient.session) rvCLient.useExistingSession(rvCLient.session); console.log(rvCLient.session)
 
 // Mobx magic (Thanks Insert :D)
 let id = 0;
@@ -186,34 +185,36 @@ const App: Component = () => {
       </>}
       {loggedIn() && (
         <>
-        <div>
+        <div id="solenoid-serverList">
           <For each={servers.server_list}>
             {(server) => (
-              <button onClick={() => setServer(server._id)}>{server.name}</button>
+              <button id="solenoid-server" onClick={() => setServer(server._id)} disabled={server._id === servers.current_server?._id ?? false}>{server.name}</button>
             )}
           </For>
         </div>
-        <div>
+        <div id="solenoid-channelList">
           <For each={servers.current_server_channels}>
             {(channel) => (
-              <button onClick={() => setChannel(channel._id)}>{channel.name}</button>
+              <button id="solenoid-channel" onClick={() => setChannel(channel._id)} disabled={channel._id === servers.current_channel?._id ?? false}>{channel.name}</button>
            )}
           </For>
         </div>
-        <ul>
+        <ul id="solenoid-messages">
           <For each={servers.messages}>
             {(message) => {
               console.log(message)
-              return (<li>{message.author?.username ?? "Unknown User"} says {message.content}</li>)
+              return (<li id="solenoid-message">{message.author?.username ?? "Unknown User"} says {message.content}</li>)
             }}
           </For>
         </ul>
-        <div>
-        <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => {e.preventDefault; logoutFromRevolt()}}>Log Out</button>
+        <div id="solenoid-userBar">
+          <div id="solenoid-misc-buttonList">
+            <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => {e.preventDefault; logoutFromRevolt()}} id="solenoid-logout">Log Out</button>
+          </div>
           <form onSubmit={(e) => {e.preventDefault(); sendMessage(newMessage())}}>
-            <button aria-label="Username" disabled>{user.username}</button>
-            <input type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
-            <button type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
+            <button id="solenoid-userOptions" aria-label="Username" disabled>{user.username}</button>
+            <input id="solenoid-send-input" type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage() || ""} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
+            <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
           </form>
         </div>
         </>
