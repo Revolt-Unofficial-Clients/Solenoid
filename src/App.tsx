@@ -173,11 +173,11 @@ const App: Component = () => {
       </form>
       <form onSubmit={(e) => {e.preventDefault(); loginWithEmail(login.email ?? "", login.password ?? "")}}>
       <div>
-          <label>Login with Email</label>
+          <label>Login with Email (Not Working bc CaptchaFailed :C )</label>
           <input type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
           <input type="password" placeholder='Password' value={login.password || ""} onInput={(e: any) => onInputChange(e, "password")}></input>
           <input type="text" placeholder='2fa Token (Optional)' value={login.mfa_token || ""} onInput={(e: any) => onInputChange(e, "mfa_token")}></input>
-          <HCaptcha sitekey='c7110311-d5c6-40a4-b82e-be12b2cff4d6' onVerify={token => setCaptchaToken(token)} />
+          <HCaptcha sitekey='c7110311-d5c6-40a4-b82e-be12b2cff4d6' onVerify={(token) => setCaptchaToken(token)} size={"compact"} />
           <button type='submit'>Login</button>
         </div>
       </form>
