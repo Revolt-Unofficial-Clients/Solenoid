@@ -189,7 +189,7 @@ const App: Component = () => {
         <div>
           <form>
             <button aria-label="Username" disabled>{user.username}</button>
-            <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={logoutFromRevolt}>Log Out</button>
+            <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => {e.preventDefault; logoutFromRevolt()}}>Log Out</button>
             <input type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
             <button type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
           </form>
