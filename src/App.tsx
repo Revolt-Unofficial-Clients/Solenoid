@@ -66,21 +66,26 @@ rvCLient.on("ready", async () => {
   fetchServers();
 })
 
-async function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined) {
+async function logIntoRevolt(token: string) {
   try {
-    if(!email || !password) {
-      if(!token) throw new Error("No Token?");
-      console.log("Logging in with Token...\n", token)
-      await rvCLient.loginBot(token);
-    } else if (email && password) {
-      console.log("Logging in with Email...\n", email, password)
-      await rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client", captcha: captchaToken()});
-    }
+    await rvCLient.loginBot(token);
 } catch (e: any) {
   console.error(e)
 } finally {
   setLoggedIn(true)
+  setUser("session_type", "token");
 }
+}
+
+async function loginWithEmail(email: string, password: string) {
+  try {
+    await rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client Beta", captcha: captchaToken()})
+  } catch (e: any) {
+    console.error(e)
+  } finally {
+    setLoggedIn(true);
+    setUser("session_type", "email");
+  }
 }
 
 function logoutFromRevolt() {
@@ -159,14 +164,14 @@ const App: Component = () => {
   return (
     <div>
       {!loggedIn() && <>
-        <form onSubmit={(e) => {e.preventDefault(); logIntoRevolt(login.token)}}>
+        <form onSubmit={(e) => {e.preventDefault(); logIntoRevolt(login.token ?? "")}}>
         <div>
           <label>Login with Token</label>
           <input type="text" placeholder='Token' value={login.token || ""} onInput={(e: any) => onInputChange(e, "token")}></input>
           <button type='submit'>Login</button>
         </div>
       </form>
-      <form onSubmit={(e) => {e.preventDefault(); logIntoRevolt(login.email, login.password)}}>
+      <form onSubmit={(e) => {e.preventDefault(); loginWithEmail(login.email ?? "", login.password ?? "")}}>
       <div>
           <label>Login with Email</label>
           <input type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
