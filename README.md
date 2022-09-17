@@ -1,34 +1,30 @@
-## Usage
+# Solenoid
+## A really fucking minimal revolt.chat client with little to no css
 
-Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
+<img width="480" alt="Really good quality screenshot of solenoid" src="https://user-images.githubusercontent.com/81704775/190832955-a134a840-a2fa-4060-8f31-7580b82325ca.png">
 
-This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
+### Reasons to use it
+
+1. Fast
+2. Minimal
+3. idk i ran out of reasons
+
+### How 2 run
+Right now you can run it using `pnpm`
 
 ```bash
-$ npm install # or pnpm install or yarn install
+# Install Deps
+pnpm i --shamefully-hoist
+# Run Solenoid from localhost:3000
+pnpm run dev
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+### Why
+I wanted to learn SolidJS because I heard it was blazingly fast and cool, so I decided to make a revolt.chat client to challenge my brain (and my sanity).
 
-## Available Scripts
 
-In the project directory, you can run:
+### Special thanks
 
-### `npm dev` or `npm start`
+> Insert: Helped me with Revolt.js and some Mobx stuff
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-
-### `npm run build`
-
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+> RyanSolid: Made me understand that I don't know anything about mobx, also this code snippet (https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js)
