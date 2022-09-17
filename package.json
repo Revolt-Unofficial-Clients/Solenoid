@@ -17,6 +17,7 @@
   "dependencies": {
     "mobx": "^6.6.2",
     "revolt.js": "^6.0.17",
+    "solid-hcaptcha": "^0.2.5",
     "solid-js": "^1.5.1"
   }
 }

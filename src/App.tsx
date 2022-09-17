@@ -2,6 +2,7 @@ import { Component, createEffect, createSignal, enableExternalSource, For } from
 import { createStore } from 'solid-js/store'
 import { Client } from "revolt.js";
 import { Reaction, runInAction } from 'mobx';
+import HCaptcha from 'solid-hcaptcha';
 
 // Interfaces
 interface user {
@@ -20,7 +21,7 @@ interface loginValues {
 
 interface server {
   server_list?: any[],
-  current_server?: string,
+  current_server?: any,
   current_server_channels?: string[],
   current_channel?: string
 }
@@ -29,6 +30,7 @@ interface server {
 const [login, setLogin] = createStore<loginValues>({})
 const [newMessage, setNewMessage] = createSignal<string>("")
 const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
+const [captchaToken, setCaptchaToken] = createSignal<string>();
 const [user, setUser] = createStore<user>({
   user_id: undefined,
   username: undefined,
@@ -86,6 +88,7 @@ const App: Component = () => {
     setUser("username", rvCLient.user?.username)
     setUser("user_id", rvCLient.user?._id)
     console.info(`Logged In ${rvCLient.user?.username}`)
+    console.info(`Current Server Configuration:\n${rvCLient.configuration?.features}`);
     fetchServers();
   })
 
@@ -93,15 +96,29 @@ const App: Component = () => {
     if(user.messages) if(message) setUser("messages", [...user.messages, `${message?.author?.username} says ${message.content}`])
   })
 
-  function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined, code?: string | number | undefined, captcha?: string) {
-    if(!email || !password) {
+  async function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined, code?: string | number | undefined) {
+    try {
+      if(!email || !password) {
       if(!token) return;
       console.log("Logging in with Token...\n", token)
-      rvCLient.loginBot(token)
+      await rvCLient.loginBot(token);
+      console.log(rvCLient.session);
     } else {
       console.log("Logging in with Email...")
-      rvCLient.login({email, password});
+      await rvCLient.login({email, password, friendly_name: "Solenoid Client", captcha: captchaToken()});
+      console.log(rvCLient.session);
     }
+  } catch (e: any) {
+    console.error(e)
+  } finally {
+    console.log(rvCLient.session);
+    console.info(rvCLient.configuration);
+  }
+  }
+
+  function logoutFromRevolt() {
+    setLoggedIn(false);
+    if (rvCLient.session) rvCLient.logout();
   }
 
   // TODO: Send Message Handler
@@ -114,7 +131,8 @@ const App: Component = () => {
   }
   // TODO: Server Switching
   function setServer(server_id: string) {
-
+    setServers("current_server", servers.server_list?.find((server) => server["_id"] === server_id));
+    console.log(servers.current_server)
   }
 
   async function fetchServers() { try {
@@ -124,15 +142,15 @@ const App: Component = () => {
     console.log(e);
   }
   }
+  
+  // TODO: Automatic Login
+  if (rvCLient.session) rvCLient.useExistingSession(rvCLient.session);
 
-  function fetchChannelsFromServer(server_id: string) {
-
-  }
   createEffect(() => {
     console.log(user.messages);
   }, [user.messages])
 
-  // TODO: Automatic Login
+  
 
   return (
     <div>
@@ -150,6 +168,7 @@ const App: Component = () => {
           <input type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
           <input type="password" placeholder='Password' value={login.password || ""} onInput={(e: any) => onInputChange(e, "password")}></input>
           <input type="text" placeholder='2fa Token (Optional)' value={login.mfa_token || ""} onInput={(e: any) => onInputChange(e, "mfa_token")}></input>
+          <HCaptcha sitekey='c7110311-d5c6-40a4-b82e-be12b2cff4d6' onVerify={token => setCaptchaToken(token)} />
           <button type='submit'>Login</button>
         </div>
       </form>
@@ -158,7 +177,7 @@ const App: Component = () => {
         <>
         <For each={servers.server_list}>
           {(server) => (
-            <button disabled>{server._id}</button>
+            <button onClick={() => setServer(server._id)}>{server.name}</button>
           )}
         </For>
         <ul>
@@ -171,6 +190,7 @@ const App: Component = () => {
         <div>
           <form>
             <button aria-label="Username" disabled>{user.username}</button>
+            <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={logoutFromRevolt}>Log Out</button>
             <input type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
             <button type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
           </form>
