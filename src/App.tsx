@@ -96,18 +96,16 @@ const App: Component = () => {
     if(user.messages) if(message) setUser("messages", [...user.messages, `${message?.author?.username} says ${message.content}`])
   })
 
-  async function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined) {
+  function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined) {
     try {
       if(!email || !password) {
-      if(!token) return;
-      console.log("Logging in with Token...\n", token)
-      await rvCLient.loginBot(token);
-      console.log(rvCLient.session);
-    } else {
-      console.log("Logging in with Email...")
-      await rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client", captcha: captchaToken()});
-      console.log(rvCLient.session);
-    }
+        if(!token) throw new Error("No Token?");
+        console.log("Logging in with Token...\n", token)
+        rvCLient.loginBot(token);
+      } else if (email && password) {
+        console.log("Logging in with Email...")
+        rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client", captcha: captchaToken()});
+      }
   } catch (e: any) {
     console.error(e)
   } finally {
