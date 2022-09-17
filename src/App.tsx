@@ -96,7 +96,7 @@ const App: Component = () => {
     if(user.messages) if(message) setUser("messages", [...user.messages, `${message?.author?.username} says ${message.content}`])
   })
 
-  async function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined, code?: string | number | undefined) {
+  async function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined) {
     try {
       if(!email || !password) {
       if(!token) return;
@@ -162,7 +162,7 @@ const App: Component = () => {
           <button type='submit'>Login</button>
         </div>
       </form>
-      <form onSubmit={(e) => {e.preventDefault(); logIntoRevolt(undefined,login.email, login.password)}}>
+      <form onSubmit={(e) => {e.preventDefault(); logIntoRevolt(login.email, login.password)}}>
       <div>
           <label>Login with Email</label>
           <input type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
