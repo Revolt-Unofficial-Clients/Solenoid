@@ -102,12 +102,10 @@ const App: Component = () => {
       if(!token) return;
       console.log("Logging in with Token...\n", token)
       await rvCLient.loginBot(token);
-      setLoggedIn(true)
       console.log(rvCLient.session);
     } else {
       console.log("Logging in with Email...")
       await rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client", captcha: captchaToken()});
-      setLoggedIn(true)
       console.log(rvCLient.session);
     }
   } catch (e: any) {
@@ -115,6 +113,7 @@ const App: Component = () => {
   } finally {
     console.log(rvCLient.session);
     console.info(rvCLient.configuration);
+    setLoggedIn(true)
   }
   }
 
