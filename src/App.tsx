@@ -1,6 +1,6 @@
 import { Component, createEffect, createSignal, enableExternalSource, For } from 'solid-js';
 import { createStore } from 'solid-js/store'
-import { Client } from "revolt.js";
+import { Channel, Client, Message, Server } from "revolt.js";
 import { Reaction, runInAction } from 'mobx';
 import HCaptcha from 'solid-hcaptcha';
 
@@ -8,8 +8,8 @@ import HCaptcha from 'solid-hcaptcha';
 interface user {
   user_id: string | undefined,
   username: string | undefined,
-  servers: string[] | undefined,
-  messages: string[] | undefined
+  session_type: "email" | "token" | undefined,
+
 }
 
 interface loginValues {
@@ -21,9 +21,10 @@ interface loginValues {
 
 interface server {
   server_list?: any[],
-  current_server?: any,
-  current_server_channels?: string[],
-  current_channel?: string
+  current_server?: Server,
+  current_server_channels?: any[],
+  current_channel?: Channel,
+  messages?: Message[]
 }
 
 // Init Variables
@@ -34,10 +35,96 @@ const [captchaToken, setCaptchaToken] = createSignal<string>();
 const [user, setUser] = createStore<user>({
   user_id: undefined,
   username: undefined,
-  servers: undefined,
-  messages: undefined,
+  session_type: undefined
 })
 const [servers, setServers] = createStore<server>({})
+
+// Revolt Client
+const rvCLient = new Client();
+
+// Functions
+const onInputChange= (e: InputEvent & {currentTarget: HTMLInputElement, target: HTMLElement}, type: string) => {
+  if (type === "email") {
+    setLogin("email", e.currentTarget.value)
+  } else if (type === "password") {
+    setLogin("password", e.currentTarget.value)
+  } else if (type === "token") {
+    setLogin("token", e.currentTarget.value)
+  } else if (type === "mfa_token") {
+    setLogin("mfa_token", e.currentTarget.value)
+  } else if (type === "newMessage") {
+    setNewMessage(e.currentTarget.value)
+  } else {
+    throw new Error("Not Valid")
+  }
+}
+rvCLient.on("ready", async () => {
+  setLoggedIn(true);
+  setUser("username", rvCLient.user?.username)
+  setUser("user_id", rvCLient.user?._id)
+  console.info(`Logged In as ${rvCLient.user?.username}`)
+  fetchServers();
+})
+
+async function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined) {
+  try {
+    if(!email || !password) {
+      if(!token) throw new Error("No Token?");
+      console.log("Logging in with Token...\n", token)
+      await rvCLient.loginBot(token);
+    } else if (email && password) {
+      console.log("Logging in with Email...\n", email, password)
+      await rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client", captcha: captchaToken()});
+    }
+} catch (e: any) {
+  console.error(e)
+} finally {
+  setLoggedIn(true)
+}
+}
+
+function logoutFromRevolt() {
+  setLoggedIn(false);
+  if (rvCLient.session) rvCLient.logout();
+}
+
+async function getMessagesFromChannel() {
+  setServers("messages", await servers.current_channel?.fetchMessages())
+}
+
+// TODO: Send Message Handler
+function sendMessage(message: string) {
+  if (servers.current_channel) servers.current_channel!.sendMessage(message);
+}
+// TODO: Channel Switching
+function setChannel(channel_id: string) {
+  setServers("current_channel", servers.current_server_channels?.find((channel) => channel["_id"] === channel_id))
+  getMessagesFromChannel();
+  console.log(servers.current_channel);
+}
+// TODO: Fetch Channels from Server
+function fetchChannels() {
+  setServers("current_server_channels", servers.current_server?.channels)
+  console.log(servers.current_server_channels);
+}
+// TODO: Server Switching
+function setServer(server_id: string) {
+  setServers("current_server", servers.server_list?.find((server) => server["_id"] === server_id));
+  fetchChannels()
+  console.log(servers.current_server)
+}
+
+async function fetchServers() { try {
+  setServers("server_list", Array.from(rvCLient.servers.values()))
+  console.log(servers.server_list)
+} catch( e: any) {
+  console.log(e);
+}
+}
+
+// TODO: Automatic Login
+if (rvCLient.session) rvCLient.useExistingSession(rvCLient.session); console.log(rvCLient.session)
+
 // Mobx magic (Thanks Insert :D)
 let id = 0;
 enableExternalSource((fn, trigger) => {
@@ -52,14 +139,14 @@ enableExternalSource((fn, trigger) => {
   }
 })
 
-// Revolt Client
-const rvCLient = new Client();
-
 // Update ServerList when logged in
 setInterval(() => {
   if(loggedIn()) {
     runInAction(() => {
       setServers("server_list", Array.from(rvCLient.servers.values()))
+      if(servers.current_channel) {
+        getMessagesFromChannel();
+      }
     })
   }
   
@@ -67,88 +154,6 @@ setInterval(() => {
 
 const App: Component = () => {
   // Event Handlers
-  const onInputChange= (e: InputEvent & {currentTarget: HTMLInputElement, target: HTMLElement}, type: string) => {
-    if (type === "email") {
-      setLogin("email", e.currentTarget.value)
-    } else if (type === "password") {
-      setLogin("password", e.currentTarget.value)
-    } else if (type === "token") {
-      setLogin("token", e.currentTarget.value)
-    } else if (type === "mfa_token") {
-      setLogin("mfa_token", e.currentTarget.value)
-    } else if (type === "newMessage") {
-      setNewMessage(e.currentTarget.value)
-    } else {
-      throw new Error("Not Valid")
-    }
-  }
-  rvCLient.on("ready", async () => {
-    setLoggedIn(true);
-    setUser("messages", []);
-    setUser("username", rvCLient.user?.username)
-    setUser("user_id", rvCLient.user?._id)
-    console.info(`Logged In ${rvCLient.user?.username}`)
-    console.info(`Current Server Configuration:\n${rvCLient.configuration?.features}`);
-    fetchServers();
-  })
-
-  rvCLient.on("message", async (message) => {
-    if(user.messages) if(message) setUser("messages", [...user.messages, `${message?.author?.username} says ${message.content}`])
-  })
-
-  function logIntoRevolt(token?: string | undefined, email?: string | undefined, password?: string | undefined) {
-    try {
-      if(!email || !password) {
-        if(!token) throw new Error("No Token?");
-        console.log("Logging in with Token...\n", token)
-        rvCLient.loginBot(token);
-      } else if (email && password) {
-        console.log("Logging in with Email...")
-        rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client", captcha: captchaToken()});
-      }
-  } catch (e: any) {
-    console.error(e)
-  } finally {
-    console.log(rvCLient.session);
-    console.info(rvCLient.configuration);
-    setLoggedIn(true)
-  }
-  }
-
-  function logoutFromRevolt() {
-    setLoggedIn(false);
-    if (rvCLient.session) rvCLient.logout();
-  }
-
-  // TODO: Send Message Handler
-  function sendMessage(message: string, channel: string) {
-    
-  }
-  // TODO: Channel Switching
-  function setChannel(channel_id: string) {
-    
-  }
-  // TODO: Server Switching
-  function setServer(server_id: string) {
-    setServers("current_server", servers.server_list?.find((server) => server["_id"] === server_id));
-    console.log(servers.current_server)
-  }
-
-  async function fetchServers() { try {
-    setServers("server_list", Array.from(rvCLient.servers.values()))
-    console.log(servers.server_list)
-  } catch( e: any) {
-    console.log(e);
-  }
-  }
-  
-  // TODO: Automatic Login
-  if (rvCLient.session) rvCLient.useExistingSession(rvCLient.session);
-
-  createEffect(() => {
-    console.log(user.messages);
-  }, [user.messages])
-
   
 
   return (
@@ -174,22 +179,32 @@ const App: Component = () => {
       </>}
       {loggedIn() && (
         <>
-        <For each={servers.server_list}>
-          {(server) => (
-            <button onClick={() => setServer(server._id)}>{server.name}</button>
-          )}
-        </For>
+        <div>
+          <For each={servers.server_list}>
+            {(server) => (
+              <button onClick={() => setServer(server._id)}>{server.name}</button>
+            )}
+          </For>
+        </div>
+        <div>
+          <For each={servers.current_server_channels}>
+            {(channel) => (
+              <button onClick={() => setChannel(channel._id)}>{channel.name}</button>
+           )}
+          </For>
+        </div>
         <ul>
-        <For each={user.messages}>
-          {(message) => (
-            <li>{message}</li>
-          )}
-        </For>
+          <For each={servers.messages}>
+            {(message) => {
+              console.log(message)
+              return (<li>{message.author?.username ?? "Unknown User"} says {message.content}</li>)
+            }}
+          </For>
         </ul>
         <div>
-          <form>
+        <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => {e.preventDefault; logoutFromRevolt()}}>Log Out</button>
+          <form onSubmit={(e) => {e.preventDefault(); sendMessage(newMessage())}}>
             <button aria-label="Username" disabled>{user.username}</button>
-            <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => {e.preventDefault; logoutFromRevolt()}}>Log Out</button>
             <input type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
             <button type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
           </form>
