@@ -105,7 +105,7 @@ const App: Component = () => {
       console.log(rvCLient.session);
     } else {
       console.log("Logging in with Email...")
-      await rvCLient.login({email, password, friendly_name: "Solenoid Client", captcha: captchaToken()});
+      await rvCLient.login({email: email, password: password, friendly_name: "Solenoid Client", captcha: captchaToken()});
       console.log(rvCLient.session);
     }
   } catch (e: any) {
