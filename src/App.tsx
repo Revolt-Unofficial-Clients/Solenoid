@@ -3,6 +3,7 @@ import { createStore } from 'solid-js/store'
 import { Channel, Client, Message, Server } from "revolt.js";
 import { Reaction, runInAction } from 'mobx';
 import HCaptcha from 'solid-hcaptcha';
+import { createLocalStore } from './utils' 
 
 // Interfaces
 interface user {
@@ -27,6 +28,16 @@ interface server {
   messages?: Message[]
 }
 
+interface settings {
+  show: boolean,
+  status: undefined | string,
+  statusText: undefined | string,
+  showUsernames: boolean,
+  newShowUsernames: undefined | boolean,
+  updateRate: number,
+  newUpdateRate: undefined | number,
+}
+
 // Init Variables
 const [login, setLogin] = createStore<loginValues>({})
 const [newMessage, setNewMessage] = createSignal<string>("")
@@ -38,6 +49,15 @@ const [user, setUser] = createStore<user>({
   session_type: undefined
 })
 const [servers, setServers] = createStore<server>({})
+const [settings, setSettings] = createLocalStore<settings>("settings", {
+  show: false,
+  status: undefined,
+  statusText: undefined,
+  showUsernames: true,
+  updateRate: 4000,
+  newUpdateRate: undefined,
+  newShowUsernames: undefined
+})
 
 // Revolt Client
 const rvCLient = new Client();
@@ -54,6 +74,8 @@ const onInputChange= (e: InputEvent & {currentTarget: HTMLInputElement, target: 
     setLogin("mfa_token", e.currentTarget.value)
   } else if (type === "newMessage") {
     setNewMessage(e.currentTarget.value)
+  } else if (type === "newUpdateRate") {
+    setSettings("newUpdateRate", Number(e.currentTarget.value))
   } else {
     throw new Error("Not Valid")
   }
@@ -95,12 +117,13 @@ function logoutFromRevolt() {
 }
 
 async function getMessagesFromChannel() {
-  setServers("messages", await servers.current_channel?.fetchMessages())
+  setServers("messages", await (await servers.current_channel?.fetchMessages())?.reverse())
 }
 
 // TODO: Send Message Handler
 function sendMessage(message: string) {
   if (servers.current_channel) servers.current_channel!.sendMessage(message);
+  setNewMessage("");
 }
 // TODO: Channel Switching
 function setChannel(channel_id: string) {
@@ -126,6 +149,15 @@ async function fetchServers() { try {
 } catch( e: any) {
   console.log(e);
 }
+}
+
+function showSettings() {
+  setSettings("show", settings.show ? false : true);
+}
+
+function setCurrentSettings() {
+  setSettings("updateRate", settings.newUpdateRate || settings.updateRate);
+  setSettings("showUsernames", settings.newShowUsernames || settings.showUsernames);
 }
 
 // TODO: Automatic Login
@@ -156,12 +188,9 @@ setInterval(() => {
     })
   }
   
-}, 4000)
+}, settings.updateRate)
 
 const App: Component = () => {
-  // Event Handlers
-  
-
   return (
     <div>
       {!loggedIn() && <>
@@ -203,7 +232,7 @@ const App: Component = () => {
           <For each={servers.messages}>
             {(message) => {
               console.log(message)
-              return (<li id="solenoid-message">{message.author?.username ?? "Unknown User"} says {message.content}</li>)
+              return (<li id="solenoid-message">{settings.showUsernames && (message.author?.username ?? "Unknown User")} {settings.showUsernames && "says"} {message.content}</li>)
             }}
           </For>
         </ul>
@@ -212,13 +241,28 @@ const App: Component = () => {
             <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => {e.preventDefault; logoutFromRevolt()}} id="solenoid-logout">Log Out</button>
           </div>
           <form onSubmit={(e) => {e.preventDefault(); sendMessage(newMessage())}}>
-            <button id="solenoid-userOptions" aria-label="Username" disabled>{user.username}</button>
-            <input id="solenoid-send-input" type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage() || ""} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
+            <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings}>{user.username}</button>
+            <input id="solenoid-send-input" type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
             <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
           </form>
         </div>
         </>
-        
+      )}
+      {settings.show && (
+        <div id="solenoid-settings-panel">
+          <form onSubmit={(e) => {
+            e.preventDefault()
+            setCurrentSettings();
+            }}>
+            <div id="solenoid-setting solenoid-showUsernames">
+              <h3>Show Usernames: <button onClick={() => setSettings("newShowUsernames", settings.newShowUsernames ? false : true)}>{settings.newShowUsernames ? "Enabled" : "Disabled"}</button></h3>
+            </div>
+            <div id="solenoid-setting solenoid-updateRate">
+              <h3>Update Rate (in MS): <input type="number" value={settings.newUpdateRate} placeholder={settings.updateRate.toString()} onChange={(e: any) => onInputChange(e, "newUpdateRate")}/></h3>
+            </div>
+            <button type="submit" id="solenoid-setting solenoid-updateSettings">Update Settings</button>
+          </form>
+        </div>
       )}
     </div>
   );
