@@ -115,6 +115,7 @@ function logoutFromRevolt() {
 
 async function getMessagesFromChannel() {
   setServers("messages", await (await servers.current_channel?.fetchMessages())?.reverse())
+  setServers("isHome", false);
 }
 
 // TODO: Send Message Handler
@@ -135,7 +136,6 @@ function fetchChannels() {
 }
 // TODO: Server Switching
 function setServer(server_id: string) {
-  if(server_id === "home")
   setServers("current_server", servers.server_list?.find((server) => server["_id"] === server_id));
   fetchChannels()
   console.log(servers.current_server)
@@ -216,7 +216,7 @@ const App: Component = () => {
       {loggedIn() && (
         <>
         <div id="solenoid-serverList">
-          <button onClick={() => {setServer(""); setChannel("")}} disabled={servers.isHome}>Solenoid Home</button>
+          <button onClick={() => {setServers("current_server", undefined); setServers("current_channel", undefined)}} disabled={servers.isHome}>Solenoid Home</button>
           <For each={servers.server_list}>
             {(server) => (
               <button id="solenoid-server" onClick={() => setServer(server._id)} disabled={server._id === servers.current_server?._id ?? false}>{server.name}</button>
