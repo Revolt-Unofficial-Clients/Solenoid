@@ -248,7 +248,7 @@ const App: Component = () => {
             <hr />
             <p>Insert: Helped me with Mobx and Revolt.js issues</p>
             <p>RyanSolid: <a href='https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js'>This</a> code snippet</p>
-            <p>VeiledProduct80: idk</p>
+            <p>VeiledProduct80: Help me realize i forgot the masquerade part</p>
             <p>Mclnooted: <b>sex</b></p>
           </div>
         )}
