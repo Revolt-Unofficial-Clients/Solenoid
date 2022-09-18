@@ -25,17 +25,16 @@ interface server {
   current_server?: Server,
   current_server_channels?: any[],
   current_channel?: Channel,
-  messages?: Message[]
+  messages?: Message[],
+  isHome: boolean
 }
 
 interface settings {
   show: boolean,
   status: undefined | string,
   statusText: undefined | string,
-  showUsernames: boolean,
-  newShowUsernames: undefined | boolean,
-  updateRate: number,
-  newUpdateRate: undefined | number,
+  showSuffix: boolean,
+  newShowSuffix: undefined | boolean
 }
 
 // Init Variables
@@ -48,15 +47,15 @@ const [user, setUser] = createStore<user>({
   username: undefined,
   session_type: undefined
 })
-const [servers, setServers] = createStore<server>({})
+const [servers, setServers] = createStore<server>({
+  isHome: true
+})
 const [settings, setSettings] = createLocalStore<settings>("settings", {
   show: false,
   status: undefined,
   statusText: undefined,
-  showUsernames: true,
-  updateRate: 4000,
-  newUpdateRate: undefined,
-  newShowUsernames: undefined
+  showSuffix: true,
+  newShowSuffix: undefined
 })
 
 // Revolt Client
@@ -74,24 +73,22 @@ const onInputChange= (e: InputEvent & {currentTarget: HTMLInputElement, target: 
     setLogin("mfa_token", e.currentTarget.value)
   } else if (type === "newMessage") {
     setNewMessage(e.currentTarget.value)
-  } else if (type === "newUpdateRate") {
-    setSettings("newUpdateRate", Number(e.currentTarget.value))
-  } else {
+  }  else {
     throw new Error("Not Valid")
   }
 }
+
 rvCLient.on("ready", async () => {
   setLoggedIn(true);
   setUser("username", rvCLient.user?.username)
   setUser("user_id", rvCLient.user?._id)
-  console.info(`Logged In as ${rvCLient.user?.username}`)
+  console.info(`Logged In as ${rvCLient.user?.username} (Bot Mode)`)
   fetchServers();
 })
 
 async function logIntoRevolt(token: string) {
   try {
     await rvCLient.loginBot(token);
-    console.log(rvCLient.configuration?.features.captcha.key);
 } catch (e: any) {
   console.error(e)
 } finally {
@@ -138,6 +135,7 @@ function fetchChannels() {
 }
 // TODO: Server Switching
 function setServer(server_id: string) {
+  if(server_id === "home")
   setServers("current_server", servers.server_list?.find((server) => server["_id"] === server_id));
   fetchChannels()
   console.log(servers.current_server)
@@ -156,8 +154,11 @@ function showSettings() {
 }
 
 function setCurrentSettings() {
-  setSettings("updateRate", settings.newUpdateRate || settings.updateRate);
-  setSettings("showUsernames", settings.newShowUsernames || settings.showUsernames);
+  if (settings.newShowSuffix === true ) {
+    setSettings("showSuffix", true)
+  } else if (settings.newShowSuffix === false ) {
+    setSettings("showSuffix", false)
+  }
 }
 
 // TODO: Automatic Login
@@ -188,7 +189,7 @@ setInterval(() => {
     })
   }
   
-}, settings.updateRate)
+}, 1000)
 
 const App: Component = () => {
   return (
@@ -215,12 +216,14 @@ const App: Component = () => {
       {loggedIn() && (
         <>
         <div id="solenoid-serverList">
+          <button onClick={() => {setServer(""); setChannel("")}} disabled={servers.isHome}>Solenoid Home</button>
           <For each={servers.server_list}>
             {(server) => (
               <button id="solenoid-server" onClick={() => setServer(server._id)} disabled={server._id === servers.current_server?._id ?? false}>{server.name}</button>
             )}
           </For>
         </div>
+        <br />
         <div id="solenoid-channelList">
           <For each={servers.current_server_channels}>
             {(channel) => (
@@ -232,10 +235,23 @@ const App: Component = () => {
           <For each={servers.messages}>
             {(message) => {
               console.log(message)
-              return (<li id="solenoid-message">{settings.showUsernames && (message.author?.username ?? "Unknown User")} {settings.showUsernames && "says"} {message.content}</li>)
+              return (<li id="solenoid-message">{message.masquerade?.name?? message.author?.username ?? "Unknown User"}{message.masquerade && " (bridge)"}{settings.showSuffix ? " says" : ":" } {message.content}</li>)
             }}
           </For>
         </ul>
+        {servers.isHome && (
+          <div>
+            <h1>Solenoid (Beta)</h1>
+            <p>A lightweight client for revolt.chat made with SolidJS</p>
+            <br />
+            <h3>Contributors</h3>
+            <hr />
+            <p>Insert: Helped me with Mobx and Revolt.js issues</p>
+            <p>RyanSolid: <a href='https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js'>This</a> code snippet</p>
+            <p>VeiledProduct80: idk</p>
+            <p>Mclnooted: <b>sex</b></p>
+          </div>
+        )}
         <div id="solenoid-userBar">
           <div id="solenoid-misc-buttonList">
             <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => {e.preventDefault; logoutFromRevolt()}} id="solenoid-logout">Log Out</button>
@@ -255,12 +271,15 @@ const App: Component = () => {
             setCurrentSettings();
             }}>
             <div id="solenoid-setting solenoid-showUsernames">
-              <h3>Show Usernames: <button onClick={() => setSettings("newShowUsernames", settings.newShowUsernames ? false : true)}>{settings.newShowUsernames ? "Enabled" : "Disabled" || settings.showUsernames ? "Enabled" : "Disabled"}</button></h3>
+              <h3>Show Prefix: <button onClick={() => {
+                if(settings.newShowSuffix) {
+                  setSettings("newShowSuffix", false);
+                } else {
+                  setSettings("newShowSuffix", true);
+                }
+              }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button></h3>
+              <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
             </div>
-            <div id="solenoid-setting solenoid-updateRate">
-              <h3>Update Rate (in MS): <input type="number" value={settings.newUpdateRate} placeholder={settings.updateRate.toString()} onChange={(e: any) => onInputChange(e, "newUpdateRate")}/></h3>
-            </div>
-            <button type="submit" id="solenoid-setting solenoid-updateSettings">Update Settings</button>
           </form>
         </div>
       )}
