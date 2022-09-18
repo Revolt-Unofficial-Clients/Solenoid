@@ -1,7 +1,8 @@
 # Solenoid
 ## A really fucking minimal revolt.chat client with little to no css
 
-<img width="480" alt="Really good quality screenshot of solenoid" src="https://user-images.githubusercontent.com/81704775/190832955-a134a840-a2fa-4060-8f31-7580b82325ca.png">
+<img width="572" alt="image" src="https://user-images.githubusercontent.com/81704775/190916922-6ee9eb36-1214-4777-b5b6-f5ac871f0f23.png">
+
 
 ### Reasons to use it
 
