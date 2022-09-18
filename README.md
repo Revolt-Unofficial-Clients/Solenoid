@@ -19,6 +19,16 @@ pnpm i --shamefully-hoist
 pnpm run dev
 ```
 
+Or you can go to [the official site](https://solenoid.vercel.app)
+
+### Features
+
+- [x] Send Messages
+- [x] Get Messages
+- [x] Server Switching
+- [x] Status Updating
+- [x] Css Support (No css by default, use a extension to override)
+
 ### Why
 I wanted to learn SolidJS because I heard it was blazingly fast and cool, so I decided to make a revolt.chat client to challenge my brain (and my sanity).
 
@@ -28,3 +38,7 @@ I wanted to learn SolidJS because I heard it was blazingly fast and cool, so I d
 > Insert: Helped me with Revolt.js and some Mobx stuff
 
 > RyanSolid: Made me understand that I don't know anything about mobx, also this code snippet (https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js)
+
+> VeliedProduct80: Helped me realize i forgot the masquerade part
+
+> Mclnooted: **sex**
