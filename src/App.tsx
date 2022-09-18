@@ -134,7 +134,7 @@ async function getMessagesFromChannel() {
 
 // TODO: Send Message Handler
 function sendMessage(message: string) {
-  if (servers.current_channel) servers.current_channel!.sendMessage(message);
+  if (servers.current_channel) servers.current_channel!.sendMessage({content: message});
   setNewMessage("");
 }
 // TODO: Channel Switching
@@ -185,26 +185,26 @@ function updateStatus() {
 }
 
 // TODO: Automatic Login
-if(settings.session) {
-  rvCLient.useExistingSession({token: settings.session});
-  setLoggedIn(true);
-  setUser("username", rvCLient.user?.username);
-  setUser("user_id", rvCLient.user?._id);
-  setUser("session_type", "email");
-  fetchServers();
-} else {
-  rvCLient.logout();
-  setLoggedIn(false);
-  setUser("user_id", undefined);
-  setUser("username", undefined);
-  setUser("session_type", undefined);
-  setServers("current_channel", undefined);
-  setServers("current_server", undefined);
-  setServers("current_server_channels", undefined);
-  setServers("isHome", false);
-  setServers("server_list", undefined);
-  setSettings("show", false);
-}
+// if(settings.session) {
+//   rvCLient.useExistingSession({token: settings.session});
+//   setLoggedIn(true);
+//   setUser("username", rvCLient.user?.username);
+//   setUser("user_id", rvCLient.user?._id);
+//   setUser("session_type", "email");
+//   fetchServers();
+// } else {
+//   rvCLient.logout();
+//   setLoggedIn(false);
+//   setUser("user_id", undefined);
+//   setUser("username", undefined);
+//   setUser("session_type", undefined);
+//   setServers("current_channel", undefined);
+//   setServers("current_server", undefined);
+//   setServers("current_server_channels", undefined);
+//   setServers("isHome", false);
+//   setServers("server_list", undefined);
+//   setSettings("show", false);
+// }
 
 // Mobx magic (Thanks Insert :D)
 let id = 0;
@@ -228,7 +228,6 @@ setInterval(() => {
       if(servers.current_channel) {
         getMessagesFromChannel();
       }
-      rvCLient.user?.update({status: {presence: "Online", text:"Logged In from Solenoid Beta | solenoid.vercel.app"}})
     })
   }
   
@@ -324,7 +323,7 @@ const App: Component = () => {
               <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
             </div>
             <div id="solenoid-setting solenoid-status">
-              <h3>Current Status: <button onClick={() => {
+              <h3>Current Status: <button type="button" onClick={() => {
                 if(settings.status === "Online") {
                   setSettings("status", "Busy")
                   updateStatus()
@@ -336,7 +335,7 @@ const App: Component = () => {
                   setSettings("status", "Online")
                   updateStatus()
                 }
-              }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status") } /></h3>
+              }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status") } /> <button type="submit">Update</button></h3>
             </div>
           </form>
         </div>
