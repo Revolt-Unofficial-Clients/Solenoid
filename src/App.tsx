@@ -271,7 +271,7 @@ const App: Component = () => {
             setCurrentSettings();
             }}>
             <div id="solenoid-setting solenoid-showUsernames">
-              <h3>Show Prefix: <button onClick={() => {
+              <h3>Show Sufix: <button onClick={() => {
                 if(settings.newShowSuffix) {
                   setSettings("newShowSuffix", false);
                 } else {
