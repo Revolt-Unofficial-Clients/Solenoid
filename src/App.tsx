@@ -255,7 +255,7 @@ const App: Component = () => {
             setCurrentSettings();
             }}>
             <div id="solenoid-setting solenoid-showUsernames">
-              <h3>Show Usernames: <button onClick={() => setSettings("newShowUsernames", settings.newShowUsernames ? false : true)}>{settings.newShowUsernames ? "Enabled" : "Disabled"}</button></h3>
+              <h3>Show Usernames: <button onClick={() => setSettings("newShowUsernames", settings.newShowUsernames ? false : true)}>{settings.newShowUsernames ? "Enabled" : "Disabled" || settings.showUsernames ? "Enabled" : "Disabled"}</button></h3>
             </div>
             <div id="solenoid-setting solenoid-updateRate">
               <h3>Update Rate (in MS): <input type="number" value={settings.newUpdateRate} placeholder={settings.updateRate.toString()} onChange={(e: any) => onInputChange(e, "newUpdateRate")}/></h3>
