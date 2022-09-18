@@ -21,20 +21,21 @@ interface loginValues {
 }
 
 interface server {
-  server_list?: any[],
-  current_server?: Server,
+  server_list?: any[] | undefined,
+  current_server?: Server | undefined,
   current_server_channels?: any[],
-  current_channel?: Channel,
-  messages?: Message[],
-  isHome: boolean
+  current_channel?: Channel | undefined,
+  messages?: Message[] | undefined,
+  isHome: boolean | undefined,
 }
 
 interface settings {
   show: boolean,
-  status: undefined | string,
+  status: "Online" | "Idle" | "Busy" | "Invisible" | null | undefined,
   statusText: undefined | string,
   showSuffix: boolean,
-  newShowSuffix: undefined | boolean
+  newShowSuffix: undefined | boolean,
+  session?: string | undefined;
 }
 
 // Init Variables
@@ -52,10 +53,10 @@ const [servers, setServers] = createStore<server>({
 })
 const [settings, setSettings] = createLocalStore<settings>("settings", {
   show: false,
-  status: undefined,
-  statusText: undefined,
+  status: "Online",
+  statusText: "Using Solenoid Client | solenoid.vercel.app",
   showSuffix: true,
-  newShowSuffix: undefined
+  newShowSuffix: undefined,
 })
 
 // Revolt Client
@@ -73,7 +74,9 @@ const onInputChange= (e: InputEvent & {currentTarget: HTMLInputElement, target: 
     setLogin("mfa_token", e.currentTarget.value)
   } else if (type === "newMessage") {
     setNewMessage(e.currentTarget.value)
-  }  else {
+  } else if (type === "status") {
+    setSettings("statusText", e.currentTarget.value)
+  } else {
     throw new Error("Not Valid")
   }
 }
@@ -105,11 +108,22 @@ async function loginWithEmail(email: string, password: string) {
   } finally {
     setLoggedIn(true);
     setUser("session_type", "email");
+    setSettings("session", rvCLient.session)
   }
 }
 
 function logoutFromRevolt() {
   setLoggedIn(false);
+  setSettings("session", undefined);
+  setUser("user_id", undefined);
+  setUser("username", undefined);
+  setUser("session_type", undefined);
+  setServers("current_channel", undefined);
+  setServers("current_server", undefined);
+  setServers("current_server_channels", undefined);
+  setServers("isHome", false);
+  setServers("server_list", undefined);
+  setSettings("show", false);
   if (rvCLient.session) rvCLient.logout();
 }
 
@@ -161,7 +175,36 @@ function setCurrentSettings() {
   }
 }
 
+function updateStatus() {
+  rvCLient.api.patch("/users/@me", {
+    status: {
+      presence: settings.status,
+      text: settings.statusText
+    }
+  })
+}
+
 // TODO: Automatic Login
+if(settings.session) {
+  rvCLient.useExistingSession({token: settings.session});
+  setLoggedIn(true);
+  setUser("username", rvCLient.user?.username);
+  setUser("user_id", rvCLient.user?._id);
+  setUser("session_type", "email");
+  fetchServers();
+} else {
+  rvCLient.logout();
+  setLoggedIn(false);
+  setUser("user_id", undefined);
+  setUser("username", undefined);
+  setUser("session_type", undefined);
+  setServers("current_channel", undefined);
+  setServers("current_server", undefined);
+  setServers("current_server_channels", undefined);
+  setServers("isHome", false);
+  setServers("server_list", undefined);
+  setSettings("show", false);
+}
 
 // Mobx magic (Thanks Insert :D)
 let id = 0;
@@ -279,6 +322,21 @@ const App: Component = () => {
                 }
               }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button></h3>
               <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
+            </div>
+            <div id="solenoid-setting solenoid-status">
+              <h3>Current Status: <button onClick={() => {
+                if(settings.status === "Online") {
+                  setSettings("status", "Busy")
+                  updateStatus()
+                  console.log(settings.status)
+                } else if (settings.status === "Busy") {
+                  setSettings("status", "Invisible")
+                  updateStatus()
+                } else if(settings.status === "Invisible") {
+                  setSettings("status", "Online")
+                  updateStatus()
+                }
+              }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status") } /></h3>
             </div>
           </form>
         </div>
