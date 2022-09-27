@@ -1,9 +1,10 @@
-import { Component, createEffect, createSignal, enableExternalSource, For } from 'solid-js';
+import { Component, createSignal, enableExternalSource, For } from 'solid-js';
 import { createStore } from 'solid-js/store'
 import { Channel, Client, Message, Server } from "revolt.js";
 import { Reaction, runInAction } from 'mobx';
 import HCaptcha from 'solid-hcaptcha';
-import { createLocalStore } from './utils' 
+import { createLocalStore } from './utils'
+import SolidMarkdown from 'solid-markdown';
 
 // Interfaces
 interface user {
@@ -128,7 +129,7 @@ function logoutFromRevolt() {
 }
 
 async function getMessagesFromChannel() {
-  setServers("messages", await (await servers.current_channel?.fetchMessages())?.reverse())
+  setServers("messages", await servers.current_channel?.fetchMessages()?.then((arr) => arr.reverse()))
   setServers("isHome", false);
 }
 
@@ -230,7 +231,7 @@ setInterval(() => {
       }
     })
   }
-  
+
 }, 1000)
 
 const App: Component = () => {
@@ -277,7 +278,7 @@ const App: Component = () => {
           <For each={servers.messages}>
             {(message) => {
               console.log(message)
-              return (<li id="solenoid-message">{message.masquerade?.name?? message.author?.username ?? "Unknown User"}{message.masquerade && " (bridge)"}{settings.showSuffix ? " says" : ":" } {message.content}</li>)
+              return (<li id="solenoid-message">{message.masquerade?.name?? message.author?.username ?? "Unknown User"}{message.masquerade && " (bridge)"}{settings.showSuffix ? " says" : ":" } <SolidMarkdown children={message.content}/></li>)
             }}
           </For>
         </ul>
