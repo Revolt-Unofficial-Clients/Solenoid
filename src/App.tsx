@@ -301,7 +301,7 @@ const App: Component = () => {
           </div>
           <form onSubmit={(e) => {e.preventDefault(); sendMessage(newMessage())}}>
             <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings}>{user.username}</button>
-            <input id="solenoid-send-input" type="text" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")}></input>
+            <textarea id="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")}/>
             <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
           </form>
         </div>
