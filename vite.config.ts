@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import smd from "solid-markdown"
 
 export default defineConfig({
   plugins: [solidPlugin()],
@@ -9,7 +10,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
     rollupOptions: {
-      external: ['solid-markdown']
+      external: [smd]
     }
   },
 });
