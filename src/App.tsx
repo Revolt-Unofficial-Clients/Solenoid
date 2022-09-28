@@ -39,7 +39,8 @@ interface settings {
     statusText: undefined | string,
     showSuffix: boolean,
     newShowSuffix: undefined | boolean,
-    session?: string | undefined;
+    session?: string | undefined,
+    zoomLevel: number
 }
 
 // Init Variables
@@ -61,8 +62,8 @@ const [settings, setSettings] = createLocalStore<settings>("settings", {
     statusText: "Using Solenoid Client | solenoid.vercel.app" || rvCLient.user?.status?.text,
     showSuffix: true,
     newShowSuffix: undefined,
+    zoomLevel: 5
 })
-
 
 
 // Functions
@@ -79,6 +80,8 @@ const onInputChange = (e: InputEvent & { currentTarget: HTMLInputElement, target
         setNewMessage(e.currentTarget.value)
     } else if (type === "status") {
         setSettings("statusText", e.currentTarget.value)
+    } else if (type == "zoom") {
+        setSettings("zoomLevel", parseInt(e.currentTarget.value));
     } else {
         throw new Error("Not Valid")
     }
@@ -240,7 +243,7 @@ const App: Component = () => {
             {loggedIn() && (
                 <>
                     <div id="solenoid-serverList">
-                        <button onClick={() => { setServers("current_server", undefined); setServers("current_channel", undefined) }} disabled={servers.isHome}>Solenoid Home</button>
+                        <button onClick={() => { setServers("current_server", undefined); setServers("current_channel", undefined); setServers("isHome", true) }} disabled={servers.isHome}>Solenoid Home</button>
                         <For each={servers.server_list}>
                             {(server) => (
                                 <button id="solenoid-server" onClick={() => setServer(server._id)} disabled={server._id === servers.current_server?._id ?? false}>{server.name}</button>
@@ -267,16 +270,16 @@ const App: Component = () => {
                                         <For each={message.attachments}>
                                             {(attachment) => {
                                                 if (attachment.metadata.type === "Image") {
+                                                    //Basic image support :D
                                                     return (
                                                       <img
                                                         src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
-                                                        width={attachment.metadata.width / 5}
-                                                        height={attachment.metadata.height / 5}
+                                                        width={attachment.metadata.width > 500 ? attachment.metadata.width / settings.zoomLevel : attachment.metadata.width}
+                                                        height={attachment.metadata.height > 500 ? attachment.metadata.height / settings.zoomLevel : attachment.metadata.height}
                                                         />
                                                     )
                                                 }
-
-                  }}
+                                            }}
                                         </For>
                                     </li>
                                 )
@@ -322,6 +325,7 @@ const App: Component = () => {
                                     setSettings("newShowSuffix", true);
                                 }
                             }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button></h3>
+                            <p>Whether to add "says:" after a username.</p>
                             <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
                         </div>
                         <div id="solenoid-setting solenoid-status">
@@ -338,6 +342,11 @@ const App: Component = () => {
                                     updateStatus()
                                 }
                             }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} /> <button type="submit">Update</button></h3>
+                        </div>
+                        <div id="solenoid-setting solenoid-img-zoom">
+                          <h3>Image Zoom Level</h3>
+                          <p>Smaller the number, bigger the image. Affects all images</p>
+                          <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
                         </div>
                     </form>
                 </div>
