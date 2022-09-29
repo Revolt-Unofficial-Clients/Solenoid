@@ -41,6 +41,7 @@ interface settings {
     newShowSuffix: undefined | boolean,
     session?: string | undefined,
     zoomLevel: number,
+    showImages: boolean,
     debug: boolean
 }
 
@@ -54,14 +55,18 @@ const [user, setUser] = createStore<user>({
     username: undefined,
     session_type: undefined
 })
+
 const [servers, setServers] = createStore<server>({
     isHome: true
 })
+
+// Solenoid Default Settings
 const [settings, setSettings] = createLocalStore<settings>("settings", {
     show: false,
     showSuffix: true,
     newShowSuffix: undefined,
     zoomLevel: 5,
+    showImages: true,
     debug: false
 })
 
@@ -202,6 +207,8 @@ function setCurrentSettings() {
     }
 
     updateStatus();
+    setServers("messages", undefined);
+    getMessagesFromChannel();
 }
 
 function updateStatus() {
@@ -235,7 +242,7 @@ setInterval(() => {
             if (servers.current_channel) {
                 getMessagesFromChannel();
             }
-            if(settings.debug) console.log(rvCLient.eventNames());
+            if (settings.debug) console.log(rvCLient.eventNames());
         })
     }
 
@@ -299,13 +306,15 @@ const App: Component = () => {
                                         <SolidMarkdown children={message.content} />
                                         <For each={message.attachments}>
                                             {(attachment) => {
-                                                if (attachment.metadata.type === "Image") {
+                                                if (!settings.showImages) {
+                                                    return (<></>);
+                                                } else if (attachment.metadata.type === "Image") {
                                                     //Basic image support :D
                                                     return (
                                                       <img
                                                         src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
                                                         width={attachment.metadata.width > 500 ? attachment.metadata.width / settings.zoomLevel : attachment.metadata.width}
-                                                        height={attachment.metadata.height > 500 ? attachment.metadata.height / settings.zoomLevel : attachment.metadata.height}
+                                                        height={attachment.metadata.height}
                                                         />
                                                     )
                                                 }
@@ -370,9 +379,18 @@ const App: Component = () => {
                             }
                         }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} /></h3>
                     </div>
+                    <div id="solenoid-setting solenoid-show-imgs">
+                        <h3>Image Rendering</h3>
+                        <p>Whether to show images in Solenoid. Affects all images.</p>
+                        <button onClick={() => {
+                            settings.showImages ? setSettings("showImages", false) : setSettings("showImages", true);
+                        }}>{
+                            settings.showImages ? "True" : "False"
+                        }</button>
+                    </div>
                     <div id="solenoid-setting solenoid-img-zoom">
                         <h3>Image Zoom Level</h3>
-                        <p>Smaller the number, bigger the image. Affects all images</p>
+                        <p>Smaller the number, bigger the image. Affects all images.</p>
                         <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
                     </div>
                     <div id="solenoid-setting solenoid-update">
