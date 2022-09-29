@@ -343,31 +343,31 @@ const App: Component = () => {
                     )}
                     <div id="solenoid-userBar">
                         <div id="solenoid-misc-buttonList">
-                            <button title={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => { e.preventDefault; logoutFromRevolt() }} id="solenoid-logout">Log Out</button>
+                            <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
+                                <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings} title={`Logged in as ${user.username}, Click for Settings`}>{user.username}</button>
+                                <textarea class="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
+                                <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
+                            </form>
                         </div>
-                        <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
-                            <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings} title={`Logged in as ${user.username}, Click for Settings`}>{user.username}</button>
-                            <textarea id="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
-                            <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
-                        </form>
                     </div>
                 </div>
             )}
             {settings.show && (
                 <div class="solenoid-settings" id="solenoid-settings-panel">
                     <div id="solenoid-setting solenoid-showUsernames">
-                        <h3>Show Suffix: <button onClick={() => {
+                        <h3>Show Suffix</h3>
+                        <p>Whether to add "says:" after a username.</p>
+                        <button onClick={() => {
                             if (settings.newShowSuffix) {
                                 setSettings("newShowSuffix", false);
                             } else {
                                 setSettings("newShowSuffix", true);
                             }
-                        }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button></h3>
-                        <p>Whether to add "says:" after a username.</p>
-                        <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
+                        }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button>
                     </div>
                     <div id="solenoid-setting solenoid-status">
-                        <h3>Current Status: <button type="button" onClick={() => {
+                        <h3>Current Status</h3>
+                        <button type="button" onClick={() => {
                             if (settings.status === "Online") {
                                 setSettings("status", "Busy")
                                 updateStatus()
@@ -379,7 +379,8 @@ const App: Component = () => {
                                 setSettings("status", "Online")
                                 updateStatus()
                             }
-                        }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} /></h3>
+                        }}>{settings.status}</button>
+                        <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} />
                     </div>
                     <div id="solenoid-setting solenoid-show-imgs">
                         <h3>Image Rendering</h3>
@@ -395,8 +396,9 @@ const App: Component = () => {
                         <p>Smaller the number, bigger the image. 0 is original size, Affects all images.</p>
                         <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
                     </div>
-                    <div id="solenoid-setting solenoid-update">
-                        <button onClick={setCurrentSettings}>Update Settings</button>
+                    <div class="solenoid-setting solenoid-update">
+                        <button class="solenoid-update-btn" onClick={setCurrentSettings}>Update Settings</button>
+                        <button title={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => { e.preventDefault; logoutFromRevolt() }} id="solenoid-logout">Log Out</button>
                     </div>
                 </div>
             )}
