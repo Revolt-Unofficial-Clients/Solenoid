@@ -114,3 +114,23 @@ button:active{
     padding: 5px;
     border-radius: 12px;
 }
+
+.solenoid-message-image{
+    width: 20%;
+    height: 20%;
+    aspect-ratio: auto 1920 / 1080;
+}
+
+.banner {
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+    border-radius: 5px;
+    background: rgb(255, 98, 98);
+    color: white;
+}
+
+.solenoid-settings > #solenoid-settings-panel {
+    color:white;
+    background-color: rgb(63, 63, 63);
+}
