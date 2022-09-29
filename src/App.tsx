@@ -35,12 +35,13 @@ interface server {
 
 interface settings {
     show: boolean,
-    status: "Online" | "Idle" | "Busy" | "Invisible" | null | undefined,
-    statusText: undefined | string,
+    status?: "Online" | "Idle" | "Busy" | "Invisible" | null | undefined,
+    statusText?: any,
     showSuffix: boolean,
     newShowSuffix: undefined | boolean,
     session?: string | undefined,
-    zoomLevel: number
+    zoomLevel: number,
+    debug: boolean
 }
 
 // Init Variables
@@ -58,11 +59,10 @@ const [servers, setServers] = createStore<server>({
 })
 const [settings, setSettings] = createLocalStore<settings>("settings", {
     show: false,
-    status: "Online",
-    statusText: "Using Solenoid Client | solenoid.vercel.app" || rvCLient.user?.status?.text,
     showSuffix: true,
     newShowSuffix: undefined,
-    zoomLevel: 5
+    zoomLevel: 5,
+    debug: false
 })
 
 
@@ -91,15 +91,26 @@ rvCLient.on("ready", async () => {
     setLoggedIn(true);
     setUser("username", rvCLient.user?.username)
     setUser("user_id", rvCLient.user?._id)
-    console.info(`Logged In as ${rvCLient.user?.username} (Bot Mode)`)
+    if (settings.debug) console.info(`Logged In as ${rvCLient.user?.username} (Bot Mode)`);
     fetchServers();
+})
+
+rvCLient.on("packet", async (info) => {
+    if (info.type === "UserUpdate" && info.id === rvCLient.user?._id) {
+        setSettings("status", info.data.status?.presence);
+        setSettings("statusText", info.data.status?.text);
+    }
 })
 
 async function logIntoRevolt(token: string) {
     try {
         await rvCLient.loginBot(token);
     } catch (e: any) {
-        console.error(e)
+        if (settings.debug) {
+            console.log(e)
+        } else {
+            alert(e);
+        }
     } finally {
         setLoggedIn(true)
         setUser("session_type", "token");
@@ -110,7 +121,11 @@ async function loginWithEmail(email: string, password: string) {
     try {
         await rvCLient.login({ email: email, password: password, friendly_name: "Solenoid Client Beta", captcha: captchaToken() })
     } catch (e: any) {
-        console.error(e)
+        if (settings.debug) {
+            console.log(e)
+        } else {
+            alert(e);
+        }
     } finally {
         setLoggedIn(true);
         setUser("session_type", "email");
@@ -158,15 +173,20 @@ function fetchChannels() {
 function setServer(server_id: string) {
     setServers("current_server", servers.server_list?.find((server) => server["_id"] === server_id));
     fetchChannels()
-    console.log(servers.current_server)
+    if(settings.debug) console.log(servers.current_server);
 }
 
 async function fetchServers() {
     try {
         setServers("server_list", Array.from(rvCLient.servers.values()))
-        console.log(servers.server_list)
+        if(settings.debug) console.log(servers.server_list)
     } catch (e: any) {
-        console.log(e);
+        if (settings.debug) {
+            console.log(e)
+
+        } else {
+            alert(e);
+        }
     }
 }
 
@@ -180,6 +200,8 @@ function setCurrentSettings() {
     } else if (settings.newShowSuffix === false) {
         setSettings("showSuffix", false)
     }
+
+    updateStatus();
 }
 
 function updateStatus() {
@@ -213,6 +235,7 @@ setInterval(() => {
             if (servers.current_channel) {
                 getMessagesFromChannel();
             }
+            if(settings.debug) console.log(rvCLient.eventNames());
         })
     }
 
@@ -221,7 +244,12 @@ setInterval(() => {
 const App: Component = () => {
     return (
         <div>
-            {!loggedIn() && <>
+            { window.location.hostname === "localhost" && (
+                <div class="banner">
+                    <span>Running on a local server, some features might not be available.</span>
+                </div>
+            )}
+            {!loggedIn() && <div>
                 <form onSubmit={(e) => { e.preventDefault(); logIntoRevolt(login.token ?? "") }}>
                     <div>
                         <label>Login with Token</label>
@@ -229,7 +257,8 @@ const App: Component = () => {
                         <button type='submit'>Login</button>
                     </div>
                 </form>
-                <form onSubmit={(e) => { e.preventDefault(); loginWithEmail(login.email ?? "", login.password ?? "") }}>
+               {window.location.hostname !== "localhost" && (
+                   <form onSubmit={(e) => { e.preventDefault(); loginWithEmail(login.email ?? "", login.password ?? "") }}>
                     <div>
                         <label>Login with Email</label>
                         <input type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
@@ -239,11 +268,12 @@ const App: Component = () => {
                         <button type='submit'>Login</button>
                     </div>
                 </form>
-            </>}
+            )}
+            </div>}
             {loggedIn() && (
-                <>
+                <div class="solenoid">
                     <div id="solenoid-serverList">
-                        <button onClick={() => { setServers("current_server", undefined); setServers("current_channel", undefined); setServers("isHome", true) }} disabled={servers.isHome}>Solenoid Home</button>
+                        <button onClick={() => { setServers("current_server", undefined); setServers("current_channel", undefined); setServers("messages", undefined); setServers("isHome", true) }} disabled={servers.isHome}>Solenoid Home</button>
                         <For each={servers.server_list}>
                             {(server) => (
                                 <button id="solenoid-server" onClick={() => setServer(server._id)} disabled={server._id === servers.current_server?._id ?? false}>{server.name}</button>
@@ -261,7 +291,7 @@ const App: Component = () => {
                     <ul id="solenoid-messages">
                         <For each={servers.messages}>
                             {(message) => {
-                                console.log(message.attachments);
+                                if(settings.debug) console.log(message.attachments);
                                 return (
                                     <li id="solenoid-message">
                                         {message.masquerade?.name ?? message.author?.username ?? "Unknown User"}
@@ -289,6 +319,7 @@ const App: Component = () => {
                     {servers.isHome && (
                         <div>
                             <h1>Solenoid (Beta)</h1>
+                            { window.location.hostname === "localhost" && <h3>Running on Local Server</h3>}
                             <p>A lightweight client for revolt.chat made with SolidJS</p>
                             <br />
                             <h3>Contributors</h3>
@@ -309,46 +340,44 @@ const App: Component = () => {
                             <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
                         </form>
                     </div>
-                </>
+                </div>
             )}
             {settings.show && (
                 <div id="solenoid-settings-panel">
-                    <form onSubmit={(e) => {
-                        e.preventDefault()
-                        setCurrentSettings();
-                    }}>
-                        <div id="solenoid-setting solenoid-showUsernames">
-                            <h3>Show Suffix: <button onClick={() => {
-                                if (settings.newShowSuffix) {
-                                    setSettings("newShowSuffix", false);
-                                } else {
-                                    setSettings("newShowSuffix", true);
-                                }
-                            }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button></h3>
-                            <p>Whether to add "says:" after a username.</p>
-                            <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
-                        </div>
-                        <div id="solenoid-setting solenoid-status">
-                            <h3>Current Status: <button type="button" onClick={() => {
-                                if (settings.status === "Online") {
-                                    setSettings("status", "Busy")
-                                    updateStatus()
-                                    console.log(settings.status)
-                                } else if (settings.status === "Busy") {
-                                    setSettings("status", "Invisible")
-                                    updateStatus()
-                                } else if (settings.status === "Invisible") {
-                                    setSettings("status", "Online")
-                                    updateStatus()
-                                }
-                            }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} /> <button type="submit">Update</button></h3>
-                        </div>
-                        <div id="solenoid-setting solenoid-img-zoom">
-                          <h3>Image Zoom Level</h3>
-                          <p>Smaller the number, bigger the image. Affects all images</p>
-                          <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
-                        </div>
-                    </form>
+                    <div id="solenoid-setting solenoid-showUsernames">
+                        <h3>Show Suffix: <button onClick={() => {
+                            if (settings.newShowSuffix) {
+                                setSettings("newShowSuffix", false);
+                            } else {
+                                setSettings("newShowSuffix", true);
+                            }
+                        }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button></h3>
+                        <p>Whether to add "says:" after a username.</p>
+                        <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
+                    </div>
+                    <div id="solenoid-setting solenoid-status">
+                        <h3>Current Status: <button type="button" onClick={() => {
+                            if (settings.status === "Online") {
+                                setSettings("status", "Busy")
+                                updateStatus()
+                                console.log(settings.status)
+                            } else if (settings.status === "Busy") {
+                                setSettings("status", "Invisible")
+                                updateStatus()
+                            } else if (settings.status === "Invisible") {
+                                setSettings("status", "Online")
+                                updateStatus()
+                            }
+                        }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} /></h3>
+                    </div>
+                    <div id="solenoid-setting solenoid-img-zoom">
+                        <h3>Image Zoom Level</h3>
+                        <p>Smaller the number, bigger the image. Affects all images</p>
+                        <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
+                    </div>
+                    <div id="solenoid-setting solenoid-update">
+                        <button onClick={setCurrentSettings}>Update Settings</button>
+                    </div>
                 </div>
             )}
         </div>
