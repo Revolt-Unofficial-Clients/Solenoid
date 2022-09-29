@@ -5,6 +5,7 @@ import { Reaction, runInAction } from 'mobx';
 import HCaptcha from 'solid-hcaptcha';
 import { createLocalStore } from './utils'
 import SolidMarkdown from 'solid-markdown';
+import "./styles/main.modules.css";
 
 // Revolt Client
 const rvCLient = new Client();
@@ -220,29 +221,30 @@ setInterval(() => {
 
 const App: Component = () => {
     return (
-        <div>
-            {!loggedIn() && <>
+        <div class="solenoid">
+            {!loggedIn() && <div class="solenoid-login">
+                <h3 id="title">Login</h3>
                 <form onSubmit={(e) => { e.preventDefault(); logIntoRevolt(login.token ?? "") }}>
-                    <div>
-                        <label>Login with Token</label>
-                        <input type="text" placeholder='Token' value={login.token || ""} onInput={(e: any) => onInputChange(e, "token")}></input>
-                        <button type='submit'>Login</button>
+                    <div class="token">
+                        <label id="subtitle">Login with Token</label>
+                        <input id="token" type="text" class="textarea" placeholder='Token' value={login.token || ""} onInput={(e: any) => onInputChange(e, "token")}></input>
+                        <button id="submit" type='submit'>Login</button>
                     </div>
                 </form>
                 <form onSubmit={(e) => { e.preventDefault(); loginWithEmail(login.email ?? "", login.password ?? "") }}>
                     <div>
-                        <label>Login with Email</label>
-                        <input type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
-                        <input type="password" placeholder='Password' value={login.password || ""} onInput={(e: any) => onInputChange(e, "password")}></input>
-                        <input type="text" placeholder='2fa Token (Optional, Not yet implemented)' value={login.mfa_token || ""} onInput={(e: any) => onInputChange(e, "mfa_token")}></input>
+                        <label id="subtitle">Login with Email</label>
+                        <input class="textarea" id="email" type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
+                        <input class="textarea" id="password" type="password" placeholder='Password' value={login.password || ""} onInput={(e: any) => onInputChange(e, "password")}></input>
+                        <input class="textarea" id="mfa" type="text" placeholder='2fa Token (Optional, Not yet implemented)' value={login.mfa_token || ""} onInput={(e: any) => onInputChange(e, "mfa_token")}></input>
                         <HCaptcha sitekey='3daae85e-09ab-4ff6-9f24-e8f4f335e433' onVerify={(token) => setCaptchaToken(token)} />
-                        <button type='submit'>Login</button>
+                        <button id="submit" type='submit'>Login</button>
                     </div>
                 </form>
-            </>}
+            </div>}
             {loggedIn() && (
                 <>
-                    <div id="solenoid-serverList">
+                    <div class='solenoid-serverlist'>
                         <button onClick={() => { setServers("current_server", undefined); setServers("current_channel", undefined); setServers("isHome", true) }} disabled={servers.isHome}>Solenoid Home</button>
                         <For each={servers.server_list}>
                             {(server) => (
@@ -251,28 +253,29 @@ const App: Component = () => {
                         </For>
                     </div>
                     <br />
-                    <div id="solenoid-channelList">
+                    <div class="solenoid-channelList">
                         <For each={servers.current_server_channels}>
                             {(channel) => (
                                 <button id="solenoid-channel" onClick={() => setChannel(channel._id)} disabled={channel._id === servers.current_channel?._id ?? false}>{channel.name}</button>
                             )}
                         </For>
                     </div>
-                    <ul id="solenoid-messages">
+                    <ul class="solenoid-messages">
                         <For each={servers.messages}>
                             {(message) => {
                                 console.log(message.attachments);
                                 return (
-                                    <li id="solenoid-message">
+                                    <li class="solenoid-message">
                                         {message.masquerade?.name ?? message.author?.username ?? "Unknown User"}
                                         {message.masquerade && " (bridge)"}{settings.showSuffix ? " says " : ": "}
-                                        <SolidMarkdown children={message.content} />
+                                        <SolidMarkdown children={message.content ?? undefined} />
                                         <For each={message.attachments}>
                                             {(attachment) => {
                                                 if (attachment.metadata.type === "Image") {
                                                     //Basic image support :D
                                                     return (
                                                       <img
+                                                        class="solenoid-message-image"
                                                         src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
                                                         width={attachment.metadata.width > 500 ? attachment.metadata.width / settings.zoomLevel : attachment.metadata.width}
                                                         height={attachment.metadata.height > 500 ? attachment.metadata.height / settings.zoomLevel : attachment.metadata.height}
@@ -287,7 +290,7 @@ const App: Component = () => {
                         </For>
                     </ul>
                     {servers.isHome && (
-                        <div>
+                        <div class="home">
                             <h1>Solenoid (Beta)</h1>
                             <p>A lightweight client for revolt.chat made with SolidJS</p>
                             <br />
