@@ -341,10 +341,10 @@ const App: Component = () => {
                     )}
                     <div id="solenoid-userBar">
                         <div id="solenoid-misc-buttonList">
-                            <button aria-label={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => { e.preventDefault; logoutFromRevolt() }} id="solenoid-logout">Log Out</button>
+                            <button title={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => { e.preventDefault; logoutFromRevolt() }} id="solenoid-logout">Log Out</button>
                         </div>
                         <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
-                            <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings}>{user.username}</button>
+                            <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings}>{user.username} title={`Logged in as ${user.username}, Click for Settings`}</button>
                             <textarea id="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
                             <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
                         </form>
