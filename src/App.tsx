@@ -5,6 +5,7 @@ import { Reaction, runInAction } from 'mobx';
 import HCaptcha from 'solid-hcaptcha';
 import { createLocalStore } from './utils'
 import SolidMarkdown from 'solid-markdown';
+import "./index.css";
 
 // Revolt Client
 const rvCLient = new Client();
@@ -314,7 +315,7 @@ const App: Component = () => {
                                                       <img
                                                         src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
                                                         width={attachment.metadata.width > 500 ? attachment.metadata.width / settings.zoomLevel : attachment.metadata.width}
-                                                        height={attachment.metadata.height}
+                                                        height={attachment.metadata.height > 500 ? attachment.metadata.height / settings.zoomLevel : attachment.metadata.height}
                                                         />
                                                     )
                                                 }
@@ -390,7 +391,7 @@ const App: Component = () => {
                     </div>
                     <div id="solenoid-setting solenoid-img-zoom">
                         <h3>Image Zoom Level</h3>
-                        <p>Smaller the number, bigger the image. Affects all images.</p>
+                        <p>Smaller the number, bigger the image. 0 is original size, Affects all images.</p>
                         <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
                     </div>
                     <div id="solenoid-setting solenoid-update">
