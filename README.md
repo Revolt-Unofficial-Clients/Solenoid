@@ -34,7 +34,7 @@ Or you can go to [the official site](https://solenoid.vercel.app)
 
 ### Features Missing
 
-- [] Everything else
+- [ ] Everything else
 
 ### Why
 I wanted to learn SolidJS because I heard it was blazingly fast and cool, so I decided to make a revolt.chat client to challenge my brain (and my sanity).
