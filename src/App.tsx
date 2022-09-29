@@ -5,7 +5,7 @@ import { Reaction, runInAction } from 'mobx';
 import HCaptcha from 'solid-hcaptcha';
 import { createLocalStore } from './utils'
 import SolidMarkdown from 'solid-markdown';
-import "./index.css";
+import styles from "./index.module.css";
 
 // Revolt Client
 const rvCLient = new Client();
@@ -316,6 +316,7 @@ const App: Component = () => {
                                                         src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
                                                         width={attachment.metadata.width > 500 ? attachment.metadata.width / settings.zoomLevel : attachment.metadata.width}
                                                         height={attachment.metadata.height > 500 ? attachment.metadata.height / settings.zoomLevel : attachment.metadata.height}
+                                                        class={styles.image}
                                                         />
                                                     )
                                                 }
