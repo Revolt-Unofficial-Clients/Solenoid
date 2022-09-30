@@ -4,9 +4,10 @@
 }
 
 :root{
-    --bg: rgb(0, 0, 0);
-    --fg: rgb(34, 34, 34);
+    --bg: #000;
+    --fg: #222;
     --fg-hover: #2b2b2b;
+    --fg-notimportant: #636363;
     --image-hover: #3a3a3a;
     --fg-border: rgb(63, 63, 63);
     --fg-nav-button: rgb(79, 79, 79);
@@ -120,6 +121,10 @@ button:active{
 
 .solenoid-message:hover {
     background-color: var(--fg-hover);
+}
+
+.solenoid-message .notimportant {
+    color: var(--fg-notimportant);
 }
 
 .solenoid-message-image{
