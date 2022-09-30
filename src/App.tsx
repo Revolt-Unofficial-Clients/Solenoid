@@ -40,6 +40,7 @@ interface settings {
     statusText?: any,
     showSuffix: boolean,
     newShowSuffix: undefined | boolean,
+    suffix: boolean,
     session?: string | undefined,
     zoomLevel: number,
     showImages: boolean,
@@ -61,10 +62,13 @@ const [servers, setServers] = createStore<server>({
     isHome: true
 })
 
+const [reply, setReply] = createSignal<Message>();
+
 // Solenoid Default Settings
 const [settings, setSettings] = createLocalStore<settings>("settings", {
     show: false,
-    showSuffix: true,
+    showSuffix: false,
+    suffix: false,
     newShowSuffix: undefined,
     zoomLevel: 5,
     showImages: true,
@@ -112,7 +116,7 @@ async function logIntoRevolt(token: string) {
     try {
         await rvCLient.loginBot(token);
     } catch (e: any) {
-        if (settings.debug) {
+        if (settings.debug === true) {
             console.log(e)
         } else {
             alert(e);
@@ -161,8 +165,19 @@ async function getMessagesFromChannel() {
 
 // Send Message Handler
 function sendMessage(message: string) {
-    if (servers.current_channel) servers.current_channel!.sendMessage({ content: message });
+    if (servers.current_channel) {
+        if (reply()) {
+            servers.current_channel!.sendMessage({ content: message, replies: [{
+                id: reply()?._id || "",
+                mention: false
+            }]});
+        } else {
+            servers.current_channel!.sendMessage({ content: message });
+        }
+
+    }
     setNewMessage("");
+    setReply();
 }
 // Channel Switching
 function setChannel(channel_id: string) {
@@ -243,7 +258,6 @@ setInterval(() => {
             if (servers.current_channel) {
                 getMessagesFromChannel();
             }
-            if (settings.debug) console.log(rvCLient.eventNames());
         })
     }
 
@@ -300,10 +314,19 @@ const App: Component = () => {
                         <For each={servers.messages}>
                             {(message) => {
                                 if (settings.debug) console.log(message.attachments);
+                                if (settings.debug) console.log(message);
                                 return (
-                                    <li class="solenoid-message">
+                                    <li class="solenoid-message" onClick={() => setReply(message)}>
                                         {message.masquerade?.name ?? message.author?.username ?? "Unknown User"}
-                                        {message.masquerade && " (bridge)"}{settings.showSuffix ? " says " : ": "}
+                                        {message.masquerade && " (bridge)"}
+                                        <For each={message.reply_ids}>
+                                        {(r) => {
+                                            const message = servers.current_channel?.client.messages.get(r);
+                                            return <span class="solenoid-message notimportant">(Replying to {message?.author?.username})</span>
+                                        }}
+                                        </For>
+                                        { settings.suffix && <>{settings.showSuffix ? " says " : ":"}</>
+                                        }
                                         <SolidMarkdown children={message.content ?? undefined} />
                                         <For each={message.attachments}>
                                             {(attachment) => {
@@ -345,7 +368,7 @@ const App: Component = () => {
                         <div id="solenoid-misc-buttonList">
                             <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
                                 <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings} title={`Logged in as ${user.username}, Click for Settings`}>{user.username}</button>
-                                <textarea class="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
+                                <textarea class="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder={reply() ? `Replying to ${reply()?.author?.username}...` :"Type what you think"} value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
                                 <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
                             </form>
                         </div>
@@ -355,7 +378,7 @@ const App: Component = () => {
             {settings.show && (
                 <div class="solenoid-settings" id="solenoid-settings-panel">
                     <div id="solenoid-setting solenoid-showUsernames">
-                        <h3>Show Suffix</h3>
+                        <h3>Suffix</h3>
                         <p>Whether to add "says:" after a username.</p>
                         <button onClick={() => {
                             if (settings.newShowSuffix) {
@@ -363,7 +386,14 @@ const App: Component = () => {
                             } else {
                                 setSettings("newShowSuffix", true);
                             }
-                        }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button>
+                        }}>{settings.newShowSuffix ? "Says:" : ":"}</button>
+                    </div>
+                    <div id="solenoid-setting solenoid-nosuffix">
+                        <h3>Toggle Suffix</h3>
+                        <p>Whether to show the suffix</p>
+                        <button
+                            onClick={() => settings.suffix ? setSettings("suffix", false) : setSettings("suffix", true)}
+                        >{settings.suffix ? "Yes" : "No"}</button>
                     </div>
                     <div id="solenoid-setting solenoid-status">
                         <h3>Current Status</h3>
@@ -395,6 +425,11 @@ const App: Component = () => {
                         <h3>Image Zoom Level</h3>
                         <p>Smaller the number, bigger the image. 0 is original size, Affects all images.</p>
                         <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
+                    </div>
+                    <div id="solenoid-setting solenoid-debug">
+                        <h3>Debug Mode</h3>
+                        <p>Enables Logging and stuff</p>
+                        <button onClick={() => settings.debug ? setSettings("debug", false) : setSettings("debug", true)}>{settings.debug ? "Enabled" : "Disabled"}</button>
                     </div>
                     <div class="solenoid-setting solenoid-update">
                         <button class="solenoid-update-btn" onClick={setCurrentSettings}>Update Settings</button>
