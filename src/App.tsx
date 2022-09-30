@@ -183,12 +183,12 @@ function sendMessage(message: string) {
 function setChannel(channel_id: string) {
     setServers("current_channel", servers.current_server_channels?.find((channel) => channel["_id"] === channel_id))
     getMessagesFromChannel();
-    console.log(servers.current_channel);
+    if (settings.debug) console.log(servers.current_channel);
 }
 // Fetch Channels from Server
 function fetchChannels() {
     setServers("current_server_channels", servers.current_server?.channels)
-    console.log(servers.current_server_channels);
+    if (settings.debug) console.log(servers.current_server_channels);
 }
 // Server Switching
 function setServer(server_id: string) {
