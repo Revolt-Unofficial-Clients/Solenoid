@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   mobx: ^6.6.2
-  revolt.js: ^6.0.17
+  revolt.js: ^6.0.18
   solid-hcaptcha: ^0.2.5
   solid-js: ^1.5.1
   solid-markdown: ^1.2.0
@@ -12,7 +12,7 @@ specifiers:
 
 dependencies:
   mobx: 6.6.2
-  revolt.js: 6.0.17
+  revolt.js: 6.0.18
   solid-hcaptcha: 0.2.5_solid-js@1.5.1
   solid-js: 1.5.1
   solid-markdown: 1.2.0_solid-js@1.5.1
@@ -1436,8 +1436,8 @@ packages:
       supports-preserve-symlinks-flag: 1.0.0
     dev: true
 
-  /revolt-api/0.5.5-3:
-    resolution: {integrity: sha512-65BFQFvPULVw0QuzokwYqmWfRijPcDY+JN66hlJrXszl+Efday1DZlTObI7zyt34ZJ4VHC3+yHb+CNhAv7v0dw==}
+  /revolt-api/0.5.5-4:
+    resolution: {integrity: sha512-T4xg9RfpdU3A7ce75s2OaQBLAfLehKF2I897OfPBitIm6D8FucAH5tHJ6mOowkEiyT+yGkP9LT7B2UccAgyvpQ==}
     dependencies:
       '@insertish/oapi': 0.1.18
       axios: 0.26.1
@@ -1446,8 +1446,8 @@ packages:
       - debug
     dev: false
 
-  /revolt.js/6.0.17:
-    resolution: {integrity: sha512-VUgBRt432K0wtl6PhjST8Kd7sVZWNOxOH9ncarLLJkYiUQdieKhYWkX1C8RHVM3tN0hZ1y0/QsDsKyNPUqX7yw==}
+  /revolt.js/6.0.18:
+    resolution: {integrity: sha512-NOmIzam1VYLKIYKDRgCeFbu6IcLXXtaQ5RwuqDhhCehCDFXzRyhYYXvl/l0Piz5E0ykMMDEG/G3GdIe/ZHrvlA==}
     dependencies:
       '@insertish/exponential-backoff': 3.1.0-patch.2
       '@insertish/isomorphic-ws': 4.0.1_ws@8.8.1
@@ -1458,7 +1458,7 @@ packages:
       lodash.isequal: 4.5.0
       long: 5.2.0
       mobx: 6.6.2
-      revolt-api: 0.5.5-3
+      revolt-api: 0.5.5-4
       ulid: 2.3.0
       ws: 8.8.1
     transitivePeerDependencies:
