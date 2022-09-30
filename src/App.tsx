@@ -36,7 +36,7 @@ interface server {
 
 interface settings {
     show: boolean,
-    status?: "Online" | "Idle" | "Busy" | "Invisible" | null | undefined,
+    status?: "Online" | "Focus" | "Idle" | "Busy" | "Invisible" | null | undefined,
     statusText?: any,
     showSuffix: boolean,
     newShowSuffix: undefined | boolean,
@@ -183,7 +183,7 @@ function sendMessage(message: string) {
 function setChannel(channel_id: string) {
     setServers("current_channel", servers.current_server_channels?.find((channel) => channel["_id"] === channel_id))
     getMessagesFromChannel();
-    if (settings.debug) console.log(servers.current_channel);
+    console.log(servers.current_channel);
 }
 // Fetch Channels from Server
 function fetchChannels() {
@@ -230,7 +230,7 @@ function setCurrentSettings() {
 function updateStatus() {
     rvCLient.api.patch("/users/@me", {
         status: {
-            presence: settings.status,
+            presence: settings.status || rvCLient.user?.status?.presence,
             text: settings.statusText
         }
     })
@@ -369,7 +369,6 @@ const App: Component = () => {
                             <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
                                 <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings} title={`Logged in as ${user.username}, Click for Settings`}>{user.username}</button>
                                 <textarea class="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder={reply() ? `Replying to ${reply()?.author?.username}...` :"Type what you think"} value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
-                                {reply() && <button onClick={() => setReply(undefined)}>Stop Replying</button>}
                                 <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
                             </form>
                         </div>
@@ -402,8 +401,10 @@ const App: Component = () => {
                             if (settings.status === "Online") {
                                 setSettings("status", "Busy")
                                 updateStatus()
-                                console.log(settings.status)
                             } else if (settings.status === "Busy") {
+                                setSettings("status", "Focus");
+                                updateStatus()
+                            } else if (settings.status === "Focus") {
                                 setSettings("status", "Invisible")
                                 updateStatus()
                             } else if (settings.status === "Invisible") {
