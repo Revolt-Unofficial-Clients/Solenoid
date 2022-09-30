@@ -5,7 +5,7 @@ import { Reaction, runInAction } from 'mobx';
 import HCaptcha from 'solid-hcaptcha';
 import { createLocalStore } from './utils'
 import SolidMarkdown from 'solid-markdown';
-import "./styles/main.css";
+import styles from "./index.module.css";
 
 // Revolt Client
 const rvCLient = new Client();
@@ -40,7 +40,6 @@ interface settings {
     statusText?: any,
     showSuffix: boolean,
     newShowSuffix: undefined | boolean,
-    suffix: boolean,
     session?: string | undefined,
     zoomLevel: number,
     showImages: boolean,
@@ -62,13 +61,10 @@ const [servers, setServers] = createStore<server>({
     isHome: true
 })
 
-const [reply, setReply] = createSignal<Message>();
-
 // Solenoid Default Settings
 const [settings, setSettings] = createLocalStore<settings>("settings", {
     show: false,
-    showSuffix: false,
-    suffix: false,
+    showSuffix: true,
     newShowSuffix: undefined,
     zoomLevel: 5,
     showImages: true,
@@ -116,7 +112,7 @@ async function logIntoRevolt(token: string) {
     try {
         await rvCLient.loginBot(token);
     } catch (e: any) {
-        if (settings.debug === true) {
+        if (settings.debug) {
             console.log(e)
         } else {
             alert(e);
@@ -165,19 +161,8 @@ async function getMessagesFromChannel() {
 
 // Send Message Handler
 function sendMessage(message: string) {
-    if (servers.current_channel) {
-        if (reply()) {
-            servers.current_channel!.sendMessage({ content: message, replies: [{
-                id: reply()?._id || "",
-                mention: false
-            }]});
-        } else {
-            servers.current_channel!.sendMessage({ content: message });
-        }
-
-    }
+    if (servers.current_channel) servers.current_channel!.sendMessage({ content: message });
     setNewMessage("");
-    setReply();
 }
 // Channel Switching
 function setChannel(channel_id: string) {
@@ -194,13 +179,13 @@ function fetchChannels() {
 function setServer(server_id: string) {
     setServers("current_server", servers.server_list?.find((server) => server["_id"] === server_id));
     fetchChannels()
-    if (settings.debug) console.log(servers.current_server);
+    if(settings.debug) console.log(servers.current_server);
 }
 
 async function fetchServers() {
     try {
         setServers("server_list", Array.from(rvCLient.servers.values()))
-        if (settings.debug) console.log(servers.server_list)
+        if(settings.debug) console.log(servers.server_list)
     } catch (e: any) {
         if (settings.debug) {
             console.log(e)
@@ -258,6 +243,7 @@ setInterval(() => {
             if (servers.current_channel) {
                 getMessagesFromChannel();
             }
+            if (settings.debug) console.log(rvCLient.eventNames());
         })
     }
 
@@ -266,31 +252,31 @@ setInterval(() => {
 const App: Component = () => {
     return (
         <div>
-            {window.location.hostname === "localhost" && (
-                <div class="solenoid-utils-local banner">
+            { window.location.hostname === "localhost" && (
+                <div class="banner">
                     <span>Running on a local server, some features might not be available.</span>
                 </div>
             )}
-            {!loggedIn() && <div class="solenoid-login">
+            {!loggedIn() && <div>
                 <form onSubmit={(e) => { e.preventDefault(); logIntoRevolt(login.token ?? "") }}>
-                    <div class="token">
-                        <label id="subtitle">Login with Token</label>
-                        <input id="token" type="text" class="textarea" placeholder='Token' value={login.token || ""} onInput={(e: any) => onInputChange(e, "token")}></input>
-                        <button id="submit" type='submit'>Login</button>
+                    <div>
+                        <label>Login with Token</label>
+                        <input type="text" placeholder='Token' value={login.token || ""} onInput={(e: any) => onInputChange(e, "token")}></input>
+                        <button type='submit'>Login</button>
                     </div>
                 </form>
-                {window.location.hostname !== "localhost" && (
-                    <form onSubmit={(e) => { e.preventDefault(); loginWithEmail(login.email ?? "", login.password ?? "") }}>
-                        <div>
-                            <label id="subtitle">Login with Email</label>
-                            <input class="textarea" id="email" type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
-                            <input class="textarea" id="password" type="password" placeholder='Password' value={login.password || ""} onInput={(e: any) => onInputChange(e, "password")}></input>
-                            <input class="textarea" id="mfa" type="text" placeholder='2fa Token (Optional, Not yet implemented)' value={login.mfa_token || ""} onInput={(e: any) => onInputChange(e, "mfa_token")}></input>
-                            <HCaptcha sitekey='3daae85e-09ab-4ff6-9f24-e8f4f335e433' onVerify={(token) => setCaptchaToken(token)} />
-                            <button id="submit" type='submit'>Login</button>
-                        </div>
-                    </form>
-                )}
+               {window.location.hostname !== "localhost" && (
+                   <form onSubmit={(e) => { e.preventDefault(); loginWithEmail(login.email ?? "", login.password ?? "") }}>
+                    <div>
+                        <label>Login with Email</label>
+                        <input type="email" placeholder='Email' value={login.email || ""} onInput={(e: any) => onInputChange(e, "email")}></input>
+                        <input type="password" placeholder='Password' value={login.password || ""} onInput={(e: any) => onInputChange(e, "password")}></input>
+                        <input type="text" placeholder='2fa Token (Optional, Not yet implemented)' value={login.mfa_token || ""} onInput={(e: any) => onInputChange(e, "mfa_token")}></input>
+                        <HCaptcha sitekey='3daae85e-09ab-4ff6-9f24-e8f4f335e433' onVerify={(token) => setCaptchaToken(token)} />
+                        <button type='submit'>Login</button>
+                    </div>
+                </form>
+            )}
             </div>}
             {loggedIn() && (
                 <div class="solenoid">
@@ -303,31 +289,22 @@ const App: Component = () => {
                         </For>
                     </div>
                     <br />
-                    <div class="solenoid-channelList">
+                    <div id="solenoid-channelList">
                         <For each={servers.current_server_channels}>
                             {(channel) => (
                                 <button id="solenoid-channel" onClick={() => setChannel(channel._id)} disabled={channel._id === servers.current_channel?._id ?? false}>{channel.name}</button>
                             )}
                         </For>
                     </div>
-                    <ul class="solenoid-messages">
+                    <ul id="solenoid-messages">
                         <For each={servers.messages}>
                             {(message) => {
-                                if (settings.debug) console.log(message.attachments);
-                                if (settings.debug) console.log(message);
+                                if(settings.debug) console.log(message.attachments);
                                 return (
-                                    <li class="solenoid-message" onClick={() => setReply(message)}>
+                                    <li id="solenoid-message">
                                         {message.masquerade?.name ?? message.author?.username ?? "Unknown User"}
-                                        {message.masquerade && " (bridge)"}
-                                        <For each={message.reply_ids}>
-                                        {(r) => {
-                                            const message = servers.current_channel?.client.messages.get(r);
-                                            return <span class="solenoid-message notimportant">(Replying to {message?.author?.username})</span>
-                                        }}
-                                        </For>
-                                        { settings.suffix && <>{settings.showSuffix ? " says " : ":"}</>
-                                        }
-                                        <SolidMarkdown children={message.content ?? undefined} />
+                                        {message.masquerade && " (bridge)"}{settings.showSuffix ? " says " : ": "}
+                                        <SolidMarkdown children={message.content} />
                                         <For each={message.attachments}>
                                             {(attachment) => {
                                                 if (!settings.showImages) {
@@ -335,11 +312,11 @@ const App: Component = () => {
                                                 } else if (attachment.metadata.type === "Image") {
                                                     //Basic image support :D
                                                     return (
-                                                        <img
-                                                            class="solenoid-message-image"
-                                                            src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
-                                                            width={attachment.metadata.width > 500 ? attachment.metadata.width / settings.zoomLevel : attachment.metadata.width}
-                                                            height={attachment.metadata.height > 500 ? attachment.metadata.height / settings.zoomLevel : attachment.metadata.height}
+                                                      <img
+                                                        src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
+                                                        width={attachment.metadata.width > 500 ? attachment.metadata.width / settings.zoomLevel : attachment.metadata.width}
+                                                        height={attachment.metadata.height > 500 ? attachment.metadata.height / settings.zoomLevel : attachment.metadata.height}
+                                                        class={styles.image}
                                                         />
                                                     )
                                                 }
@@ -351,9 +328,9 @@ const App: Component = () => {
                         </For>
                     </ul>
                     {servers.isHome && (
-                        <div class="home">
+                        <div>
                             <h1>Solenoid (Beta)</h1>
-                            {window.location.hostname === "localhost" && <h3>Running on Local Server</h3>}
+                            { window.location.hostname === "localhost" && <h3>Running on Local Server</h3>}
                             <p>A lightweight client for revolt.chat made with SolidJS</p>
                             <br />
                             <h3>Contributors</h3>
@@ -366,38 +343,31 @@ const App: Component = () => {
                     )}
                     <div id="solenoid-userBar">
                         <div id="solenoid-misc-buttonList">
-                            <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
-                                <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings} title={`Logged in as ${user.username}, Click for Settings`}>{user.username}</button>
-                                <textarea class="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder={reply() ? `Replying to ${reply()?.author?.username}...` :"Type what you think"} value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
-                                <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
-                            </form>
+                            <button title={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => { e.preventDefault; logoutFromRevolt() }} id="solenoid-logout">Log Out</button>
                         </div>
+                        <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
+                            <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings} title={`Logged in as ${user.username}, Click for Settings`}>{user.username}</button>
+                            <textarea id="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder='Type what you think' value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
+                            <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
+                        </form>
                     </div>
                 </div>
             )}
             {settings.show && (
-                <div class="solenoid-settings" id="solenoid-settings-panel">
+                <div id="solenoid-settings-panel">
                     <div id="solenoid-setting solenoid-showUsernames">
-                        <h3>Suffix</h3>
-                        <p>Whether to add "says:" after a username.</p>
-                        <button onClick={() => {
+                        <h3>Show Suffix: <button onClick={() => {
                             if (settings.newShowSuffix) {
                                 setSettings("newShowSuffix", false);
                             } else {
                                 setSettings("newShowSuffix", true);
                             }
-                        }}>{settings.newShowSuffix ? "Says:" : ":"}</button>
-                    </div>
-                    <div id="solenoid-setting solenoid-nosuffix">
-                        <h3>Toggle Suffix</h3>
-                        <p>Whether to show the suffix</p>
-                        <button
-                            onClick={() => settings.suffix ? setSettings("suffix", false) : setSettings("suffix", true)}
-                        >{settings.suffix ? "Yes" : "No"}</button>
+                        }}>{settings.newShowSuffix ? "Enabled" : "Disabled"}</button></h3>
+                        <p>Whether to add "says:" after a username.</p>
+                        <p>current_value: {settings.showSuffix ? "true" : "false"}</p>
                     </div>
                     <div id="solenoid-setting solenoid-status">
-                        <h3>Current Status</h3>
-                        <button type="button" onClick={() => {
+                        <h3>Current Status: <button type="button" onClick={() => {
                             if (settings.status === "Online") {
                                 setSettings("status", "Busy")
                                 updateStatus()
@@ -409,8 +379,7 @@ const App: Component = () => {
                                 setSettings("status", "Online")
                                 updateStatus()
                             }
-                        }}>{settings.status}</button>
-                        <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} />
+                        }}>{settings.status}</button> <input type="text" value={settings.statusText} onChange={(e: any) => onInputChange(e, "status")} /></h3>
                     </div>
                     <div id="solenoid-setting solenoid-show-imgs">
                         <h3>Image Rendering</h3>
@@ -418,22 +387,16 @@ const App: Component = () => {
                         <button onClick={() => {
                             settings.showImages ? setSettings("showImages", false) : setSettings("showImages", true);
                         }}>{
-                                settings.showImages ? "True" : "False"
-                            }</button>
+                            settings.showImages ? "True" : "False"
+                        }</button>
                     </div>
                     <div id="solenoid-setting solenoid-img-zoom">
                         <h3>Image Zoom Level</h3>
                         <p>Smaller the number, bigger the image. 0 is original size, Affects all images.</p>
                         <input type="number" value={settings.zoomLevel} onChange={(e: any) => onInputChange(e, "zoom")}></input>
                     </div>
-                    <div id="solenoid-setting solenoid-debug">
-                        <h3>Debug Mode</h3>
-                        <p>Enables Logging and stuff</p>
-                        <button onClick={() => settings.debug ? setSettings("debug", false) : setSettings("debug", true)}>{settings.debug ? "Enabled" : "Disabled"}</button>
-                    </div>
-                    <div class="solenoid-setting solenoid-update">
-                        <button class="solenoid-update-btn" onClick={setCurrentSettings}>Update Settings</button>
-                        <button title={`Log Out from ${user.username}`} aria-role="logout" onClick={(e) => { e.preventDefault; logoutFromRevolt() }} id="solenoid-logout">Log Out</button>
+                    <div id="solenoid-setting solenoid-update">
+                        <button onClick={setCurrentSettings}>Update Settings</button>
                     </div>
                 </div>
             )}
