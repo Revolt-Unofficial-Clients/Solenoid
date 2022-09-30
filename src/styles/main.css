@@ -119,7 +119,7 @@ button:active{
     border-radius: var(--radius);
 }
 
-.solenoid-message:hover {
+.solenoid-message:hover{
     background-color: var(--fg-hover);
 }
 
@@ -136,7 +136,7 @@ button:active{
     padding: 5;
 }
 
-.solenoid-message-image:active {
+.solenoid-message-image:active, .solenoid-message-image:hover {
     width: 50%;
     height: 50%;
     background-color: var(--image-hover);
