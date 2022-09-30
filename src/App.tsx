@@ -369,6 +369,7 @@ const App: Component = () => {
                             <form onSubmit={(e) => { e.preventDefault(); sendMessage(newMessage()) }}>
                                 <button id="solenoid-userOptions" aria-label="Username" onClick={showSettings} title={`Logged in as ${user.username}, Click for Settings`}>{user.username}</button>
                                 <textarea class="solenoid-send-input" aria-label="Type your message here..." aria-role="sendmessagebox" placeholder={reply() ? `Replying to ${reply()?.author?.username}...` :"Type what you think"} value={newMessage()} onChange={(e: any) => onInputChange(e, "newMessage")} />
+                                {reply() && <button onClick={() => setReply(undefined)}>Stop Replying</button>}
                                 <button id="solenoid-send-button" type="submit" aria-label="Send Message" aria-role="sendmessagebutton">Send Message</button>
                             </form>
                         </div>
