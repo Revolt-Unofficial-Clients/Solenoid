@@ -15,10 +15,12 @@
     "vite-plugin-solid": "^2.3.0"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "mobx": "^6.6.2",
     "revolt.js": "^6.0.18",
     "solid-hcaptcha": "^0.2.5",
     "solid-js": "^1.5.1",
-    "solid-markdown": "^1.2.0"
+    "solid-markdown": "^1.2.0",
+    "ulid": "^2.3.0"
   }
 }
