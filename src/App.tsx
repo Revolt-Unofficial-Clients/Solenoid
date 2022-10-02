@@ -56,6 +56,11 @@ interface status {
     text: string,
 }
 
+interface reply {
+    id: string,
+    mention: boolean
+}
+
 interface settings {
     show: boolean;
     status?:
@@ -91,7 +96,7 @@ const [servers, setServers] = createStore<server>({
     isHome: true,
 });
 
-const [reply, setReply] = createSignal<Message>();
+const [replies, setReplies] = createSignal<reply[]>([]);
 
 const [images, setImages] = createSignal<any[] | undefined>(undefined);
 const [imgUrls, setImgUrls] = createSignal<any[]>([]);
@@ -290,15 +295,10 @@ async function sendMessage(message: string) {
     if (servers.current_channel) {
         if (images()) {
             await sendFile(message);
-        } else if (reply()) {
+        } else if (replies()) {
             servers.current_channel!.sendMessage({
                 content: message,
-                replies: [
-                    {
-                        id: reply()?._id || "",
-                        mention: false,
-                    },
-                ],
+                replies: replies(),
                 nonce,
             });
         } else {
@@ -309,7 +309,7 @@ async function sendMessage(message: string) {
         }
     }
     setNewMessage("");
-    setReply();
+    setReplies([]);
     setImages(undefined);
 }
 
@@ -540,23 +540,32 @@ const App: Component = () => {
                                 return (
                                     <li
                                         class="solenoid-message"
-                                        onClick={() => setReply(message)}
+                                        onClick={() => setReplies([...replies(), {
+                                            id: message._id,
+                                            mention: false
+                                        }])}
                                     >
                                         {message.masquerade?.name ??
                                             message.author?.username ??
                                             "Unknown User"}
                                         {message.masquerade && " (bridge)"}
-                                        <For each={message.reply_ids}>
+                                        {message.reply_ids!.length > 1 ? (
+                                            <span class="solenoid-message notimportant"> (Replying to {message?.reply_ids?.length} messages)</span>
+                                        ) : (
+                                            <For each={message.reply_ids}>
                                             {(r) => {
                                                 const message =
                                                     servers.current_channel?.client.messages.get(r);
                                                 return (
                                                     <span class="solenoid-message notimportant">
-                                                        (Replying to {message?.author?.username})
+                                                        (Replying to {message?.author?.username ?? "Unknown User"})
                                                     </span>
                                                 );
                                             }}
                                         </For>
+
+                                        )}
+
                                         {settings.suffix && (
                                             <>{settings.showSuffix ? " says " : ":"}</>
                                         )}
@@ -640,8 +649,8 @@ const App: Component = () => {
                                     aria-label="Type your message here..."
                                     aria-role="sendmessagebox"
                                     placeholder={
-                                        reply()
-                                            ? `Replying to ${reply()?.author?.username}...`
+                                        replies().length !== 0
+                                            ? `Replying to ${replies().length} message${replies().length > 1 ? "s" : ""}`
                                             : "Type what you think"
                                     }
                                     value={newMessage()}
@@ -673,13 +682,13 @@ const App: Component = () => {
                                     />
                                 </div>
                                 {images() && (
-                                  <button onClick={() => setImages(undefined)}>
+                                  <button onClick={() => setImages([])}>
                                       Remove Attachments
                                   </button>
                                 )}
-                                {reply() && (
-                                    <button onClick={() => setReply(undefined)}>
-                                        Stop Replying to {reply()?.author?.username}
+                                {replies() && (
+                                    <button onClick={() => setReplies([])}>
+                                        Stop Replying
                                     </button>
                                 )}
                             </form>
