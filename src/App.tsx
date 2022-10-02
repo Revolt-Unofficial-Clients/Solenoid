@@ -111,7 +111,7 @@ const [settings, setSettings] = createLocalStore<settings>("settings", {
     debug: false,
 });
 
-const [statuslist, setStatusList] = createLocalSignal<status[]>("statusList", [{}]);
+const [statuslist, setStatusList] = createLocalSignal<status[]>("statusList", []);
 
 // Functions
 const onInputChange = (
@@ -663,9 +663,6 @@ const App: Component = () => {
                                             )}
                                         </For>
                                     </div>
-                                    <button class="solenoidui-button-upload">
-                                        {images() ? "Remove Images" : "Upload Image"}
-                                    </button>
                                     <input
                                         class="solenoid-input-image"
                                         type="file"

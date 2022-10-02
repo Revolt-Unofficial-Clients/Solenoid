@@ -211,12 +211,9 @@ button:active {
 }
 
 .solenoidui-upload .solenoid-input-image {
-  opacity: 0;
-}
-
-.solenoidui-button-upload {
-  background-color: var(--accent);
-  color: #000;
+  opacity: 1;
+  padding: 3px;
+  margin: 0px;
 }
 
 .solenoidui-button-upload:hover {
