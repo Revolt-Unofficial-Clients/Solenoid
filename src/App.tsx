@@ -672,6 +672,11 @@ const App: Component = () => {
                                         onChange={onImageChange}
                                     />
                                 </div>
+                                {images() && (
+                                  <button onClick={() => setImages(undefined)}>
+                                      Remove Attachments
+                                  </button>
+                                )}
                                 {reply() && (
                                     <button onClick={() => setReply(undefined)}>
                                         Stop Replying to {reply()?.author?.username}
