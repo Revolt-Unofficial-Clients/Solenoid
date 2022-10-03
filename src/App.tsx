@@ -553,16 +553,16 @@ const App: Component = () => {
                                             <span class="solenoid-message notimportant"> (Replying to {message?.reply_ids?.length} messages)</span>
                                         ) : (
                                             <For each={message.reply_ids}>
-                                            {(r) => {
-                                                const message =
-                                                    servers.current_channel?.client.messages.get(r);
-                                                return (
-                                                    <span class="solenoid-message notimportant">
-                                                        (Replying to {message?.author?.username ?? "Unknown User"})
-                                                    </span>
-                                                );
-                                            }}
-                                        </For>
+                                                {(r) => {
+                                                    const message =
+                                                        servers.current_channel?.client.messages.get(r);
+                                                    return (
+                                                        <span class="solenoid-message notimportant">
+                                                            (Replying to {message?.author?.username ?? "Unknown User"})
+                                                        </span>
+                                                    );
+                                                }}
+                                            </For>
 
                                         )}
 
@@ -594,6 +594,10 @@ const App: Component = () => {
                                                             }
                                                         />
                                                     );
+                                                } else if (attachment.metadata.type === "Video") {
+                                                    return (
+                                                        <video class="solenoid-message-video" src={`${rvCLient.configuration?.features.autumn.url}/attachments/${attachment._id}`} controls />
+                                                    )
                                                 }
                                             }}
                                         </For>
@@ -677,14 +681,14 @@ const App: Component = () => {
                                         type="file"
                                         multiple
                                         name="upload"
-                                        accept="image/*"
+                                        accept="image/png,image/jpeg,image/gif,video/mp4"
                                         onChange={onImageChange}
                                     />
                                 </div>
                                 {images() && (
-                                  <button onClick={() => setImages([])}>
-                                      Remove Attachments
-                                  </button>
+                                    <button onClick={() => setImages([])}>
+                                        Remove Attachments
+                                    </button>
                                 )}
                                 {replies() && (
                                     <button onClick={() => setReplies([])}>
