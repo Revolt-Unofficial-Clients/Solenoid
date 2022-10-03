@@ -4,6 +4,8 @@ import {
     enableExternalSource,
     For,
     createEffect,
+    Ref,
+    on
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Channel, Client, Message, Server } from "revolt.js";
@@ -96,10 +98,13 @@ const [servers, setServers] = createStore<server>({
     isHome: true,
 });
 
+const [messages, setMessages] = createSignal<Message[] | undefined>();
 const [replies, setReplies] = createSignal<reply[]>([]);
 
 const [images, setImages] = createSignal<any[] | undefined>(undefined);
 const [imgUrls, setImgUrls] = createSignal<any[]>([]);
+
+let bottomRef: Ref<any>;
 
 // Status Prefabs
 const [newMode, setNewMode] = createSignal<"Online" | "Idle" | "Focus" | "Busy" | "Invisible" | undefined | null>();
@@ -214,10 +219,7 @@ function logoutFromRevolt() {
 }
 
 async function getMessagesFromChannel() {
-    setServers(
-        "messages",
-        await servers.current_channel?.fetchMessages()?.then((arr) => arr.reverse())
-    );
+    setMessages(await servers.current_channel?.fetchMessages()?.then((arr) => arr.reverse()));
     setServers("isHome", false);
 }
 
@@ -410,7 +412,11 @@ setInterval(() => {
             }
         });
     }
-}, 1500);
+}, 2000);
+
+createEffect(on(messages, () => {
+    bottomRef.scrollIntoView({behavior: "smooth"})
+}))
 
 const App: Component = () => {
     return (
@@ -533,7 +539,7 @@ const App: Component = () => {
                         </For>
                     </div>
                     <ul class="solenoid-messages">
-                        <For each={servers.messages}>
+                        <For each={messages()}>
                             {(message) => {
                                 if (settings.debug) console.log(message.attachments);
                                 if (settings.debug) console.log(message);
@@ -549,7 +555,7 @@ const App: Component = () => {
                                             message.author?.username ??
                                             "Unknown User"}
                                         {message.masquerade && " (bridge)"}
-                                        {message.reply_ids!.length > 1 ? (
+                                        {message.reply_ids && message.reply_ids.length > 1 ? (
                                             <span class="solenoid-message notimportant"> (Replying to {message?.reply_ids?.length} messages)</span>
                                         ) : (
                                             <For each={message.reply_ids}>
@@ -606,6 +612,7 @@ const App: Component = () => {
                             }}
                         </For>
                     </ul>
+                    <div ref={bottomRef} />
                     {servers.isHome && (
                         <div class="home">
                             <h1>Solenoid (Beta)</h1>

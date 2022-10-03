@@ -219,3 +219,11 @@ button:active {
 .solenoidui-button-upload:hover {
   background-color: var(--accent-button-hover);
 }
+
+.solenoid-message-video {
+  margin-top: 5px;
+  width: 50%;
+  height: 50%;
+  border-radius: var(--radius);
+  margin: 5px;
+}
