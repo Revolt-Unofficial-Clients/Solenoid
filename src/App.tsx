@@ -3,9 +3,7 @@ import {
     createSignal,
     enableExternalSource,
     For,
-    createEffect,
-    Ref,
-    on
+    createEffect
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Channel, Client, Message, Server } from "revolt.js";
