@@ -104,8 +104,6 @@ const [replies, setReplies] = createSignal<reply[]>([]);
 const [images, setImages] = createSignal<any[] | undefined>(undefined);
 const [imgUrls, setImgUrls] = createSignal<any[]>([]);
 
-let bottomRef: Ref<any>;
-
 // Status Prefabs
 const [newMode, setNewMode] = createSignal<"Online" | "Idle" | "Focus" | "Busy" | "Invisible" | undefined | null>();
 const [newStatus, setNewStatus] = createSignal<string | null>();
@@ -414,9 +412,6 @@ setInterval(() => {
     }
 }, 2000);
 
-createEffect(on(messages, () => {
-    bottomRef.scrollIntoView({behavior: "smooth"})
-}))
 
 const App: Component = () => {
     return (
@@ -612,7 +607,6 @@ const App: Component = () => {
                             }}
                         </For>
                     </ul>
-                    <div ref={bottomRef} />
                     {servers.isHome && (
                         <div class="home">
                             <h1>Solenoid (Beta)</h1>
