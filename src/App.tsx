@@ -6,7 +6,7 @@ import {
     createEffect
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Channel, Client, Message, Server } from "revolt.js";
+import { Channel, Client, Message, Server} from "revolt.js";
 import { Reaction, runInAction } from "mobx";
 import HCaptcha from "solid-hcaptcha";
 import { createLocalStore, createLocalSignal } from "./utils";
@@ -75,13 +75,14 @@ interface settings {
     showSuffix: boolean;
     newShowSuffix: undefined | boolean;
     suffix: boolean;
-    session?: string | undefined;
+    session?: any | undefined;
+    session_type?: string | undefined;
     zoomLevel: number;
     showImages: boolean;
     debug: boolean;
 }
 
-// Init Variables
+// Initialize Variables
 const [login, setLogin] = createStore<loginValues>({});
 const [newMessage, setNewMessage] = createSignal<string>("");
 const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
@@ -113,6 +114,8 @@ const [settings, setSettings] = createLocalStore<settings>("settings", {
     suffix: false,
     newShowSuffix: undefined,
     zoomLevel: 5,
+    session: undefined,
+    session_type: undefined,
     showImages: true,
     debug: false,
 });
@@ -175,8 +178,12 @@ async function logIntoRevolt(token: string) {
     } finally {
         setLoggedIn(true);
         setUser("session_type", "token");
+        setSettings("session", rvCLient.session);
     }
 }
+
+
+
 
 async function loginWithEmail(email: string, password: string) {
     try {
@@ -185,6 +192,12 @@ async function loginWithEmail(email: string, password: string) {
             password: password,
             friendly_name: "Solenoid Client Beta",
             captcha: captchaToken(),
+        }).catch((e) => {
+            throw e
+        }).finally(() => {
+            setLoggedIn(true);
+            setUser("session_type", "email");
+            setSettings("session", rvCLient.session);
         });
     } catch (e: any) {
         if (settings.debug) {
@@ -192,10 +205,6 @@ async function loginWithEmail(email: string, password: string) {
         } else {
             alert(e);
         }
-    } finally {
-        setLoggedIn(true);
-        setUser("session_type", "email");
-        setSettings("session", rvCLient.session);
     }
 }
 
@@ -215,7 +224,7 @@ function logoutFromRevolt() {
 }
 
 async function getMessagesFromChannel() {
-    setMessages(await servers.current_channel?.fetchMessages()?.then((arr) => arr.reverse()));
+    await servers.current_channel?.fetchMessagesWithUsers().then(({messages}) => setMessages(messages.reverse()));
     setServers("isHome", false);
 }
 
@@ -384,6 +393,18 @@ function updateStatus(mode?: "Online" | "Focus" | "Idle" | "Busy" | "Invisible" 
     }
 }
 
+// AutoLogin
+async function loginWithSession(session: any & {action: "LOGIN"}) {
+    try {
+        await rvCLient.useExistingSession(session);
+        setSettings("session_type", "email");
+        setSettings("session", session);
+        setLoggedIn(true);
+    } catch (e) {
+        throw e;
+    }
+}
+
 // Mobx magic (Thanks Insert :D)
 let id = 0;
 enableExternalSource((fn, trigger) => {
@@ -409,6 +430,8 @@ setInterval(() => {
         });
     }
 }, 2000);
+
+if (settings.session && !loggedIn()) loginWithSession(settings.session);
 
 
 const App: Component = () => {
@@ -487,6 +510,7 @@ const App: Component = () => {
                             </div>
                         </form>
                     )}
+                    {settings.session && <button id="existingsession" onClick={() => loginWithSession(settings.session)}>Use Existing Session</button>}
                 </div>
             )}
             {loggedIn() && (
