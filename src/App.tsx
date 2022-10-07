@@ -621,6 +621,14 @@ const App: Component = () => {
                                                     return (
                                                         <video class="solenoid-message-video" src={`${rvCLient.configuration?.features.autumn.url}/attachments/${attachment._id}`} controls />
                                                     )
+                                                } else {
+                                                    return (
+                                                        <div class="solenoid-message-file">
+                                                            <h3 class="header">{message.author?.username} sent you a {attachment.metadata.type}</h3>
+                                                            <p class="name">File Name: {attachment.filename}</p>
+                                                            <a class="download" type="download" href={`${rvCLient.configuration?.features?.autumn?.url}/attachments/${attachment._id}`}>Download</a>
+                                                        </div>
+                                                    )
                                                 }
                                             }}
                                         </For>
@@ -676,9 +684,11 @@ const App: Component = () => {
                                     aria-label="Type your message here..."
                                     aria-role="sendmessagebox"
                                     placeholder={
-                                        replies().length !== 0
+                                        replies().length > 1
                                             ? `Replying to ${replies().length} message${replies().length > 1 ? "s" : ""}`
-                                            : "Type what you think"
+                                            : replies().length === 1
+                                            ? `Replying to ${replies()[0].id}`
+                                            : "Type What you Think"
                                     }
                                     value={newMessage()}
                                     onChange={(e: any) => onInputChange(e, "newMessage")}
@@ -713,7 +723,7 @@ const App: Component = () => {
                                         Remove Attachments
                                     </button>
                                 )}
-                                {replies() && (
+                                {replies().length > 0 && (
                                     <button onClick={() => setReplies([])}>
                                         Stop Replying
                                     </button>

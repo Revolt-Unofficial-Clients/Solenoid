@@ -227,3 +227,15 @@ button:active {
   border-radius: var(--radius);
   margin: 5px;
 }
+
+div[class^="solenoid-message-file"] a[type="download"] {
+  padding: 5px;
+  margin-top: 3rem;
+  background-color: var(--fg-nav-button);
+  color: #fff;
+}
+
+div[class^="solenoid-message-file"] * {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
