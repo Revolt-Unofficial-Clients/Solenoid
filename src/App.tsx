@@ -35,7 +35,7 @@ interface loginValues {
 }
 
 interface server {
-    server_list?: any[] | undefined;
+    server_list?: Server[] | undefined;
     current_server?: Server | undefined;
     current_server_channels?: any[];
     current_channel?: Channel | undefined;
@@ -122,6 +122,11 @@ const [settings, setSettings] = createLocalStore<settings>("settings", {
 
 const [statuslist, setStatusList] = createLocalSignal<status[]>("statusList", []);
 
+// Request notification permission
+(async () => {
+    let permission = await Notification.requestPermission()
+})();
+
 // Functions
 const onInputChange = (
     e: InputEvent & { currentTarget: HTMLInputElement; target: HTMLElement },
@@ -150,15 +155,20 @@ const onImageChange = (e: any) => {
     setImages([...e.target.files]);
 };
 
+// Setup
 rvCLient.on("ready", async () => {
     setLoggedIn(true);
     setUser("username", rvCLient.user?.username);
     setUser("user_id", rvCLient.user?._id);
-    if (settings.debug)
-        console.info(`Logged In as ${rvCLient.user?.username} (Bot Mode)`);
+    if (settings.debug && settings.session_type === "token") {
+        console.info(`Logged In as ${rvCLient.user?.username} (Bot Mode)`)
+    } else if (settings.debug && settings.session_type === "email") {
+        console.info(`Logged In as ${rvCLient.user?.username}`);
+    };
     fetchServers();
 });
 
+// Update Status Automatically
 rvCLient.on("packet", async (info) => {
     if (info.type === "UserUpdate" && info.id === rvCLient.user?._id) {
         setSettings("status", info.data.status?.presence);
@@ -166,6 +176,7 @@ rvCLient.on("packet", async (info) => {
     }
 });
 
+// Login With Token and Enable Bot Mode
 async function logIntoRevolt(token: string) {
     try {
         await rvCLient.loginBot(token);
@@ -182,9 +193,7 @@ async function logIntoRevolt(token: string) {
     }
 }
 
-
-
-
+// Login With Email and Password and Enable User Mode
 async function loginWithEmail(email: string, password: string) {
     try {
         await rvCLient.login({
@@ -208,6 +217,7 @@ async function loginWithEmail(email: string, password: string) {
     }
 }
 
+// Logout from current session and reset server properties
 function logoutFromRevolt() {
     setLoggedIn(false);
     setSettings("session", undefined);
@@ -223,6 +233,7 @@ function logoutFromRevolt() {
     if (rvCLient.session) rvCLient.logout();
 }
 
+// Get Messages from current selected channel
 async function getMessagesFromChannel() {
     await servers.current_channel?.fetchMessagesWithUsers().then(({messages}) => setMessages(messages.reverse()));
     setServers("isHome", false);
@@ -235,6 +246,7 @@ createEffect(() => {
     setImgUrls(newImageUrls);
 }, [images]);
 
+// Upload image to autumn.revolt.chat
 async function uploadFile(
     autummURL: string,
     tag: string,
@@ -254,6 +266,7 @@ async function uploadFile(
     return res.data.id;
 }
 
+// Send message with file
 async function sendFile(content: string) {
     const attachments: string[] = [];
 
@@ -346,6 +359,7 @@ function setServer(server_id: string) {
     if (settings.debug) console.log(servers.current_server);
 }
 
+// Fetch joined servers
 async function fetchServers() {
     try {
         setServers("server_list", Array.from(rvCLient.servers.values()));
@@ -358,11 +372,21 @@ async function fetchServers() {
         }
     }
 }
+// Get Current Status from API
+async function getStatus() {
+    const userinfo = await rvCLient.api.get("/users/@me");
+    setSettings("statusText", userinfo.status?.text);
+    setSettings("status", userinfo.status?.presence);
+}
 
+// Show Settings Centre
 function showSettings() {
+    // Update current status to show properly and don't show undefined on a button
+    getStatus();
     setSettings("show", settings.show ? false : true);
 }
 
+// Set settings
 function setCurrentSettings() {
     if (settings.newShowSuffix === true) {
         setSettings("showSuffix", true);
@@ -375,6 +399,7 @@ function setCurrentSettings() {
     getMessagesFromChannel();
 }
 
+// Update status
 function updateStatus(mode?: "Online" | "Focus" | "Idle" | "Busy" | "Invisible" | null | undefined, status?: string) {
     if (mode && status) {
         rvCLient.api.patch("/users/@me", {
@@ -404,6 +429,26 @@ async function loginWithSession(session: any & {action: "LOGIN"}) {
         throw e;
     }
 }
+
+// Send Notifications
+rvCLient.on("message", (msg) => {
+    if (Notification.permission) {
+        if (msg.mentions?.some(e => {
+            if (e?._id === rvCLient.user?._id) {
+                console.log(true);
+                return true
+            } else {
+                    console.log(false);
+                    return false
+                };
+        })) {
+        const notification = new Notification(`${msg.author?.username} mentioned you:`, {
+            body: `${msg.content}`
+        })
+    }
+
+    }
+})
 
 // Mobx magic (Thanks Insert :D)
 let id = 0;
@@ -515,27 +560,32 @@ const App: Component = () => {
             )}
             {loggedIn() && (
                 <div class="solenoid">
-                    <div id="solenoid-serverList">
-                        <button
+                    <div class="solenoid-serverList">
+                        <div
                             onClick={() => {
                                 setServers("current_server", undefined);
                                 setServers("current_channel", undefined);
                                 setServers("messages", undefined);
                                 setServers("isHome", true);
                             }}
-                            disabled={servers.isHome}
+                            class="server"
                         >
                             Solenoid Home
-                        </button>
+                        </div>
                         <For each={servers.server_list}>
                             {(server) => (
-                                <button
-                                    id="solenoid-server"
+                                <div
                                     onClick={() => setServer(server._id)}
-                                    disabled={server._id === servers.current_server?._id ?? false}
-                                >
-                                    {server.name}
-                                </button>
+                                    class={"server"}
+                                >{server.icon &&
+                                        <img
+                                            src={`${rvCLient.configuration?.features?.autumn?.url}/icons/${server.icon._id}?max-side=256`}
+                                            width={32}
+                                            height={32}
+                                        />
+                                    }
+                                    <p class="name">{server.name}</p>
+                                </div>
                             )}
                         </For>
                     </div>
@@ -555,32 +605,74 @@ const App: Component = () => {
                             )}
                         </For>
                     </div>
-                    <ul class="solenoid-messages">
+                    <div class="solenoid-messages">
                         <For each={messages()}>
                             {(message) => {
                                 if (settings.debug) console.log(message.attachments);
                                 if (settings.debug) console.log(message);
+                                if (settings.debug) console.log();
                                 return (
-                                    <li
+                                    <div
                                         class="solenoid-message"
                                         onClick={() => setReplies([...replies(), {
                                             id: message._id,
                                             mention: false
                                         }])}
                                     >
-                                        {message.masquerade?.name ??
-                                            message.author?.username ??
-                                            "Unknown User"}
-                                        {message.masquerade && " (bridge)"}
+                                        <div class="solenoid-message-author">
+                                        {message.masquerade?.avatar ? (
+                                            <img
+                                                style={{
+                                                    "max-width": "50px",
+                                                    "max-height": "50px"
+                                                }}
+                                                class="solenoid-pfp"
+                                                src={message.masquerade?.avatar}
+                                            ></img>
+                                        ) : message.author?.avatar ? (
+                                            <img
+                                                style={{
+                                                    "max-width": "50px",
+                                                    "max-height": "50px"
+                                                }}
+                                                class="solenoid-pfp"
+                                                src={`${rvCLient.configuration?.features?.autumn?.url}/avatars/${message.author?.avatar?._id}`}
+                                                title={`${message.author?.avatar?.filename}`}
+                                            ></img>
+                                        ) : (
+                                            <img
+                                                style={{
+                                                    "max-width": "50px",
+                                                    "max-height": "50px"
+                                                }}
+                                                class="solenoid-pfp"
+                                                title="Default Avatar"
+                                                src={`https://api.revolt.chat/users/${message.author?._id}/default_avatar`}
+                                            ></img>
+                                        ) }
+                                        <span
+                                        class="solenoid-username"
+                                        >
+                                            {
+                                                // TODO Add support for role colors
+                                                message.masquerade?.name
+                                                ?? message.member?.nickname
+                                                ?? message.author?.username
+                                                ??"Unknown User"
+                                            }
+                                        </span>
+                                        {message.masquerade && <span class="solenoid-masquerade">(Masquerade)</span>}
+                                        {message.author?.bot && <span class="solenoid-bot">(Bot)</span>}
+                                        {message.author?._id === "01G1V3VWVQFC8XAKYEPNYHHR2C" && <span class="solenoid-dev">Solenoid Developer 😺</span>}
                                         {message.reply_ids && message.reply_ids.length > 1 ? (
-                                            <span class="solenoid-message notimportant"> (Replying to {message?.reply_ids?.length} messages)</span>
+                                            <span class="notimportant"> (Replying to {message?.reply_ids?.length} messages)</span>
                                         ) : (
                                             <For each={message.reply_ids}>
                                                 {(r) => {
                                                     const message =
                                                         servers.current_channel?.client.messages.get(r);
                                                     return (
-                                                        <span class="solenoid-message notimportant">
+                                                        <span class="notimportant">
                                                             (Replying to {message?.author?.username ?? "Unknown User"})
                                                         </span>
                                                     );
@@ -592,7 +684,8 @@ const App: Component = () => {
                                         {settings.suffix && (
                                             <>{settings.showSuffix ? " says " : ":"}</>
                                         )}
-                                        <SolidMarkdown children={message.content ?? undefined} />
+                                        </div>
+                                        <SolidMarkdown class="solenoid-md" children={message.content ?? undefined} />
                                         <For each={message.attachments}>
                                             {(attachment) => {
                                                 if (!settings.showImages) {
@@ -632,11 +725,11 @@ const App: Component = () => {
                                                 }
                                             }}
                                         </For>
-                                    </li>
+                                    </div>
                                 );
                             }}
                         </For>
-                    </ul>
+                    </div>
                     {servers.isHome && (
                         <div class="home">
                             <h1>Solenoid (Beta)</h1>
