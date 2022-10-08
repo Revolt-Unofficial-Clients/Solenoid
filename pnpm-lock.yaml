@@ -7,6 +7,7 @@ specifiers:
   solid-hcaptcha: ^0.2.5
   solid-js: ^1.5.1
   solid-markdown: ^1.2.0
+  solid-styled-components: ^0.28.4
   typescript: ^4.8.2
   ulid: ^2.3.0
   vite: ^3.0.9
@@ -19,6 +20,7 @@ dependencies:
   solid-hcaptcha: 0.2.5_solid-js@1.5.1
   solid-js: 1.5.1
   solid-markdown: 1.2.0_solid-js@1.5.1
+  solid-styled-components: 0.28.4_solid-js@1.5.1
   ulid: 2.3.0
 
 devDependencies:
@@ -891,6 +893,14 @@ packages:
     dev: false
     optional: true
 
+  /goober/2.1.11_csstype@3.1.0:
+    resolution: {integrity: sha512-5SS2lmxbhqH0u9ABEWq7WPU69a4i2pYcHeCxqaNq6Cw3mnrF0ghWNM4tEGid4dKy8XNIAUbuThuozDHHKJVh3A==}
+    peerDependencies:
+      csstype: ^3.0.10
+    dependencies:
+      csstype: 3.1.0
+    dev: false
+
   /has-flag/3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
     engines: {node: '>=4'}
@@ -1586,6 +1596,16 @@ packages:
       '@babel/types': 7.18.8
       solid-js: 1.5.1
     dev: true
+
+  /solid-styled-components/0.28.4_solid-js@1.5.1:
+    resolution: {integrity: sha512-SGbXv5tLIs1qErr3x7M+HWE4lu+37C4myV8gbce7WnZumjBmM5sifKv/NulVeSf3nMRa3uwkAM14q7QmLGC2gQ==}
+    peerDependencies:
+      solid-js: ^1.4.4
+    dependencies:
+      csstype: 3.1.0
+      goober: 2.1.11_csstype@3.1.0
+      solid-js: 1.5.1
+    dev: false
 
   /source-map-js/1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}

@@ -257,10 +257,6 @@ div[class^="solenoid-message-author"] {
   align-items: center;
 }
 
-div[class^="solenoid-message-author"] span[class^="solenoid-username"] {
-  font-weight: bold;
-}
-
 div[class^="solenoid-message"] [class^="solenoid-md"] {
   margin-top: 1rem;
   margin-bottom: 0.5rem;

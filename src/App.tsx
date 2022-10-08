@@ -3,7 +3,8 @@ import {
     createSignal,
     enableExternalSource,
     For,
-    createEffect
+    createEffect,
+    children
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Channel, Client, Message, Server} from "revolt.js";
@@ -14,6 +15,7 @@ import SolidMarkdown from "solid-markdown";
 import Axios from "axios";
 import "./styles/main.css";
 import { ulid } from "ulid";
+import { styled, css } from "solid-styled-components";
 
 import type { AxiosRequestConfig } from "axios";
 
@@ -430,6 +432,16 @@ async function loginWithSession(session: any & {action: "LOGIN"}) {
     }
 }
 
+// Get Role Colour from Message
+function getrolecolour(message: Message) {
+    for (const [_, {colour}] of message.member!.orderedRoles) {
+        console.log(colour);
+        if (colour) {
+            return colour;
+        }
+    }
+}
+
 // Send Notifications
 rvCLient.on("message", (msg) => {
     if (Notification.permission) {
@@ -476,8 +488,8 @@ setInterval(() => {
     }
 }, 2000);
 
+// Automatically log in when session is found and not logged in
 if (settings.session && !loggedIn()) loginWithSession(settings.session);
-
 
 const App: Component = () => {
     return (
@@ -610,7 +622,8 @@ const App: Component = () => {
                             {(message) => {
                                 if (settings.debug) console.log(message.attachments);
                                 if (settings.debug) console.log(message);
-                                if (settings.debug) console.log();
+                                if (settings.debug) console.log(message.member?.orderedRoles);
+                                let colour = getrolecolour(message);
                                 return (
                                     <div
                                         class="solenoid-message"
@@ -651,15 +664,22 @@ const App: Component = () => {
                                             ></img>
                                         ) }
                                         <span
-                                        class="solenoid-username"
-                                        >
-                                            {
-                                                // TODO Add support for role colors
-                                                message.masquerade?.name
-                                                ?? message.member?.nickname
-                                                ?? message.author?.username
-                                                ??"Unknown User"
-                                            }
+                                        class={colour && colour.includes("gradient") ? css`
+                                                background: ${colour};
+                                                background-clip: text;
+                                                -webkit-background-clip: text;
+                                                -webkit-text-fill-color: transparent;
+                                                font-weight: bold;
+                                                ` : css`
+                                                color: ${colour ?? "#fff"};
+                                                font-weight: bold;
+                                        `}
+                                        > {
+                                            message.masquerade?.name
+                                            ?? message.member?.nickname
+                                            ?? message.author?.username
+                                            ??"Unknown User"
+                                        }
                                         </span>
                                         {message.masquerade && <span class="solenoid-masquerade">(Masquerade)</span>}
                                         {message.author?.bot && <span class="solenoid-bot">(Bot)</span>}

@@ -21,6 +21,7 @@
     "solid-hcaptcha": "^0.2.5",
     "solid-js": "^1.5.1",
     "solid-markdown": "^1.2.0",
+    "solid-styled-components": "^0.28.4",
     "ulid": "^2.3.0"
   }
 }
