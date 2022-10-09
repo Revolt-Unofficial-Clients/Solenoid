@@ -130,6 +130,14 @@ div[class^="server"] p[class^="name"]{
   border-radius: var(--radius);
 }
 
+div[class^="solenoid-message"] .mentioned {
+ background-color: #446b91;
+}
+
+div[class^="solenoid-message"] .mentioned:hover {
+  background-color: #365473;
+}
+
 .solenoid-message:hover {
   background-color: var(--fg-hover);
 }
@@ -293,4 +301,32 @@ div[class^="solenoid-message-author"] span[class^="solenoid-dev"] {
 span[class^="notimportant"] {
   margin-left: 0.5rem;
   color: var(--fg-notimportant);
+}
+
+div[class^="solenoid-channelList"] {
+  display: flex;
+  flex-direction: column;
+}
+
+div[class^="solenoid-channel"] {
+  background-color: #1E1E1E;
+  padding: 3px;
+  border-radius: 3px;
+}
+
+div[class^="solenoid-channel"] .active {
+  background-color: #1B1B1B;
+}
+
+div[class^="solenoid-channel"] .active span {
+  color: #F6F6F6;
+}
+
+div[class^="solenoid-channel"] span {
+  color: #323232;
+}
+
+div[class^="solenoid-channel"] span[class^="hashicon"] {
+  font-size: 24px;
+  font-weight: bold;
 }

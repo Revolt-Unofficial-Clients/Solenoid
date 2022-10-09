@@ -3,93 +3,31 @@ import {
     createSignal,
     enableExternalSource,
     For,
-    createEffect,
-    children
+    createEffect
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import { Channel, Client, Message, Server} from "revolt.js";
+import { Client, Message} from "revolt.js";
 import { Reaction, runInAction } from "mobx";
-import HCaptcha from "solid-hcaptcha";
 import { createLocalStore, createLocalSignal } from "./utils";
-import SolidMarkdown from "solid-markdown";
 import Axios from "axios";
 import "./styles/main.css";
 import { ulid } from "ulid";
-import { styled, css } from "solid-styled-components";
+import {Message as MessageComponent } from "./components/Message";
+import { Login as LoginComponent } from "./components/Login";
+import { ServerList } from "./components/ServerList";
 
 import type { AxiosRequestConfig } from "axios";
+import type { user, loginValues, reply, server, settings as config, status } from "./types"
 
 // Revolt Client
 const rvCLient = new Client();
-
-// Interfaces
-interface user {
-    user_id: string | undefined;
-    username: string | undefined;
-    session_type: "email" | "token" | undefined;
-}
-
-interface loginValues {
-    email?: string;
-    password?: string;
-    token?: string;
-    mfa_token?: string;
-}
-
-interface server {
-    server_list?: Server[] | undefined;
-    current_server?: Server | undefined;
-    current_server_channels?: any[];
-    current_channel?: Channel | undefined;
-    messages?: Message[] | undefined;
-    isHome: boolean | undefined;
-}
-
-interface status {
-    id: number,
-    mode:
-    | "Online"
-    | "Focus"
-    | "Idle"
-    | "Busy"
-    | "Invisible"
-    | null
-    | undefined,
-    text: string,
-}
-
-interface reply {
-    id: string,
-    mention: boolean
-}
-
-interface settings {
-    show: boolean;
-    status?:
-    | "Online"
-    | "Focus"
-    | "Idle"
-    | "Busy"
-    | "Invisible"
-    | null
-    | undefined;
-    statusText?: any;
-    showSuffix: boolean;
-    newShowSuffix: undefined | boolean;
-    suffix: boolean;
-    session?: any | undefined;
-    session_type?: string | undefined;
-    zoomLevel: number;
-    showImages: boolean;
-    debug: boolean;
-}
 
 // Initialize Variables
 const [login, setLogin] = createStore<loginValues>({});
 const [newMessage, setNewMessage] = createSignal<string>("");
 const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
 const [captchaToken, setCaptchaToken] = createSignal<string>();
-const [user, setUser] = createStore<user>({
+const [usr, setUser] = createStore<user>({
     user_id: undefined,
     username: undefined,
     session_type: undefined,
@@ -110,7 +48,7 @@ const [newMode, setNewMode] = createSignal<"Online" | "Idle" | "Focus" | "Busy" 
 const [newStatus, setNewStatus] = createSignal<string | null>();
 
 // Solenoid Default Settings
-const [settings, setSettings] = createLocalStore<settings>("settings", {
+const [settings, setSettings] = createLocalStore<config>("settings", {
     show: false,
     showSuffix: false,
     suffix: false,
@@ -123,6 +61,8 @@ const [settings, setSettings] = createLocalStore<settings>("settings", {
 });
 
 const [statuslist, setStatusList] = createLocalSignal<status[]>("statusList", []);
+const [captchaKey, setCaptchaKey] = createSignal<string>("3daae85e-09ab-4ff6-9f24-e8f4f335e433");
+
 
 // Request notification permission
 (async () => {
@@ -167,7 +107,6 @@ rvCLient.on("ready", async () => {
     } else if (settings.debug && settings.session_type === "email") {
         console.info(`Logged In as ${rvCLient.user?.username}`);
     };
-    fetchServers();
 });
 
 // Update Status Automatically
@@ -494,82 +433,15 @@ if (settings.session && !loggedIn()) loginWithSession(settings.session);
 const App: Component = () => {
     return (
         <div>
-            {window.location.hostname === "localhost" && (
-                <div class="solenoid-utils-local banner">
-                    <span>
-                        Running on a local server, some features might not be available.
-                    </span>
-                </div>
-            )}
-            {!loggedIn() && (
-                <div class="solenoid-login">
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            logIntoRevolt(login.token ?? "");
-                        }}
-                    >
-                        <div class="token">
-                            <label id="subtitle">Login with Token</label>
-                            <input
-                                id="token"
-                                type="text"
-                                class="textarea"
-                                placeholder="Token"
-                                value={login.token || ""}
-                                onInput={(e: any) => onInputChange(e, "token")}
-                            ></input>
-                            <button id="submit" type="submit">
-                                Login
-                            </button>
-                        </div>
-                    </form>
-                    {window.location.hostname !== "localhost" && (
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                loginWithEmail(login.email ?? "", login.password ?? "");
-                            }}
-                        >
-                            <div>
-                                <label id="subtitle">Login with Email</label>
-                                <input
-                                    class="textarea"
-                                    id="email"
-                                    type="email"
-                                    placeholder="Email"
-                                    value={login.email || ""}
-                                    onInput={(e: any) => onInputChange(e, "email")}
-                                ></input>
-                                <input
-                                    class="textarea"
-                                    id="password"
-                                    type="password"
-                                    placeholder="Password"
-                                    value={login.password || ""}
-                                    onInput={(e: any) => onInputChange(e, "password")}
-                                ></input>
-                                <input
-                                    class="textarea"
-                                    id="mfa"
-                                    type="text"
-                                    placeholder="2fa Token (Optional, Not yet implemented)"
-                                    value={login.mfa_token || ""}
-                                    onInput={(e: any) => onInputChange(e, "mfa_token")}
-                                ></input>
-                                <HCaptcha
-                                    sitekey="3daae85e-09ab-4ff6-9f24-e8f4f335e433"
-                                    onVerify={(token) => setCaptchaToken(token)}
-                                />
-                                <button id="submit" type="submit">
-                                    Login
-                                </button>
-                            </div>
-                        </form>
-                    )}
-                    {settings.session && <button id="existingsession" onClick={() => loginWithSession(settings.session)}>Use Existing Session</button>}
-                </div>
-            )}
+            <LoginComponent
+                client={rvCLient}
+                userSetter={setUser}
+                captchaKey={captchaKey()}
+                configSetter={setSettings}
+                solenoid_config={settings}
+                logged={loggedIn}
+                logSetter={setLoggedIn}
+            />
             {loggedIn() && (
                 <div class="solenoid">
                     <div class="solenoid-serverList">
@@ -584,36 +456,23 @@ const App: Component = () => {
                         >
                             Solenoid Home
                         </div>
-                        <For each={servers.server_list}>
-                            {(server) => (
-                                <div
-                                    onClick={() => setServer(server._id)}
-                                    class={"server"}
-                                >{server.icon &&
-                                        <img
-                                            src={`${rvCLient.configuration?.features?.autumn?.url}/icons/${server.icon._id}?max-side=256`}
-                                            width={32}
-                                            height={32}
-                                        />
-                                    }
-                                    <p class="name">{server.name}</p>
-                                </div>
-                            )}
-                        </For>
+                        <ServerList
+                            client={rvCLient}
+                            servers={servers.server_list}
+                            setter={setServer}
+                        />
                     </div>
                     <br />
                     <div class="solenoid-channelList">
                         <For each={servers.current_server_channels}>
                             {(channel) => (
-                                <button
-                                    id="solenoid-channel"
+                                <div
+                                    class={"solenoid-channel" + (channel._id === servers.current_channel?._id ? " active" : "") }
+                                    id={`channel_${channel._id}`}
                                     onClick={() => setChannel(channel._id)}
-                                    disabled={
-                                        channel._id === servers.current_channel?._id ?? false
-                                    }
                                 >
-                                    {channel.name}
-                                </button>
+                                    <span class="hashicon">#</span> <span class="channel_name">{channel.name}</span>
+                                </div>
                             )}
                         </For>
                     </div>
@@ -625,127 +484,14 @@ const App: Component = () => {
                                 if (settings.debug) console.log(message.member?.orderedRoles);
                                 let colour = getrolecolour(message);
                                 return (
-                                    <div
-                                        class="solenoid-message"
-                                        onClick={() => setReplies([...replies(), {
-                                            id: message._id,
-                                            mention: false
-                                        }])}
-                                    >
-                                        <div class="solenoid-message-author">
-                                        {message.masquerade?.avatar ? (
-                                            <img
-                                                style={{
-                                                    "max-width": "50px",
-                                                    "max-height": "50px"
-                                                }}
-                                                class="solenoid-pfp"
-                                                src={message.masquerade?.avatar}
-                                            ></img>
-                                        ) : message.author?.avatar ? (
-                                            <img
-                                                style={{
-                                                    "max-width": "50px",
-                                                    "max-height": "50px"
-                                                }}
-                                                class="solenoid-pfp"
-                                                src={`${rvCLient.configuration?.features?.autumn?.url}/avatars/${message.author?.avatar?._id}`}
-                                                title={`${message.author?.avatar?.filename}`}
-                                            ></img>
-                                        ) : (
-                                            <img
-                                                style={{
-                                                    "max-width": "50px",
-                                                    "max-height": "50px"
-                                                }}
-                                                class="solenoid-pfp"
-                                                title="Default Avatar"
-                                                src={`https://api.revolt.chat/users/${message.author?._id}/default_avatar`}
-                                            ></img>
-                                        ) }
-                                        <span
-                                        class={colour && colour.includes("gradient") ? css`
-                                                background: ${colour};
-                                                background-clip: text;
-                                                -webkit-background-clip: text;
-                                                -webkit-text-fill-color: transparent;
-                                                font-weight: bold;
-                                                ` : css`
-                                                color: ${colour ?? "#fff"};
-                                                font-weight: bold;
-                                        `}
-                                        > {
-                                            message.masquerade?.name
-                                            ?? message.member?.nickname
-                                            ?? message.author?.username
-                                            ??"Unknown User"
-                                        }
-                                        </span>
-                                        {message.masquerade && <span class="solenoid-masquerade">(Masquerade)</span>}
-                                        {message.author?.bot && <span class="solenoid-bot">(Bot)</span>}
-                                        {message.author?._id === "01G1V3VWVQFC8XAKYEPNYHHR2C" && <span class="solenoid-dev">Solenoid Developer 😺</span>}
-                                        {message.reply_ids && message.reply_ids.length > 1 ? (
-                                            <span class="notimportant"> (Replying to {message?.reply_ids?.length} messages)</span>
-                                        ) : (
-                                            <For each={message.reply_ids}>
-                                                {(r) => {
-                                                    const message =
-                                                        servers.current_channel?.client.messages.get(r);
-                                                    return (
-                                                        <span class="notimportant">
-                                                            (Replying to {message?.author?.username ?? "Unknown User"})
-                                                        </span>
-                                                    );
-                                                }}
-                                            </For>
-
-                                        )}
-
-                                        {settings.suffix && (
-                                            <>{settings.showSuffix ? " says " : ":"}</>
-                                        )}
-                                        </div>
-                                        <SolidMarkdown class="solenoid-md" children={message.content ?? undefined} />
-                                        <For each={message.attachments}>
-                                            {(attachment) => {
-                                                if (!settings.showImages) {
-                                                    return <></>;
-                                                } else if (attachment.metadata.type === "Image") {
-                                                    //Basic image support :D
-                                                    return (
-                                                        <img
-                                                            class="solenoid-message-image"
-                                                            src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
-                                                            width={
-                                                                attachment.metadata.width > 500
-                                                                    ? attachment.metadata.width /
-                                                                    settings.zoomLevel
-                                                                    : attachment.metadata.width
-                                                            }
-                                                            height={
-                                                                attachment.metadata.height > 500
-                                                                    ? attachment.metadata.height /
-                                                                    settings.zoomLevel
-                                                                    : attachment.metadata.height
-                                                            }
-                                                        />
-                                                    );
-                                                } else if (attachment.metadata.type === "Video") {
-                                                    return (
-                                                        <video class="solenoid-message-video" src={`${rvCLient.configuration?.features.autumn.url}/attachments/${attachment._id}`} controls />
-                                                    )
-                                                } else {
-                                                    return (
-                                                        <div class="solenoid-message-file">
-                                                            <h3 class="header">{message.author?.username} sent you a {attachment.metadata.type}</h3>
-                                                            <p class="name">File Name: {attachment.filename}</p>
-                                                            <a class="download" type="download" href={`${rvCLient.configuration?.features?.autumn?.url}/attachments/${attachment._id}`}>Download</a>
-                                                        </div>
-                                                    )
-                                                }
-                                            }}
-                                        </For>
-                                    </div>
+                                    <MessageComponent
+                                        client={rvCLient}
+                                        message={message}
+                                        colour={colour}
+                                        settings={settings}
+                                        setter={setReplies}
+                                        signal={replies}
+                                    />
                                 );
                             }}
                         </For>
@@ -777,72 +523,70 @@ const App: Component = () => {
                         </div>
                     )}
                     <div id="solenoid-userBar">
-                        <div id="solenoid-misc-buttonList">
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    sendMessage(newMessage());
-                                }}
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                sendMessage(newMessage());
+                            }}
+                        >
+                            <button
+                                id="solenoid-userOptions"
+                                aria-label="Username"
+                                onClick={showSettings}
+                                title={`Logged in as ${usr.username}, Click for Settings`}
                             >
-                                <button
-                                    id="solenoid-userOptions"
-                                    aria-label="Username"
-                                    onClick={showSettings}
-                                    title={`Logged in as ${user.username}, Click for Settings`}
-                                >
-                                    {user.username}
-                                </button>
-                                <textarea
-                                    class="solenoid-send-input"
-                                    aria-label="Type your message here..."
-                                    aria-role="sendmessagebox"
-                                    placeholder={
-                                        replies().length > 1
-                                            ? `Replying to ${replies().length} message${replies().length > 1 ? "s" : ""}`
-                                            : replies().length === 1
-                                            ? `Replying to ${replies()[0].id}`
-                                            : "Type What you Think"
-                                    }
-                                    value={newMessage()}
-                                    onChange={(e: any) => onInputChange(e, "newMessage")}
-                                />
-                                <button
-                                    id="solenoid-send-button"
-                                    type="submit"
-                                    aria-label="Send Message"
-                                    aria-role="sendmessagebutton"
-                                >
-                                    Send Message
-                                </button>
-                                <div class="solenoidui-upload">
-                                    <div class="solenoid-image-galery">
-                                        <For each={imgUrls()}>
-                                            {(imageSrc) => (
-                                                <img class="solenoid-image-preview" src={imageSrc} />
-                                            )}
-                                        </For>
-                                    </div>
-                                    <input
-                                        class="solenoid-input-image"
-                                        type="file"
-                                        multiple
-                                        name="upload"
-                                        accept="image/png,image/jpeg,image/gif,video/mp4"
-                                        onChange={onImageChange}
-                                    />
+                                {usr.username}
+                            </button>
+                            <textarea
+                                class="solenoid-send-input"
+                                aria-label="Type your message here..."
+                                aria-role="sendmessagebox"
+                                placeholder={
+                                    replies().length > 1
+                                        ? `Replying to ${replies().length} message${replies().length > 1 ? "s" : ""}`
+                                        : replies().length === 1
+                                        ? `Replying to ${replies()[0].id}`
+                                        : "Type What you Think"
+                                }
+                                value={newMessage()}
+                                onChange={(e: any) => onInputChange(e, "newMessage")}
+                            />
+                            <button
+                                id="solenoid-send-button"
+                                type="submit"
+                                aria-label="Send Message"
+                                aria-role="sendmessagebutton"
+                            >
+                                Send Message
+                            </button>
+                            <div class="solenoidui-upload">
+                                <div class="solenoid-image-galery">
+                                    <For each={imgUrls()}>
+                                        {(imageSrc) => (
+                                            <img class="solenoid-image-preview" src={imageSrc} />
+                                        )}
+                                    </For>
                                 </div>
-                                {images() && (
-                                    <button onClick={() => setImages([])}>
-                                        Remove Attachments
-                                    </button>
-                                )}
-                                {replies().length > 0 && (
-                                    <button onClick={() => setReplies([])}>
-                                        Stop Replying
-                                    </button>
-                                )}
-                            </form>
-                        </div>
+                                <input
+                                    class="solenoid-input-image"
+                                    type="file"
+                                    multiple
+                                    name="upload"
+                                    accept="image/png,image/jpeg,image/gif,video/mp4"
+                                    onChange={onImageChange}
+                                />
+                            </div>
+                            {images() && (
+                                <button onClick={() => setImages([])}>
+                                    Remove Attachments
+                                </button>
+                            )}
+                            {replies().length > 0 && (
+                                <button onClick={() => setReplies([])}>
+                                    Stop Replying
+                                </button>
+                            )}
+                        </form>
                     </div>
                 </div>
             )}
@@ -965,7 +709,7 @@ const App: Component = () => {
                             Update Settings
                         </button>
                         <button
-                            title={`Log Out from ${user.username}`}
+                            title={`Log Out from ${usr.username}`}
                             aria-role="logout"
                             onClick={(e) => {
                                 e.preventDefault;
