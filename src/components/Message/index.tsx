@@ -105,7 +105,7 @@ const Message: Component<MessageComponent> = ({client, message, settings, setter
         <For each={message.attachments}>
             {(attachment) => {
                 if (!settings.showImages) {
-                    return <></>;
+                    return <span>Attachments have been disabled, Enable Image Rendering through settings.</span>;
                 } else if (attachment.metadata.type === "Image") {
                     //Basic image support :D
                     return (
