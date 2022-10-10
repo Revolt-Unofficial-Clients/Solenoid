@@ -15,6 +15,7 @@ import { ulid } from "ulid";
 import {Message as MessageComponent } from "./components/Message";
 import { Login as LoginComponent } from "./components/Login";
 import { ServerList } from "./components/ServerList";
+// For Later (import { emojiDictionary } from "./assets/emoji")
 
 import type { AxiosRequestConfig } from "axios";
 import type { user, loginValues, reply, server, settings as config, status } from "./types"
@@ -40,8 +41,8 @@ const [servers, setServers] = createStore<server>({
 const [messages, setMessages] = createSignal<Message[] | undefined>();
 const [replies, setReplies] = createSignal<reply[]>([]);
 
-const [images, setImages] = createSignal<any[] | undefined>(undefined);
-const [imgUrls, setImgUrls] = createSignal<any[]>([]);
+const [images, setImages] = createSignal<any[] | null | undefined>(undefined);
+const [imgUrls, setImgUrls] = createSignal<any[] | null | undefined>([]);
 
 // Status Prefabs
 const [newMode, setNewMode] = createSignal<"Online" | "Idle" | "Focus" | "Busy" | "Invisible" | undefined | null>();
@@ -96,6 +97,14 @@ const onInputChange = (
 const onImageChange = (e: any) => {
     setImages([...e.target.files]);
 };
+
+// Dealing with Textarea Height
+function calcHeight(value: any) {
+  let numberOfLineBreaks = (value.match(/\n/g) || []).length;
+  // min-height + lines x line-height + padding + border
+  let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2;
+  return newHeight;
+}
 
 // Setup
 rvCLient.on("ready", async () => {
@@ -523,71 +532,74 @@ const App: Component = () => {
                             </p>
                         </div>
                     )}
-                    <div id="solenoid-userBar">
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                sendMessage(newMessage());
-                            }}
+                    {imgUrls()!.length > 0 && (
+                            <div class="solenoid-image-galery">
+                                <For each={imgUrls()}>
+                                    {(imageSrc) => (
+                                        <img class="solenoid-image-preview" src={imageSrc} />
+                                    )}
+                                </For>
+                        </div>)}
+                    <div class="solenoid-userBar">
+                        <div
+                            id="solenoid-userOptions"
+                            aria-label="Username"
+                            onClick={showSettings}
+                            title={`Logged in as ${usr.username}, Click for Settings`}
+                            role="button"
                         >
-                            <button
-                                id="solenoid-userOptions"
-                                aria-label="Username"
-                                onClick={showSettings}
-                                title={`Logged in as ${usr.username}, Click for Settings`}
+                            {usr.username}
+                        </div>
+                        <input
+                            class="solenoid-send-input"
+                            title="Type your message here..."
+                            aria-role="input"
+                            placeholder={
+                                replies().length > 1
+                                    ? `Replying to ${replies().length} message${replies().length > 1 ? "s" : ""}`
+                                    : replies().length === 1
+                                    ? `Replying to ${replies()[0].id}`
+                                    : "Type What you Think"
+                            }
+                            value={newMessage()}
+                            onChange={(e: any) => onInputChange(e, "newMessage")}
+                        />
+                        <div
+                            class="solenoid-send-button"
+                            aria-label="Send"
+                            onClick={() => sendMessage(newMessage())}
+                            role="button"
+                        >
+                            <span>Send</span>
+                        </div>
+                        <input
+                            class="solenoid-input-image"
+                            type="file"
+                            multiple
+                            name="upload"
+                            accept="image/png,image/jpeg,image/gif,video/mp4"
+                            onChange={onImageChange}
+                        />
+
+                        {images() && (
+                            <div
+                            onClick={() => {
+                                setImages(null)
+                                setImgUrls(null);
+                            }}
+                            role="button"
                             >
-                                {usr.username}
-                            </button>
-                            <textarea
-                                class="solenoid-send-input"
-                                aria-label="Type your message here..."
-                                aria-role="sendmessagebox"
-                                placeholder={
-                                    replies().length > 1
-                                        ? `Replying to ${replies().length} message${replies().length > 1 ? "s" : ""}`
-                                        : replies().length === 1
-                                        ? `Replying to ${replies()[0].id}`
-                                        : "Type What you Think"
-                                }
-                                value={newMessage()}
-                                onChange={(e: any) => onInputChange(e, "newMessage")}
-                            />
-                            <button
-                                id="solenoid-send-button"
-                                type="submit"
-                                aria-label="Send Message"
-                                aria-role="sendmessagebutton"
-                            >
-                                Send Message
-                            </button>
-                            <div class="solenoidui-upload">
-                                <div class="solenoid-image-galery">
-                                    <For each={imgUrls()}>
-                                        {(imageSrc) => (
-                                            <img class="solenoid-image-preview" src={imageSrc} />
-                                        )}
-                                    </For>
-                                </div>
-                                <input
-                                    class="solenoid-input-image"
-                                    type="file"
-                                    multiple
-                                    name="upload"
-                                    accept="image/png,image/jpeg,image/gif,video/mp4"
-                                    onChange={onImageChange}
-                                />
+                                <span>Remove Attachments</span>
                             </div>
-                            {images() && (
-                                <button onClick={() => setImages([])}>
-                                    Remove Attachments
-                                </button>
-                            )}
-                            {replies().length > 0 && (
-                                <button onClick={() => setReplies([])}>
-                                    Stop Replying
-                                </button>
-                            )}
-                        </form>
+                        )}
+                        {replies().length > 0 && (
+                            <div
+                            onClick={() => setReplies([])}
+                            role="button"
+                            >
+                                <span>Stop Replying</span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

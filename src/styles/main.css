@@ -28,7 +28,7 @@ html body {
   height: 100%;
 }
 
-button {
+div[role="button"] {
   transition: 300ms;
   padding: 3px;
   margin: 3px;
@@ -37,16 +37,21 @@ button {
   border-radius: 3px;
 }
 
-button:hover {
+div[role="button"]:hover {
   background-color: var(--accent-button-hover);
 }
 
-button:active {
+div[role="button"]:active {
   background-color: var(--accent-button-active);
 }
 
-.main {
-  margin-inline: auto;
+#root {
+  border: 1px solid green;
+  width: 99.8%;
+}
+
+.solenoid {
+  overflow-x: none;
 }
 
 .solenoid-login {
@@ -121,11 +126,24 @@ div[class^="server"] p[class^="name"]{
   color: white !important;
 }
 
+.solenoid-messages {
+  display: flex;
+  flex-direction: column;
+  width: 98%;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+
 .solenoid-message {
+  display: flex;
+  flex-direction: column;
   color: white;
   background-color: var(--fg);
-  width: 100vh;
-  margin: 10px;
+  width: 95vw;
+  margin-top: 5px;
+  margin-bottom: 5px;
   padding: 5px;
   border-radius: var(--radius);
 }
@@ -152,14 +170,6 @@ div[class^="solenoid-message"] .mentioned:hover {
   padding: 5;
 }
 
-.solenoid-image-preview {
-  margin-top: 5px;
-  width: 10%;
-  height: 10%;
-  border-radius: var(--radius);
-  margin: 5px;
-}
-
 .solenoid-image-galery {
   display: flex;
 }
@@ -171,14 +181,8 @@ div[class^="solenoid-message"] .mentioned:hover {
   background-color: var(--image-hover);
 }
 
-.solenoid-image-preview:hover {
-  transition: 300ms;
-  width: 25%;
-  height: 25%;
-  background-color: var(--image-hover);
-}
-
 .banner {
+  width: 90%;
   margin: 5px;
   padding: 5px;
   text-align: center;
@@ -211,28 +215,12 @@ div[class^="solenoid-message"] .mentioned:hover {
 
 .solenoid-send-input {
   background-color: var(--fg);
-  width: 95vh;
+  width: 65%;
   border-radius: var(--radius);
   border: none;
   font-size: 15px;
   color: #fff;
-}
-
-.solenoidui-upload {
-  display: inline-block;
-  position: relative;
-  top: 10px;
-  overflow: hidden;
-}
-
-.solenoidui-upload .solenoid-input-image {
-  opacity: 1;
-  padding: 3px;
-  margin: 0px;
-}
-
-.solenoidui-button-upload:hover {
-  background-color: var(--accent-button-hover);
+  height: 2rem;
 }
 
 .solenoid-message-video {
@@ -329,4 +317,39 @@ div[class^="solenoid-channel"] span {
 div[class^="solenoid-channel"] span[class^="hashicon"] {
   font-size: 24px;
   font-weight: bold;
+}
+
+div[class^="solenoid-userBar"] {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+  background-color: var(--bg);
+  overflow: none;
+}
+div[class^="solenoid-userBar"] *, div[class^="solenoid-userBar"] {
+  border: 1px solid red !important;
+}
+
+div[class^="solenoid-image-galery"] {
+  position: sticky;
+  bottom: 3.5rem;
+  background-color: var(--fg);
+  width: 100%;
+  height: 10rem;
+}
+
+img[class^="solenoid-image-preview] {
+  width: 30%;
+  height: 30%;
+  border-radius: var(--radius);
+  margin: 5px;
+}
+
+input[class^="solenoid-input-image"] {
+  width: auto;
 }
