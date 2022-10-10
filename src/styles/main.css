@@ -46,7 +46,6 @@ div[role="button"]:active {
 }
 
 #root {
-  border: 1px solid green;
   width: 99.8%;
 }
 
@@ -330,9 +329,6 @@ div[class^="solenoid-userBar"] {
   margin-bottom: 10px;
   background-color: var(--bg);
   overflow: none;
-}
-div[class^="solenoid-userBar"] *, div[class^="solenoid-userBar"] {
-  border: 1px solid red !important;
 }
 
 div[class^="solenoid-image-galery"] {
