@@ -343,11 +343,10 @@ div[class^="solenoid-image-galery"] {
   height: 10rem;
 }
 
-img[class^="solenoid-image-preview] {
-  width: 30%;
-  height: 30%;
+img[class^="solenoid-image-preview"] {
+  margin-left: 5px;
+  margin-right: 5px;
   border-radius: var(--radius);
-  margin: 5px;
 }
 
 input[class^="solenoid-input-image"] {
