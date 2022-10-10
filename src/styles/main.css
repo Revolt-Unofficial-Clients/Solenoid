@@ -220,6 +220,15 @@ div[class^="solenoid-message"] .mentioned:hover {
   font-size: 15px;
   color: #fff;
   height: 2rem;
+  resize: none;
+}
+
+div[class^="content"] {
+  display: block;
+}
+
+div[class^="solenoid-md"] {
+  overflow-wrap: break-word;
 }
 
 .solenoid-message-video {

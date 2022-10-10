@@ -550,7 +550,7 @@ const App: Component = () => {
                         >
                             {usr.username}
                         </div>
-                        <input
+                        <textarea
                             class="solenoid-send-input"
                             title="Type your message here..."
                             aria-role="input"
@@ -563,6 +563,9 @@ const App: Component = () => {
                             }
                             value={newMessage()}
                             onChange={(e: any) => onInputChange(e, "newMessage")}
+                            wrap="soft"
+                            maxlength={2000}
+                            autofocus
                         />
                         <div
                             class="solenoid-send-button"

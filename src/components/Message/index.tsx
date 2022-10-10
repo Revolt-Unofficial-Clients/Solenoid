@@ -99,7 +99,9 @@ const Message: Component<MessageComponent> = ({client, message, settings, setter
             <>{settings.showSuffix ? " says " : ":"}</>
         )}
         </div>
-        <SolidMarkdown class="solenoid-md" children={message.content ?? undefined} />
+        <div class="content">
+            <SolidMarkdown class="solenoid-md" children={message.content ?? undefined} />
+        </div>
         <For each={message.attachments}>
             {(attachment) => {
                 if (!settings.showImages) {
