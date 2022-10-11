@@ -1,4 +1,5 @@
 import type { Server, Message, Channel } from "revolt.js";
+import type { Responses } from "gifbox.js";
 
 declare interface user {
     user_id: string | undefined;
@@ -56,7 +57,11 @@ declare interface settings {
     suffix: boolean;
     session?: any | undefined;
     session_type?: string | undefined;
+    yiffbox_session: string | undefined;
     zoomLevel: number;
     showImages: boolean;
     debug: boolean;
+    experiments: {
+        picker: boolean
+    }
 }

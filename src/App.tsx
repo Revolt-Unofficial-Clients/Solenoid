@@ -12,9 +12,11 @@ import { createLocalStore, createLocalSignal } from "./utils";
 import Axios from "axios";
 import "./styles/main.css";
 import { ulid } from "ulid";
-import {Message as MessageComponent } from "./components/Message";
+import { Message as MessageComponent } from "./components/Message";
 import { Login as LoginComponent } from "./components/Login";
 import { ServerList } from "./components/ServerList";
+import { Picker } from "./components/Picker"
+import { Client as gbClient } from "gifbox.js"
 // For Later (import { emojiDictionary } from "./assets/emoji")
 
 import type { AxiosRequestConfig } from "axios";
@@ -22,6 +24,9 @@ import type { user, loginValues, reply, server, settings as config, status } fro
 
 // Revolt Client
 const rvCLient = new Client();
+
+// Gifbox CLient
+const gifboxClient = new gbClient();
 
 // Initialize Variables
 const [login, setLogin] = createStore<loginValues>({});
@@ -56,14 +61,24 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
     newShowSuffix: undefined,
     zoomLevel: 5,
     session: undefined,
+    yiffbox_session: undefined,
     session_type: undefined,
     showImages: true,
     debug: false,
+    experiments: {
+        picker: true
+    }
 });
 
 const [statuslist, setStatusList] = createLocalSignal<status[]>("statusList", []);
 const [captchaKey, setCaptchaKey] = createSignal<string>("3daae85e-09ab-4ff6-9f24-e8f4f335e433");
 
+async function checkIfSessionExists () {
+    if (await gifboxClient.getCurrentSession()) {
+        const session = await gifboxClient.getCurrentSession();
+       setSettings("yiffbox_session", session.token);
+    }
+}
 
 // Request notification permission
 (async () => {
@@ -481,7 +496,7 @@ const App: Component = () => {
                                     id={`channel_${channel._id}`}
                                     onClick={() => setChannel(channel._id)}
                                 >
-                                    <span class="hashicon">#</span> <span class="channel_name">{channel.name}</span>
+                                    <span class="hashicon">#</span> <span class="channel_name">{channel.name} <div class="unread"/></span>
                                 </div>
                             )}
                         </For>
@@ -719,6 +734,18 @@ const App: Component = () => {
                         >
                             {settings.debug ? "Enabled" : "Disabled"}
                         </button>
+                    </div><div id="solenoid-setting solenoid-experiments">
+                        <h3>Experiments</h3>
+                        <h4>Emoji Picker</h4>
+                        <button
+                            onClick={() =>
+                                settings.experiments.picker
+                                    ? setSettings("experiments", "picker", false)
+                                    : setSettings("experiments", "picker", true)
+                            }
+                        >
+                            {settings.experiments.picker ? "Enabled" : "Disabled"}
+                        </button>
                     </div>
                     <div class="solenoid-setting solenoid-update">
                         <button class="solenoid-update-btn" onClick={setCurrentSettings}>
@@ -738,6 +765,10 @@ const App: Component = () => {
                     </div>
                 </div>
             )}
+            {settings.experiments.picker && <Picker
+                setMessage={setNewMessage}
+                message={newMessage}
+                />}
         </div>
     );
 };
