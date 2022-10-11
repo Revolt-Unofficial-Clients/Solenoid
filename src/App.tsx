@@ -73,13 +73,7 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
 const [statuslist, setStatusList] = createLocalSignal<status[]>("statusList", []);
 const [captchaKey, setCaptchaKey] = createSignal<string>("3daae85e-09ab-4ff6-9f24-e8f4f335e433");
 
-async function checkIfSessionExists () {
-    if (await gifboxClient.getCurrentSession()) {
-        const session = await gifboxClient.getCurrentSession();
-       setSettings("yiffbox_session", session.token);
-    }
-}
-
+const [showPicker, setShowPicker] = createSignal<boolean>(false);
 // Request notification permission
 (async () => {
     let permission = await Notification.requestPermission()
@@ -296,6 +290,7 @@ async function sendMessage(message: string) {
     setNewMessage("");
     setReplies([]);
     setImages(undefined);
+    setShowPicker(false);
 }
 
 // Channel Switching
@@ -547,6 +542,11 @@ const App: Component = () => {
                             </p>
                         </div>
                     )}
+                    {showPicker() && settings.experiments.picker && <Picker
+                            setMessage={setNewMessage}
+                            message={newMessage}
+                        />
+                    }
                     {imgUrls()!.length > 0 && (
                             <div class="solenoid-image-galery">
                                 <For each={imgUrls()}>
@@ -563,7 +563,7 @@ const App: Component = () => {
                             title={`Logged in as ${usr.username}, Click for Settings`}
                             role="button"
                         >
-                            {usr.username}
+                            config
                         </div>
                         <textarea
                             class="solenoid-send-input"
@@ -582,6 +582,12 @@ const App: Component = () => {
                             maxlength={2000}
                             autofocus
                         />
+                        <div
+                        class="solenoid-toggle"
+                        onClick={() => showPicker() ? setShowPicker(false) : setShowPicker(true)}
+                        role="button">
+                        <span>😺</span>
+                        </div>
                         <div
                             class="solenoid-send-button"
                             aria-label="Send"
@@ -765,10 +771,6 @@ const App: Component = () => {
                     </div>
                 </div>
             )}
-            {settings.experiments.picker && <Picker
-                setMessage={setNewMessage}
-                message={newMessage}
-                />}
         </div>
     );
 };

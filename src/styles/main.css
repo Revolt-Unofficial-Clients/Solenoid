@@ -33,8 +33,10 @@ div[role="button"] {
   padding: 3px;
   margin: 3px;
   border: none;
+  width: fit-content;
   background-color: var(--accent);
   border-radius: 3px;
+  cursor: pointer;
 }
 
 div[role="button"]:hover {
@@ -428,11 +430,24 @@ div[class="solenoid-picker-grid gifbox"] {
 
 
 
-div[class^="solenoid-picker"] span[class^="emoji"] {
+div[class^="solenoid-picker"] span[class^="emoji"]{
   padding: 5px;
-/*   border: 1px solid green; */
+  border: 1px solid green;
   text-align: center;
   cursor: pointer;
+}
+
+div[class^="solenoid-picker"] div[class^="custom-container"]{
+  display: flex;
+  padding: 5px;
+  border: 1px solid green;
+  text-align: center;
+  cursor: pointer;
+}
+
+img[class^="emoji-custom"] {
+  width: 23px;
+  height: 23px;
 }
 
 div[class^="solenoid-picker"] div[class^="gif-container"] img[class^="gif"] {

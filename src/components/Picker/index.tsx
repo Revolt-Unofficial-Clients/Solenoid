@@ -90,11 +90,27 @@ export const Picker: Component<props> = (props) => {
                 <For each={Object.entries(emojiDictionary)}>
                     {(emoji) => {
                         console.log(emoji);
-                        if (emoji[1].includes("custom:")) return;
-                        return <span
-                        title={":" + emoji[0] + ":"}
-                        class="emoji"
-                        onClick={() => addToText(`:${emoji[0]}:`)}>{emoji[1]}</span>
+                        if (emoji[1].startsWith("custom:")) {
+                            return (
+                                <div class="custom-container">
+                                <img
+                                    src={`https://dl.insrt.uk/projects/revolt/emotes/${emoji[1].substring(7)}`}
+                                    class="emoji-custom"
+                                    onClick={() => addToText(`:${emoji[0]}:`)}
+                                />
+                            </div>)
+                        } else {
+                            return (
+                                <span
+                                    title={":" + emoji[0] + ":"}
+                                    class="emoji"
+                                    onClick={() => addToText(`:${emoji[0]}:`)}
+                                >
+                                    {emoji[1]}
+                                </span>
+                            )
+                        }
+
                     }}
                 </For>
             </div>
