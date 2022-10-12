@@ -1,6 +1,7 @@
 import type { Component, Setter, Accessor } from "solid-js"
 import { For, createSignal, createEffect } from "solid-js"
 import {emojiDictionary} from "../../assets/emoji";
+import { Message } from "revolt.js"
 import { Client } from "gifbox.js";
 // import type { settings } from "../../types";
 import { Responses } from "gifbox.js";
@@ -9,8 +10,11 @@ const gbClient = new Client({
 });
 
 interface props {
-    setMessage: Setter<string>;
-    message: Accessor<string>;
+    setMessage?: Setter<string> | any;
+    message?: Accessor<string> | any;
+    type: string;
+    messageToReact?: Message;
+    setOpen: Setter<boolean>;
 }
 
 const [tab, setTab] = createSignal<number>(0);
@@ -54,7 +58,7 @@ export const Picker: Component<props> = (props) => {
     }
 
     function addToText(s: string) {
-        props.setMessage(props.message() + " " + s)
+            props.setMessage(props.message() + " " + s)
     }
 
     async function searchGB() {
@@ -81,10 +85,10 @@ export const Picker: Component<props> = (props) => {
 
     return (
         <div class="solenoid-picker">
-            <div class="tab-container">
+            {props.type === "emoji" && <div class="tab-container">
                 <span class="tab" aria-selected={tab() === 0} onClick={() => setTab(0)}>Emojis</span>
                 <span class="tab" aria-selected={tab() === 1} onClick={() => setTab(1)}>Gifs</span>
-            </div>
+            </div>}
             {tab() === 0 ? (
                 <div class="solenoid-picker-grid">
                 <For each={Object.entries(emojiDictionary)}>
@@ -96,7 +100,14 @@ export const Picker: Component<props> = (props) => {
                                 <img
                                     src={`https://dl.insrt.uk/projects/revolt/emotes/${emoji[1].substring(7)}`}
                                     class="emoji-custom"
-                                    onClick={() => addToText(`:${emoji[0]}:`)}
+                                    onClick={() => {
+                                        if(props.type === "emoji") {
+                                            addToText(`:${emoji[0]}:`)
+                                        } else {
+                                            props.messageToReact?.react(emoji[0])
+                                        }
+
+                                    }}
                                 />
                             </div>)
                         } else {
@@ -104,7 +115,15 @@ export const Picker: Component<props> = (props) => {
                                 <span
                                     title={":" + emoji[0] + ":"}
                                     class="emoji"
-                                    onClick={() => addToText(`:${emoji[0]}:`)}
+                                    onClick={() => {
+                                        if(props.type === "emoji") {
+                                            addToText(`:${emoji[0]}:`)
+                                        } else {
+                                            props.messageToReact?.react(emoji[1])
+                                            props.setOpen(false);
+                                        }
+
+                                    }}
                                 >
                                     {emoji[1]}
                                 </span>
@@ -121,7 +140,12 @@ export const Picker: Component<props> = (props) => {
                         <input role="searchbox" placeholder="Browse GIFBox" value={query()} onChange={(e) => setQuery(e.currentTarget.value)}/>
                         <button onClick={searchGB}>Search</button>
                     </div>
-                    <For each={gifs()}>
+                    {loading() ? (
+                        <div class="loading">
+                            <span>Loading Gifs... 📦</span>
+                        </div>
+                    ) : (
+                        <For each={gifs()}>
                         {(gif) => {
                             console.log(gif);
                             return (
@@ -134,7 +158,7 @@ export const Picker: Component<props> = (props) => {
                                 </div>
                             )
                         }}
-                    </For>
+                    </For>)}
                     {gifs()!.length < 0 && (
                         <p>{error()}</p>
                     )}

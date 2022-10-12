@@ -1,26 +1,31 @@
 # Solenoid
-## A really fucking minimal revolt.chat client with little to no css
-
-<img width="572" alt="image" src="https://user-images.githubusercontent.com/81704775/190916922-6ee9eb36-1214-4777-b5b6-f5ac871f0f23.png">
-
+## A minimal, yet functional third-party revolt.chat client
 
 ### Reasons to use it
 
 1. Fast
-2. Minimal
-3. idk i ran out of reasons
+2. Clean Looking
+3. Full of useful features
 
 ### How 2 run
 Right now you can run it using `pnpm`
 
 ```bash
+# Clone Repo
+git clone https://github.com/stationarystation/Solenoid.git
+
+# Go to repo
+cd Solenoid
+
 # Install Deps
 pnpm i --shamefully-hoist
-# Run Solenoid from localhost:3000
+
+# Run Solenoid from localhost:3000.
 pnpm run dev
+
 ```
 
-Or you can go to [the official site](https://solenoid.vercel.app)
+Or you can go to [the official site](https://ui.solenoid.vercel.app)
 
 ### Features
 
@@ -28,9 +33,14 @@ Or you can go to [the official site](https://solenoid.vercel.app)
 - [x] Get Messages
 - [x] Server Switching
 - [x] Status Updating
-- [x] Css Support (No css by default, use a extension to override)
 - [x] Basic Markdown Support
 - [x] Image Support
+- [x] Video Support
+- [x] File Downloads
+- [x] Avatar Support
+- [x] Role Colors
+- [x] Emoji Picker
+- [x] GIFBox Support
 
 ### Features Missing
 
@@ -42,10 +52,20 @@ I wanted to learn SolidJS because I heard it was blazingly fast and cool, so I d
 
 ### Special thanks
 
-> Insert: Helped me with Revolt.js and some Mobx stuff
+> Insert: Helped me with Revolt.js and  Mobx.
 
-> RyanSolid: Made me understand that I don't know anything about mobx, also this code snippet (https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js)
+> RyanSolid: Made me understand that I don't know anything about Mobx, also [this code snippet](https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js)
 
 > VeliedProduct80: Helped me realize i forgot the masquerade part
 
-> Mclnooted: **sex**
+> Mclnooted: Requested **sex**
+
+> Infi: Helped me with GIFBox
+
+> Bloom: Helped me with css
+
+### Other Third-party clients to check out
+
+- [ReductV3 by DoruDoLaso](https://dorudolasu.github.io/ReductV3/)
+- [Unvolt by Vale](https://vale.rocks/unvolt)
+- [Retaped by Error 404: Null not Found](https://error-404-null-not-found.github.io/retaped)

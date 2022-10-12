@@ -48,7 +48,8 @@ const [replies, setReplies] = createSignal<reply[]>([]);
 
 const [images, setImages] = createSignal<any[] | null | undefined>(undefined);
 const [imgUrls, setImgUrls] = createSignal<any[] | null | undefined>([]);
-
+const [pickerType, setPickerType] = createSignal<"react" | "emoji">("emoji");
+const [reaction, setReaction] = createSignal<string>();
 // Status Prefabs
 const [newMode, setNewMode] = createSignal<"Online" | "Idle" | "Focus" | "Busy" | "Invisible" | undefined | null>();
 const [newStatus, setNewStatus] = createSignal<string | null>();
@@ -223,6 +224,10 @@ async function uploadFile(
     });
 
     return res.data.id;
+}
+
+function deleteMessage(message: Message) {
+    message.delete();
 }
 
 // Send message with file
@@ -421,6 +426,11 @@ rvCLient.on("message", (msg) => {
     }
 })
 
+rvCLient.on("message/delete", (id) => {
+    const newArray = servers.messages?.filter((e) => id == e._id);
+    setServers("messages", newArray);
+})
+
 // Mobx magic (Thanks Insert :D)
 let id = 0;
 enableExternalSource((fn, trigger) => {
@@ -469,7 +479,8 @@ const App: Component = () => {
                             onClick={() => {
                                 setServers("current_server", undefined);
                                 setServers("current_channel", undefined);
-                                setServers("messages", undefined);
+                                setMessages(undefined);
+                                setServers("current_server_channels", undefined);
                                 setServers("isHome", true);
                             }}
                             class="server"
@@ -482,28 +493,60 @@ const App: Component = () => {
                             setter={setServer}
                         />
                     </div>
-                    <br />
-                    <div class="solenoid-channelList">
-                        <For each={servers.current_server_channels}>
-                            {(channel) => (
-                                <div
-                                    class={"solenoid-channel" + (channel._id === servers.current_channel?._id ? " active" : "") }
-                                    id={`channel_${channel._id}`}
-                                    onClick={() => setChannel(channel._id)}
-                                >
-                                    <span class="hashicon">#</span> <span class="channel_name">{channel.name} <div class="unread"/></span>
-                                </div>
-                            )}
-                        </For>
-                    </div>
+                    {servers.current_server && (
+                        <div class="solenoid-server-info-container">
+                            <div class="solenoid-server-banner-container">
+                                <img class="solenoid-banner" src={`https://autumm.revolt.chat/banners/${servers.current_server.banner?._id}`}/>
+                            </div>
+                            <div class="solenoid-channelList">
+                            <For each={servers.current_server_channels}>
+                                {(channel) => (
+                                    <div
+                                        class={"solenoid-channel" + (channel._id === servers.current_channel?._id ? " active" : "") }
+                                        id={`channel_${channel._id}`}
+                                        onClick={() => setChannel(channel._id)}
+                                    >
+                                        <span class="hashicon">#</span> <span class="channel_name">{channel.name} <div class="unread"/></span>
+                                    </div>
+                                )}
+                            </For>
+                            </div>
+                        </div>
+                    )}
                     <div class="solenoid-messages">
+                        {servers.isHome && (
+                            <div class="home">
+                                <h1>Solenoid (Beta)</h1>
+                                {window.location.hostname === "localhost" && (
+                                    <h3>Running on Local Server</h3>
+                                )}
+                                <p>A lightweight client for revolt.chat made with SolidJS</p>
+                                <br />
+                                <h3>Contributors</h3>
+                                <hr />
+                                <p>Insert: Helped me with Mobx and Revolt.js issues</p>
+                                <p>
+                                    RyanSolid:{" "}
+                                    <a href="https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js">
+                                        This
+                                    </a>{" "}
+                                    code snippet
+                                </p>
+                                <p>
+                                    VeiledProduct80: Help me realize i forgot the masquerade part
+                                </p>
+                                <p>
+                                    Mclnooted: <b>sex</b>
+                                </p>
+                            </div>
+                        )}
                         <For each={messages()}>
                             {(message) => {
                                 if (settings.debug) console.log(message.attachments);
                                 if (settings.debug) console.log(message);
                                 if (settings.debug) console.log(message.member?.orderedRoles);
                                 let colour = getrolecolour(message);
-                                return (
+                                return (<>
                                     <MessageComponent
                                         client={rvCLient}
                                         message={message}
@@ -511,40 +554,23 @@ const App: Component = () => {
                                         settings={settings}
                                         setter={setReplies}
                                         signal={replies}
+                                        deleteFunction={deleteMessage}
+                                        picker={setShowPicker}
+                                        picker_type={setPickerType}
+                                        ptype={pickerType}
+                                        show={showPicker}
                                     />
+
+                                    </>
                                 );
                             }}
                         </For>
                     </div>
-                    {servers.isHome && (
-                        <div class="home">
-                            <h1>Solenoid (Beta)</h1>
-                            {window.location.hostname === "localhost" && (
-                                <h3>Running on Local Server</h3>
-                            )}
-                            <p>A lightweight client for revolt.chat made with SolidJS</p>
-                            <br />
-                            <h3>Contributors</h3>
-                            <hr />
-                            <p>Insert: Helped me with Mobx and Revolt.js issues</p>
-                            <p>
-                                RyanSolid:{" "}
-                                <a href="https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js">
-                                    This
-                                </a>{" "}
-                                code snippet
-                            </p>
-                            <p>
-                                VeiledProduct80: Help me realize i forgot the masquerade part
-                            </p>
-                            <p>
-                                Mclnooted: <b>sex</b>
-                            </p>
-                        </div>
-                    )}
                     {showPicker() && settings.experiments.picker && <Picker
                             setMessage={setNewMessage}
                             message={newMessage}
+                            type={pickerType()}
+                            setOpen={setShowPicker}
                         />
                     }
                     {imgUrls()!.length > 0 && (
@@ -584,7 +610,10 @@ const App: Component = () => {
                         />
                         <div
                         class="solenoid-toggle"
-                        onClick={() => showPicker() ? setShowPicker(false) : setShowPicker(true)}
+                        onClick={() => {
+                            showPicker() ? setShowPicker(false) : setShowPicker(true)
+                            setPickerType("emoji");
+                        }}
                         role="button">
                         <span>😺</span>
                         </div>
