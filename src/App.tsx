@@ -303,7 +303,7 @@ function setChannel(channel_id: string) {
     setServers(
         "current_channel",
         servers.current_server_channels?.find(
-            (channel) => channel["_id"] === channel_id
+            (channel) => channel!["_id"] === channel_id
         )
     );
     getMessagesFromChannel();
@@ -504,14 +504,14 @@ const App: Component = () => {
                             <For each={servers.current_server_channels}>
                                 {(channel) => (
                                     <div
-                                        class={"solenoid-channel" + (channel._id === servers.current_channel?._id ? " active" : "") }
-                                        id={`channel_${channel._id}`}
-                                        onClick={() => setChannel(channel._id)}
+                                        class={"solenoid-channel" + (channel!._id === servers.current_channel?._id ? " active" : "") }
+                                        id={`channel_${channel!._id}`}
+                                        onClick={() => setChannel(channel!._id)}
                                     >
                                         <span class="hashicon">
-                                        {channel.icon ? <img width={24} height={24} src={`https://autumn.revolt.chat/icons/${channel.icon?._id}?max_side=256`}/> : "#"}
+                                        {channel?.icon ? <img width={24} height={24} src={`https://autumn.revolt.chat/icons/${channel.icon?._id}?max_side=256`}/> : "#"}
                                         </span>
-                                        <span class="channel_name">{channel.name}</span>
+                                        <span class="channel_name">{channel!.name}</span>
                                     </div>
                                 )}
                             </For>

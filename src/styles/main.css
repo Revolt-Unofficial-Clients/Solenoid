@@ -308,26 +308,36 @@ span[class^="notimportant"] {
   color: var(--fg-notimportant);
 }
 
-div[class^="solenoid-channelList"] {
+div[class="solenoid-channelList"] {
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  width: 25rem;
-  height: 15rem;
-
+  overflow-y: auto;
+  overflow-x: none;
+  width: 24rem;
+  height: 15.4rem;
 }
 
-div[class^="solenoid-channel"] {
+img[class^="solenoid-banner"] {
+  width: 35rem;
+  height: 102%;
+  border: 1px solid red;
+  filter: blur(4px) grayscale(50%);
+}
+
+div[class="solenoid-channel"] {
+  width: auto;
+  height: 2rem;
   background-color: #1E1E1E;
   padding: 3px;
   border-radius: 3px;
+  justify-content: center;
 }
 
 div[class^="solenoid-channel"] .active {
   background-color: #1B1B1B;
 }
 
-div[class^="solenoid-channel"] .active span {
+div[class^="solenoid-channel"] .active span{
   color: #F6F6F6;
 }
 
@@ -336,8 +346,12 @@ div[class^="solenoid-channel"] span {
 }
 
 div[class^="solenoid-channel"] span[class^="hashicon"] {
+  margin-left: 5px;
+  margin-right: 5px;
   font-size: 24px;
   font-weight: bold;
+  width: 24px;
+  height: 24px;
 }
 
 div[class^="solenoid-userBar"] {
