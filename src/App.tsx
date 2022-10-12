@@ -307,7 +307,7 @@ function setChannel(channel_id: string) {
         )
     );
     getMessagesFromChannel();
-    console.log(servers.current_channel);
+    if(settings.debug) console.log(servers.current_channel);
 }
 // Fetch Channels from Server
 function fetchChannels() {
@@ -399,7 +399,7 @@ async function loginWithSession(session: any & {action: "LOGIN"}) {
 function getrolecolour(message: Message) {
     if (!message.member) return "#fff";
     for (const [_, {colour}] of message.member!.orderedRoles) {
-        console.log(colour);
+        if(settings.debug) console.log(colour);
         if (colour) {
             return colour;
         }
