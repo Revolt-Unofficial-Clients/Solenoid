@@ -17,7 +17,7 @@ declare interface loginValues {
 declare interface server {
     server_list?: Server[] | undefined;
     current_server?: Server | undefined;
-    current_server_channels?: any[];
+    current_server_channels?: Channel[] | undefined;
     current_channel?: Channel | undefined;
     messages?: Message[] | undefined;
     isHome: boolean | undefined;

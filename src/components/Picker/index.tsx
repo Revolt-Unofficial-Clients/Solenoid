@@ -85,10 +85,14 @@ export const Picker: Component<props> = (props) => {
 
     return (
         <div class="solenoid-picker">
-            {props.type === "emoji" && <div class="tab-container">
+            {props.type === "emoji" ? (<div class="tab-container">
                 <span class="tab" aria-selected={tab() === 0} onClick={() => setTab(0)}>Emojis</span>
                 <span class="tab" aria-selected={tab() === 1} onClick={() => setTab(1)}>Gifs</span>
-            </div>}
+            </div>) : (
+                <div class="tab-container">
+                    <span class="tab">You won't see others reactions. See <a href="https://github.com/stationaryStation/Solenoid/issues/8">#8</a></span>
+                </div>
+            )}
             {tab() === 0 ? (
                 <div class="solenoid-picker-grid">
                 <For each={Object.entries(emojiDictionary)}>

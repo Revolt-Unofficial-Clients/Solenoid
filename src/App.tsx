@@ -496,7 +496,9 @@ const App: Component = () => {
                     {servers.current_server && (
                         <div class="solenoid-server-info-container">
                             <div class="solenoid-server-banner-container">
-                                <img class="solenoid-banner" src={`https://autumm.revolt.chat/banners/${servers.current_server.banner?._id}`}/>
+                                {servers.current_server.banner && (
+                                    <img class="solenoid-banner" src={`https://autumn.revolt.chat/banners/${servers.current_server.banner?._id}`}/>
+                                )}
                             </div>
                             <div class="solenoid-channelList">
                             <For each={servers.current_server_channels}>
@@ -506,7 +508,10 @@ const App: Component = () => {
                                         id={`channel_${channel._id}`}
                                         onClick={() => setChannel(channel._id)}
                                     >
-                                        <span class="hashicon">#</span> <span class="channel_name">{channel.name} <div class="unread"/></span>
+                                        <span class="hashicon">
+                                        {channel.icon ? <img width={24} height={24} src={`https://autumn.revolt.chat/icons/${channel.icon?._id}?max_side=256`}/> : "#"}
+                                        </span>
+                                        <span class="channel_name">{channel.name}</span>
                                     </div>
                                 )}
                             </For>
