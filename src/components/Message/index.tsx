@@ -11,7 +11,6 @@ import type { settings, reply } from "../../types";
 import { css } from "solid-styled-components";
 import { createSignal } from "solid-js";
 import { Picker } from "../Picker";
-import { Reaction, runInAction } from "mobx";
 
 interface MessageComponent {
     client: Client
@@ -21,17 +20,15 @@ interface MessageComponent {
     setter: Setter<reply[]>
     colour: string | undefined
     deleteFunction: any
-    picker: Setter<boolean>
-    picker_type: Setter<"emoji" | "react">
-    show: Accessor<boolean>
-    ptype: Accessor<"emoji" | "react">
 }
 
 const [editing, setEditing] = createSignal<boolean>(false);
 const [editMessageId, setEditMessageId] = createSignal<string>();
 const [newMessage, setNewMessage] = createSignal<string>();
 
-const Message: Component<MessageComponent> = ({client, message, settings, setter, signal, colour, deleteFunction, picker, picker_type, show, ptype}) => {
+const [showPicker, setShowPicker] = createSignal<boolean>(false);
+
+const Message: Component<MessageComponent> = ({client, message, settings, setter, signal, colour, deleteFunction}) => {
     return (
         <div
         class={"solenoid-message " + (message.mentions?.find((e) => e?._id === client.user?._id) ? "mentioned" : "")}
@@ -135,8 +132,7 @@ const Message: Component<MessageComponent> = ({client, message, settings, setter
                     role="button"
                     class="react"
                     onClick={() => {
-                        picker(true)
-                        picker_type("react")
+                        setShowPicker(true)
                         setEditMessageId(message._id)
                     }}
                 >
@@ -166,11 +162,11 @@ const Message: Component<MessageComponent> = ({client, message, settings, setter
                 <SolidMarkdown class="solenoid-md" children={message.content ?? undefined} />
             )}
         </div>
-        {show() && editMessageId() === message._id && settings.experiments.picker && <Picker
+        {showPicker() && editMessageId() === message._id && settings.experiments.picker && <Picker
                                         setMessage={setNewMessage}
                                         messageToReact={message}
-                                        type={ptype()}
-                                        setOpen={picker}
+                                        type="react"
+                                        setOpen={setShowPicker}
                                     />
         }
         <For each={message.attachments}>
