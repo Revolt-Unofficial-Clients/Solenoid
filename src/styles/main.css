@@ -261,7 +261,7 @@ div[class^="solenoid-message-file"] * {
 }
 div[class^="solenoid-message-author"] img[class^="solenoid-pfp"] {
   border-radius: 5px;
-  aspect-ratio: aspect-ratio: auto 1920 / 1080;
+  aspect-ratio: auto 1920 / 1080;
   margin-right: 1rem;
 }
 
