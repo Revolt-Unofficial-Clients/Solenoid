@@ -122,14 +122,14 @@ const Message: Component<MessageComponent> = ({
                         border-radius: 3px;
                         margin-left: 0.5rem;
                         margin-right: 0.5rem;
-                        color: ${element.colour ?? "#000"}
+                        color: ${element.colour ?? "#000"};
                       ` : css`
                         background-color: ${element.bkg ?? "#212121"};
                         padding: 2px;
                         border-radius: 3px;
                         margin-left: 0.5rem;
                         margin-right: 0.5rem;
-                        color: ${element.colour ?? "#fff"}
+                        color: ${element.colour ?? "#fff"};
                       `}>{element.title} {element.url && <img src={element.url} width={20} height={20} class="badgeIcon"/>}</span>
                       )
                     }
@@ -138,14 +138,14 @@ const Message: Component<MessageComponent> = ({
               )
             } else if (typeof element.id === "string" && message.author?._id === element.id){
               return (
-                <span class={element.colour && element.colour.includes("gradient") ? css`
-                background: ${element.colour};
+                <span class={element.bkg && element.bkg.includes("gradient") ? css`
+                background: ${element.bkg};
                 padding: 2px;
                 border-radius: 3px;
                 margin-left: 0.5rem;
                 margin-right: 0.5rem;
                 ` : css`
-                  background-color: ${element.colour ?? "#212121"};
+                  background-color: ${element.bkg ?? "#212121"};
                   padding: 2px;
                   border-radius: 3px;
                   margin-left: 0.5rem;
