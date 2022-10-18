@@ -303,6 +303,12 @@ div[class^="solenoid-message-author"] span[class^="solenoid-dev"] {
   border-radius: 3px;
 }
 
+div[class^="solenoid-message-author"] img[class="badgeIcon"]{
+  position: relative;
+  top: 4px;
+}
+
+
 span[class^="notimportant"] {
   margin-left: 0.5rem;
   color: var(--fg-notimportant);

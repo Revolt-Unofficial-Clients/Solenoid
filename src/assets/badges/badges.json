@@ -1,0 +1,27 @@
+[
+  {
+    "id": "01G1V3VWVQFC8XAKYEPNYHHR2C",
+    "title": "Solenoid Developer 😺",
+    "bkg": "linear-gradient(90deg, rgba(255,121,201,1) 0%, rgba(204,85,252,1) 49%, rgba(99,87,255,1) 100%)",
+    "colour": "#fff"
+  },
+  {
+    "id": "01GD372BMJ817BZ3CTB705T77S",
+    "title": "Tester 🐱",
+    "bkg": "linear-gradient(90deg, rgba(255,121,201,1) 0%, rgba(204,85,252,1) 49%, rgba(99,87,255,1) 100%)",
+    "colour": "#fff"
+  },
+  {
+    "id": ["01FH48GXF663JKTH1R13XRF747", "01EXAF3KX65608AJ4NG27YG1HM"],
+    "title": "Trans",
+    "bkg": "rgba(255,177,224,1)",
+    "colour": "#000000"
+  },
+  {
+    "id": ["01EX2NCWQ0CHS3QJF0FEQS1GR4", "01EXAME8DPWQH72RCBPX490ZMQ"],
+    "title": "Revolt Founder",
+    "url": "https://autumn.revolt.chat/icons/gtc0gJE2S3RvuDhrl2-JeakvgbqEGr2acvBnRTTh6k?max_side=256",
+    "bkg": "#111823",
+    "colour": "#fff"
+  }
+]

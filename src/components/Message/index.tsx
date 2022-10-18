@@ -11,6 +11,9 @@ import type { settings, reply } from "../../types";
 import { css } from "solid-styled-components";
 import { createSignal } from "solid-js";
 import { Picker } from "../Picker";
+import type { Badges } from "../../assets/badges/types"
+import badgeList from "../../assets/badges/badges.json"
+console.log(badgeList);
 
 interface MessageComponent {
   client: Client;
@@ -103,9 +106,58 @@ const Message: Component<MessageComponent> = ({
           <span class="solenoid-masquerade">(Masquerade)</span>
         )}
         {message.author?.bot && <span class="solenoid-bot">(Bot)</span>}
-        {message.author?._id === "01G1V3VWVQFC8XAKYEPNYHHR2C" && (
+        <div class="badges">
+        <For each={badgeList}>
+          {(element: Badges) => {
+            if (element.id instanceof Array<string>) {
+              return (
+                <For each={element.id}>
+                  {(e) => {
+                    if (e === message.author_id){
+                      return (
+                        <span class={element.bkg?.includes("gradient") ? css`
+                        background: ${element.bkg};
+                        font-weight: bold;
+                        padding: 2px;
+                        border-radius: 3px;
+                        margin-left: 0.5rem;
+                        margin-right: 0.5rem;
+                        color: ${element.colour ?? "#000"}
+                      ` : css`
+                        background-color: ${element.bkg ?? "#212121"};
+                        padding: 2px;
+                        border-radius: 3px;
+                        margin-left: 0.5rem;
+                        margin-right: 0.5rem;
+                        color: ${element.colour ?? "#fff"}
+                      `}>{element.title} {element.url && <img src={element.url} width={20} height={20} class="badgeIcon"/>}</span>
+                      )
+                    }
+                  }}
+                </For>
+              )
+            } else if (typeof element.id === "string" && message.author?._id === element.id){
+              return (
+                <span class={element.colour && element.colour.includes("gradient") ? css`
+                background: ${element.colour};
+                padding: 2px;
+                border-radius: 3px;
+                margin-left: 0.5rem;
+                margin-right: 0.5rem;
+                ` : css`
+                  background-color: ${element.colour ?? "#212121"};
+                  padding: 2px;
+                  border-radius: 3px;
+                  margin-left: 0.5rem;
+                  margin-right: 0.5rem;
+                `}>{element.title} {element.url && <img src={element.url} width={15} height={15}/>}</span>
+              )
+            }}}
+        </For>
+        </div>
+        {/* {message.author?._id === "01G1V3VWVQFC8XAKYEPNYHHR2C" && (
           <span class="solenoid-dev">Solenoid Developer 😺</span>
-        )}
+        )} */}
         {message.reply_ids && message.reply_ids.length > 1 ? (
           <span class="notimportant">
             {" "}
