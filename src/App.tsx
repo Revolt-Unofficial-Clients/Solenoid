@@ -32,7 +32,16 @@ import type {
 } from "./types";
 
 // Icons
-import { FiSmile, FiPlusCircle, FiSend, FiSettings, FiStopCircle, FiX, FiSlash, FiXCircle } from "solid-icons/fi"
+import {
+  FiSmile,
+  FiPlusCircle,
+  FiSend,
+  FiSettings,
+  FiStopCircle,
+  FiX,
+  FiSlash,
+  FiXCircle,
+} from "solid-icons/fi";
 
 // Revolt Client
 const rvCLient = new Client();
@@ -79,7 +88,7 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
   debug: false,
   experiments: {
     picker: false,
-    compact: false
+    compact: false,
   },
 });
 
@@ -593,17 +602,19 @@ const App: Component = () => {
                 )}
               </For>
               {images() && (
-              <div
-                onClick={() => {
-                  setImages(null);
-                  setImgUrls(null);
-                }}
-                role="button"
-                class="noattach"
-              >
-                <span><FiXCircle size={125/4} color={"#8B8B8B"}/></span>
-              </div>
-            )}
+                <div
+                  onClick={() => {
+                    setImages(null);
+                    setImgUrls(null);
+                  }}
+                  role="button"
+                  class="noattach"
+                >
+                  <span>
+                    <FiXCircle size={125 / 4} color={"#8B8B8B"} />
+                  </span>
+                </div>
+              )}
             </div>
           )}
           <div class="solenoid-userBar">
@@ -614,7 +625,7 @@ const App: Component = () => {
               title={`Logged in as ${usr.username}, Click for Settings`}
               role="button"
             >
-              <FiSettings onClick={showSettings}/>
+              <FiSettings onClick={showSettings} />
             </div>
             <textarea
               class="solenoid-send-input"
@@ -643,7 +654,9 @@ const App: Component = () => {
               }}
               role="button"
             >
-              <span><FiSmile /></span>
+              <span>
+                <FiSmile />
+              </span>
             </div>
             <div
               class="solenoid-send-button"
@@ -651,7 +664,9 @@ const App: Component = () => {
               onClick={() => sendMessage(newMessage())}
               role="button"
             >
-              <span><FiSend /></span>
+              <span>
+                <FiSend />
+              </span>
             </div>
             <input
               class="solenoid-input-image"
@@ -662,10 +677,14 @@ const App: Component = () => {
               accept="image/png,image/jpeg,image/gif,video/mp4"
               onChange={onImageChange}
             />
-            <label for="files" role="button" class="userbutton"><FiPlusCircle /></label>
+            <label for="files" role="button" class="userbutton">
+              <FiPlusCircle />
+            </label>
             {replies().length > 0 && (
               <div onClick={() => setReplies([])} role="button">
-                <span><FiX /> Stop Replying</span>
+                <span>
+                  <FiX /> Stop Replying
+                </span>
               </div>
             )}
           </div>
@@ -674,12 +693,32 @@ const App: Component = () => {
       {settings.show && (
         <div class="solenoid-settings" id="solenoid-settings-panel">
           <div id="solenoid-setting solenoid-revoltusername">
-            <h3>Logged In as <img src={`${rvCLient.configuration?.features.autumn.url}/avatars/${rvCLient.user?.avatar?._id}`} class="pfp" width={25} height={25}/>{rvCLient.user?.username}</h3>
-            {servers.current_server && servers.current_server.member?.nickname && (
-                <h3>Server Nickname: {servers.current_server.member?.nickname}</h3>
-            )}
+            <h3>
+              Logged In as{" "}
+              <img
+                src={rvCLient.user?.avatar ? `${rvCLient.configuration?.features.autumn.url}/avatars/${rvCLient.user?.avatar?._id}` : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`} 
+                class="pfp"
+                width={25}
+                height={25}
+              />
+              {rvCLient.user?.username}
+            </h3>
+            {servers.current_server &&
+              servers.current_server.member?.nickname && (
+                <h3>
+                  Server Nickname: {servers.current_server.member?.nickname}
+                </h3>
+              )}
             {servers.current_server && servers.current_server.member?.avatar && (
-                <h3>Server Avatar: <img src={`${rvCLient.configuration?.features.autumn.url}/avatars/${servers.current_server.member.avatar._id}`} class="pfp" width={25} height={25}/></h3>
+              <h3>
+                Server Avatar:{" "}
+                <img
+                  src={`${rvCLient.configuration?.features.autumn.url}/avatars/${servers.current_server.member.avatar._id}`}
+                  class="pfp"
+                  width={25}
+                  height={25}
+                />
+              </h3>
             )}
           </div>
           <div id="solenoid-setting solenoid-showUsernames">
