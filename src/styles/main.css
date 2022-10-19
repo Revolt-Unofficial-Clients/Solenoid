@@ -28,7 +28,7 @@ html body {
   height: 100%;
 }
 
-[role="button"] {
+[role="button"], [class="button"] {
   transition: 300ms;
   padding: 3px;
   margin: 3px;
@@ -39,12 +39,31 @@ html body {
   cursor: pointer;
 }
 
+div[role="button"]:not([class="noattach"], [class="edit"], [class="reply"], [class="delete"], [class="react"]), [class="userbutton"]{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 [role="button"]:hover {
   background-color: var(--accent-button-hover);
 }
 
 [role="button"]:active {
   background-color: var(--accent-button-active);
+}
+
+div[role="button"][class="noattach"] {
+  display: flex;
+  background-color: var(--image-hover);
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 5rem;
+  margin: 2em;
 }
 
 #root {

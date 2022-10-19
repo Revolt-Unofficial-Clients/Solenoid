@@ -10,9 +10,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^4.8.2",
-    "vite": "^3.0.9",
-    "vite-plugin-solid": "^2.3.0"
+    "typescript": "latest",
+    "vite": "latest",
+    "vite-plugin-solid": "latest"
   },
   "dependencies": {
     "axios": "^0.27.2",
@@ -20,6 +20,7 @@
     "mobx": "^6.6.2",
     "revolt.js": "^6.0.18",
     "solid-hcaptcha": "^0.2.5",
+    "solid-icons": "^1.0.2",
     "solid-js": "^1.5.1",
     "solid-markdown": "^1.2.0",
     "solid-styled-components": "^0.28.4",

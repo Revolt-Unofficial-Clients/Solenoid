@@ -20,6 +20,7 @@ import { ServerList } from "./components/ServerList";
 import { Picker } from "./components/Picker";
 import { ChannelList } from "./components/ChannelList";
 
+// Types
 import type { AxiosRequestConfig } from "axios";
 import type {
   user,
@@ -29,6 +30,9 @@ import type {
   settings as config,
   status,
 } from "./types";
+
+// Icons
+import { FiSmile, FiPlusCircle, FiSend, FiSettings, FiStopCircle, FiX, FiSlash, FiXCircle } from "solid-icons/fi"
 
 // Revolt Client
 const rvCLient = new Client();
@@ -587,6 +591,18 @@ const App: Component = () => {
                   <img class="solenoid-image-preview" src={imageSrc} />
                 )}
               </For>
+              {images() && (
+              <div
+                onClick={() => {
+                  setImages(null);
+                  setImgUrls(null);
+                }}
+                role="button"
+                class="noattach"
+              >
+                <span><FiXCircle size={125/4} color={"#8B8B8B"}/></span>
+              </div>
+            )}
             </div>
           )}
           <div class="solenoid-userBar">
@@ -597,7 +613,7 @@ const App: Component = () => {
               title={`Logged in as ${usr.username}, Click for Settings`}
               role="button"
             >
-              config
+              <FiSettings />
             </div>
             <textarea
               class="solenoid-send-input"
@@ -626,7 +642,7 @@ const App: Component = () => {
               }}
               role="button"
             >
-              <span>😺</span>
+              <span><FiSmile /></span>
             </div>
             <div
               class="solenoid-send-button"
@@ -634,7 +650,7 @@ const App: Component = () => {
               onClick={() => sendMessage(newMessage())}
               role="button"
             >
-              <span>Send</span>
+              <span><FiSend /></span>
             </div>
             <input
               class="solenoid-input-image"
@@ -645,22 +661,10 @@ const App: Component = () => {
               accept="image/png,image/jpeg,image/gif,video/mp4"
               onChange={onImageChange}
             />
-            <label for="files" role="button" class="button">+</label>
-
-            {images() && (
-              <div
-                onClick={() => {
-                  setImages(null);
-                  setImgUrls(null);
-                }}
-                role="button"
-              >
-                <span>Remove Attachments</span>
-              </div>
-            )}
+            <label for="files" role="button" class="userbutton"><FiPlusCircle /></label>
             {replies().length > 0 && (
               <div onClick={() => setReplies([])} role="button">
-                <span>Stop Replying</span>
+                <span><FiX /> Stop Replying</span>
               </div>
             )}
           </div>
