@@ -28,7 +28,7 @@ html body {
   height: 100%;
 }
 
-div[role="button"] {
+[role="button"] {
   transition: 300ms;
   padding: 3px;
   margin: 3px;
@@ -39,11 +39,11 @@ div[role="button"] {
   cursor: pointer;
 }
 
-div[role="button"]:hover {
+[role="button"]:hover {
   background-color: var(--accent-button-hover);
 }
 
-div[role="button"]:active {
+[role="button"]:active {
   background-color: var(--accent-button-active);
 }
 
@@ -388,7 +388,7 @@ img[class^="solenoid-image-preview"] {
 }
 
 input[class^="solenoid-input-image"] {
-  width: auto;
+  display: none;
 }
 
 .unread {

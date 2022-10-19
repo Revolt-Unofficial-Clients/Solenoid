@@ -641,9 +641,11 @@ const App: Component = () => {
               type="file"
               multiple
               name="upload"
+              id="files"
               accept="image/png,image/jpeg,image/gif,video/mp4"
               onChange={onImageChange}
             />
+            <label for="files" role="button" class="button">+</label>
 
             {images() && (
               <div
@@ -666,6 +668,15 @@ const App: Component = () => {
       )}
       {settings.show && (
         <div class="solenoid-settings" id="solenoid-settings-panel">
+          <div id="solenoid-setting solenoid-revoltusername">
+            <h3>Logged In as <img src={`${rvCLient.configuration?.features.autumn.url}/avatars/${rvCLient.user?.avatar?._id}`} class="pfp" width={25} height={25}/>{rvCLient.user?.username}</h3>
+            {servers.current_server && servers.current_server.member?.nickname && (
+                <h3>Server Nickname: {servers.current_server.member?.nickname}</h3>
+            )}
+            {servers.current_server && servers.current_server.member?.avatar && (
+                <h3>Server Avatar: <img src={`${rvCLient.configuration?.features.autumn.url}/avatars/${servers.current_server.member.avatar._id}`} class="pfp" width={25} height={25}/></h3>
+            )}
+          </div>
           <div id="solenoid-setting solenoid-showUsernames">
             <h3>Suffix</h3>
             <p>Whether to add "says:" after a username.</p>
