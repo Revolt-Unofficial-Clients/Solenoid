@@ -266,6 +266,21 @@ div[class="solenoid-md compact"] {
   overflow-wrap: anywhere;
 }
 
+div[class="message-container compact"] {
+  display: flex;
+}
+
+div[role="button"][class="done"] {
+  width: auto;
+  text-align: center;
+  color: #000;
+}
+
+textarea[class="solenoid-send-input compact"] {
+  width: 50rem;
+  height: auto
+}
+
 .solenoid-message-video {
   margin-top: 5px;
   width: 50%;

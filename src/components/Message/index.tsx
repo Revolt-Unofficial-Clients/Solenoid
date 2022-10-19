@@ -203,10 +203,39 @@ const Message: Component<MessageComponent> = ({
 
         {settings.suffix && <span>{settings.showSuffix ? " says " : ":"}</span>}
 
-        {settings.experiments.compact && <SolidMarkdown
+        {settings.experiments.compact && <>
+        {editing() && editMessageId() === message._id ? (
+          <div class="message-container compact">
+            <textarea
+              value={newMessage()}
+              onChange={(e) => setNewMessage(e.currentTarget.value)}
+              autofocus
+              class="solenoid-send-input compact"
+            />
+            <div
+              role="button"
+              class="done"
+              onClick={() => {
+                message
+                  .edit({
+                    content: newMessage(),
+                  })
+                  .then(() => {
+                    setEditing(false);
+                    setNewMessage();
+                  });
+              }}
+            >
+              <span class="edit done">Done</span>
+            </div>
+          </div>
+        ) : (
+          <SolidMarkdown
             class="solenoid-md compact"
             children={message.content ?? undefined}
-        />}
+        />
+        )}
+        </>}
 
         <div class="button-container">
           {message.author?._id === client.user?._id && !editing() && (
