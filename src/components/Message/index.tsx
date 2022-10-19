@@ -59,6 +59,16 @@ const Message: Component<MessageComponent> = ({
             class="solenoid-pfp"
             src={message.masquerade?.avatar}
           ></img>
+        ) : message.member?.avatar ?(
+          <img
+            style={{
+              "max-width": "50px",
+              "max-height": "50px",
+            }}
+            class="solenoid-pfp"
+            src={`${client.configuration?.features?.autumn?.url}/avatars/${message.member?.avatar?._id}`}
+            title={`${message.member?.avatar?.filename}`}
+          ></img>
         ) : message.author?.avatar ? (
           <img
             style={{
