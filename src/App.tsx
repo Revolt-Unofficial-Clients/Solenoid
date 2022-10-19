@@ -78,7 +78,8 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
   showImages: true,
   debug: false,
   experiments: {
-    picker: true,
+    picker: false,
+    compact: false
   },
 });
 
@@ -613,7 +614,7 @@ const App: Component = () => {
               title={`Logged in as ${usr.username}, Click for Settings`}
               role="button"
             >
-              <FiSettings />
+              <FiSettings onClick={showSettings}/>
             </div>
             <textarea
               class="solenoid-send-input"
@@ -836,6 +837,16 @@ const App: Component = () => {
               }
             >
               {settings.experiments.picker ? "Enabled" : "Disabled"}
+            </button>
+            <h4>Compact Mode</h4>
+            <button
+              onClick={() =>
+                settings.experiments.picker
+                  ? setSettings("experiments", "compact", false)
+                  : setSettings("experiments", "compact", true)
+              }
+            >
+              {settings.experiments.compact ? "Enabled" : "Disabled"}
             </button>
           </div>
           <div class="solenoid-setting solenoid-update">

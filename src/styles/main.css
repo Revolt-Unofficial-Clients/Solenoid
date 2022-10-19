@@ -256,7 +256,14 @@ div[class^="content"] {
 }
 
 div[class^="solenoid-md"] {
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+div[class="solenoid-md compact"] {
+  display: block;
+  overflow: auto;
+  width: 100rem;
+  overflow-wrap: anywhere;
 }
 
 .solenoid-message-video {
@@ -287,6 +294,11 @@ div[class^="solenoid-message-author"] img[class^="solenoid-pfp"] {
 div[class^="solenoid-message-author"] {
   display: flex;
   align-items: center;
+}
+
+div[class^="solenoid-message-author"] [class^="icon"] {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 div[class^="solenoid-message"] [class^="solenoid-md"] {

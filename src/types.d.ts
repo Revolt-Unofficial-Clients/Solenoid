@@ -62,6 +62,7 @@ declare interface settings {
     showImages: boolean;
     debug: boolean;
     experiments: {
-        picker: boolean
+        picker: boolean,
+        compact: boolean,
     }
 }
