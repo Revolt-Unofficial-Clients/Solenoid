@@ -194,11 +194,13 @@ const Message: Component<MessageComponent> = ({
         }
 
         {settings.experiments.compact && message.reply_ids && (
-          <FiRepeat class="icon" color="#636363"/>
+          <>
+            <FiRepeat class="icon" color="#636363"/><span style="margin-right:5px">{message.reply_ids.length}</span>
+          </>
         )}
         
-        {message.mentions?.find((e) => e?._id === client.user?._id) && (
-          <FiAtSign class="icon" color="rgb(122, 189, 255)"/>
+        {settings.experiments.compact && message.mentions?.find((e) => e?._id === client.user?._id) && (
+          <><FiAtSign class="icon" color="rgb(122, 189, 255)"/></>
         )}
 
         {settings.suffix && <span>{settings.showSuffix ? " says " : ":"}</span>}
