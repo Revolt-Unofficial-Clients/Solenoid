@@ -879,10 +879,11 @@ const App: Component = () => {
             </button>
             <h4>Compact Mode</h4>
             <button
-              onClick={() =>
-                settings.experiments.picker
+              onClick={() =>{
+                settings.experiments.compact
                   ? setSettings("experiments", "compact", false)
                   : setSettings("experiments", "compact", true)
+              }
               }
             >
               {settings.experiments.compact ? "Enabled" : "Disabled"}
