@@ -300,9 +300,16 @@ div[class^="solenoid-message-file"] * {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-div[class^="solenoid-message-author"] img[class^="solenoid-pfp"] {
+img[class^="solenoid-pfp"] {
   border-radius: 5px;
   aspect-ratio: auto 1920 / 1080;
+}
+
+div[id="solenoid-setting solenoid-revoltusername"] h3 img[class="solenoid-pfp"]{
+  margin-right: 0.3rem;
+}
+
+div[class^="solenoid-message-author"] img[class^="solenoid-pfp"] {
   margin-right: 1rem;
 }
 
@@ -435,6 +442,11 @@ img[class^="solenoid-image-preview"] {
 
 input[class^="solenoid-input-image"] {
   display: none;
+}
+
+div[class="item"][id="3"] div {
+  width: 25rem;
+  height: 10rem;
 }
 
 .unread {
@@ -592,4 +604,27 @@ div[class="reply"] {
 div[class="reply"]:hover {
   background-color: #36a586;
   color: #57ffc7;
+}
+
+div[class="item"] {
+  margin:0;
+  margin-top: 0.5rem;
+}
+
+form[class="solenoid-server-username"] div[class="item"][id="3"] div {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+form[class="solenoid-server-username"] div[class="item"][id="3"] div label[class="avatar-upload-btn"] {
+  color: #000;
+  display: flex;
+  text-align: center;
+  margin-left: 0;
+}
+
+form[class="solenoid-server-username"] div[class="item"][id="3"] div label[class="avatar-upload-btn"] svg {
+  position: relative;
+  top: 3px;
+  margin-right: 2px;
 }

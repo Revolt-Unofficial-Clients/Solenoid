@@ -37,9 +37,7 @@ import {
   FiPlusCircle,
   FiSend,
   FiSettings,
-  FiStopCircle,
   FiX,
-  FiSlash,
   FiXCircle,
 } from "solid-icons/fi";
 
@@ -89,6 +87,7 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
   experiments: {
     picker: false,
     compact: false,
+    nick: false,
   },
 });
 
@@ -697,7 +696,7 @@ const App: Component = () => {
               Logged In as{" "}
               <img
                 src={rvCLient.user?.avatar ? `${rvCLient.configuration?.features.autumn.url}/avatars/${rvCLient.user?.avatar?._id}` : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`} 
-                class="pfp"
+                class="solenoid-pfp"
                 width={25}
                 height={25}
               />
@@ -719,6 +718,42 @@ const App: Component = () => {
                   height={25}
                 />
               </h3>
+            )}
+            {/* TODO: Add server username/avatar changing */}
+            {servers.current_server && settings.experiments.nick && (
+              <form class="solenoid-server-username">
+                <div class="item" id="1">
+                  <h4>Server Identity</h4>
+                  <span class="subtitle">Edit how you look in the {servers.current_server.name} server</span>
+                </div>
+                <div class="item" id="2">
+                  <span title="Nickname shown to everyone on the server" class="title">Nickname</span>
+                  <input class="nickname" placeholder={rvCLient.user?.username || servers.current_server.member?.nickname || "New Nickname"} />
+                </div>
+                <div class="item" id="3">
+                  <span title="Avatar shown to everyone on the server" class="title">Avatar</span>
+                  <div>
+                    <img class="solenoid-pfp"
+                    src={servers.current_server.member?.avatar || rvCLient.user?.avatar ? `https://autumn.revolt.chat/avatars/${servers.current_server.member?.avatar?._id || rvCLient.user?.avatar?._id}` : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`}
+                    width={64}
+                    height={64}
+                    />
+                    
+                    <input
+                    class="solenoid-input-image"
+                    type="file"
+                    name="avatar-upload"
+                    id="avatar-upload"
+                    accept="image/png,image/jpeg,image/gif"/>
+                    <label for="avatar-upload" role="button" class="avatar-upload-btn">
+                      <FiPlusCircle /> Upload Image
+                    </label>
+                  </div>
+                </div>
+                <button role="button" class="button change" onClick={() => {
+                  // Placeholder
+                }}>Submit</button>
+            </form>
             )}
           </div>
           <div id="solenoid-setting solenoid-showUsernames">
@@ -887,6 +922,17 @@ const App: Component = () => {
               }
             >
               {settings.experiments.compact ? "Enabled" : "Disabled"}
+            </button>
+            <h4>Serverside Nickname Changer</h4>
+            <button
+              onClick={() =>{
+                settings.experiments.compact
+                  ? setSettings("experiments", "nick", false)
+                  : setSettings("experiments", "nick", true)
+              }
+              }
+            >
+              {settings.experiments.nick ? "Enabled" : "Disabled"}
             </button>
           </div>
           <div class="solenoid-setting solenoid-update">

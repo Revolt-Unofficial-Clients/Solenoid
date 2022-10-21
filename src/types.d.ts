@@ -64,5 +64,6 @@ declare interface settings {
     experiments: {
         picker: boolean,
         compact: boolean,
+        nick: boolean
     }
 }
