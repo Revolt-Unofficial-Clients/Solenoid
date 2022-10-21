@@ -645,7 +645,7 @@ const App: Component = () => {
               maxlength={2000}
               autofocus
             />
-            <div
+            {settings.experiments.picker && <div
               class="solenoid-toggle"
               onClick={() => {
                 showPicker() ? setShowPicker(false) : setShowPicker(true);
@@ -656,7 +656,7 @@ const App: Component = () => {
               <span>
                 <FiSmile />
               </span>
-            </div>
+            </div>}
             <div
               class="solenoid-send-button"
               aria-label="Send"
