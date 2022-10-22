@@ -13,6 +13,8 @@ import Axios from "axios";
 import "./styles/main.css";
 import { ulid } from "ulid";
 
+import { uploadAttachment } from "revolt-toolset";
+
 // Components
 import { Message as MessageComponent } from "./components/Message";
 import { Login as LoginComponent } from "./components/Login";
@@ -39,6 +41,7 @@ import {
   FiSettings,
   FiX,
   FiXCircle,
+  FiUpload
 } from "solid-icons/fi";
 
 // Revolt Client
@@ -65,7 +68,12 @@ const [replies, setReplies] = createSignal<reply[]>([]);
 const [images, setImages] = createSignal<any[] | null | undefined>(undefined);
 const [imgUrls, setImgUrls] = createSignal<any[] | null | undefined>([]);
 const [pickerType, setPickerType] = createSignal<"react" | "emoji">("emoji");
-const [reaction, setReaction] = createSignal<string>();
+// const [reaction, setReaction] = createSignal<string>();
+
+// Experimental Server side Nickname Switcher
+const [avatarImage, setAvatarImage] = createSignal<any>();
+const [nickname, setNickname] = createSignal<string>();
+
 // Status Prefabs
 const [newMode, setNewMode] = createSignal<
   "Online" | "Idle" | "Focus" | "Busy" | "Invisible" | undefined | null
@@ -98,11 +106,20 @@ const [statuslist, setStatusList] = createLocalSignal<status[]>(
 const [captchaKey, setCaptchaKey] = createSignal<string>(
   "3daae85e-09ab-4ff6-9f24-e8f4f335e433"
 );
-
+// Experimental Emoji Picker
 const [showPicker, setShowPicker] = createSignal<boolean>(false);
+
+// Way to know if user notifications are enabled
+let notification_access: boolean;
+
 // Request notification permission
 (async () => {
   let permission = await Notification.requestPermission();
+  if (permission === "granted") {
+    notification_access = true;
+  } else {
+    notification_access = false;
+  }
 })();
 
 // Functions
@@ -132,6 +149,9 @@ const onInputChange = (
 const onImageChange = (e: any) => {
   setImages([...e.target.files]);
 };
+const onAvatarChange = (e: Event & {currentTarget: HTMLInputElement; target: Element;}) => {
+  setAvatarImage(e.currentTarget.files![0]);
+};
 
 // Dealing with Textarea Height
 function calcHeight(value: any) {
@@ -160,50 +180,6 @@ rvCLient.on("packet", async (info) => {
     setSettings("statusText", info.data.status?.text);
   }
 });
-
-// Login With Token and Enable Bot Mode
-async function logIntoRevolt(token: string) {
-  try {
-    await rvCLient.loginBot(token);
-  } catch (e: any) {
-    if (settings.debug === true) {
-      console.log(e);
-    } else {
-      alert(e);
-    }
-  } finally {
-    setLoggedIn(true);
-    setUser("session_type", "token");
-    setSettings("session", rvCLient.session);
-  }
-}
-
-// Login With Email and Password and Enable User Mode
-async function loginWithEmail(email: string, password: string) {
-  try {
-    await rvCLient
-      .login({
-        email: email,
-        password: password,
-        friendly_name: "Solenoid Client Beta",
-        captcha: captchaToken(),
-      })
-      .catch((e) => {
-        throw e;
-      })
-      .finally(() => {
-        setLoggedIn(true);
-        setUser("session_type", "email");
-        setSettings("session", rvCLient.session);
-      });
-  } catch (e: any) {
-    if (settings.debug) {
-      console.log(e);
-    } else {
-      alert(e);
-    }
-  }
-}
 
 // Logout from current session and reset server properties
 function logoutFromRevolt() {
@@ -441,7 +417,7 @@ function getrolecolour(message: Message) {
 
 // Send Notifications
 rvCLient.on("message", (msg) => {
-  if (Notification.permission) {
+  if (notification_access) {
     if (
       msg.mentions?.some((e) => {
         if (e?._id === rvCLient.user?._id) {
@@ -721,38 +697,50 @@ const App: Component = () => {
             )}
             {/* TODO: Add server username/avatar changing */}
             {servers.current_server && settings.experiments.nick && (
-              <form class="solenoid-server-username">
+              <form class="solenoid-server-username" onSubmit={async (e) => {
+                console.log("Clicked")
+                e.preventDefault();
+                const cancel = Axios.CancelToken.source();
+                const file = await uploadAttachment(`solenoid-avatar-${rvCLient.user?._id}`, avatarImage(), "avatars")
+                console.log(file);
+                servers.current_server?.member?.edit({
+                  avatar: file || servers.current_server.member.avatar?._id || null,
+                  nickname: nickname() || null
+                })
+              }}>
                 <div class="item" id="1">
                   <h4>Server Identity</h4>
                   <span class="subtitle">Edit how you look in the {servers.current_server.name} server</span>
                 </div>
                 <div class="item" id="2">
-                  <span title="Nickname shown to everyone on the server" class="title">Nickname</span>
-                  <input class="nickname" placeholder={rvCLient.user?.username || servers.current_server.member?.nickname || "New Nickname"} />
+                  <h4 title="Nickname shown to everyone on the server" class="title">Nickname</h4>
+                  <input class="nickname" placeholder={servers.current_server.member?.nickname || rvCLient.user?.username ||  "New Nickname"} value={nickname() || ""} onChange={(e) => setNickname(e.currentTarget.value)}/>
                 </div>
                 <div class="item" id="3">
-                  <span title="Avatar shown to everyone on the server" class="title">Avatar</span>
+                  <h4 title="Avatar shown to everyone on the server" class="title">Avatar</h4>
                   <div>
                     <img class="solenoid-pfp"
-                    src={servers.current_server.member?.avatar || rvCLient.user?.avatar ? `https://autumn.revolt.chat/avatars/${servers.current_server.member?.avatar?._id || rvCLient.user?.avatar?._id}` : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`}
+                    src={avatarImage() ? URL.createObjectURL(avatarImage()) : servers.current_server.member?.avatar || rvCLient.user?.avatar ? `https://autumn.revolt.chat/avatars/${servers.current_server.member?.avatar?._id || rvCLient.user?.avatar?._id}` : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`}
                     width={64}
                     height={64}
                     />
-                    
-                    <input
+                    <label title="Upload New Avatar" role="button" class="noattach" for="avatar-upload">
+                      <FiPlusCircle />
+                    </label>
+                  </div>
+                  <input
                     class="solenoid-input-image"
                     type="file"
                     name="avatar-upload"
                     id="avatar-upload"
-                    accept="image/png,image/jpeg,image/gif"/>
-                    <label for="avatar-upload" role="button" class="avatar-upload-btn">
-                      <FiPlusCircle /> Upload Image
-                    </label>
-                  </div>
+                    accept="image/png,image/jpeg,image/gif"
+                    onChange={(e) => {
+                      onAvatarChange(e)
+                      console.log(avatarImage())
+                    }
+                    }/>
                 </div>
-                <button role="button" class="button change" onClick={() => {
-                  // Placeholder
-                }}>Submit</button>
+                <button role="button" class="button change"><span><FiUpload /> Submit</span></button>
             </form>
             )}
           </div>

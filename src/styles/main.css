@@ -56,7 +56,7 @@ div[role="button"]:not([class="noattach"], [class="edit"], [class="reply"], [cla
   background-color: var(--accent-button-active);
 }
 
-div[role="button"][class="noattach"] {
+[role="button"][class^="noattach"] {
   display: flex;
   background-color: var(--image-hover);
   text-align: center;
@@ -64,6 +64,14 @@ div[role="button"][class="noattach"] {
   align-items: center;
   width: 5rem;
   margin: 2em;
+}
+
+label[role="button"][class^="noattach"] {
+  width: 4.15rem;
+  height: 4.15rem;
+  margin:0;
+  margin-left: 1rem;
+  padding:0;
 }
 
 #root {
@@ -446,7 +454,7 @@ input[class^="solenoid-input-image"] {
 
 div[class="item"][id="3"] div {
   width: 25rem;
-  height: 10rem;
+  height: 6rem;
 }
 
 .unread {
@@ -612,6 +620,7 @@ div[class="item"] {
 }
 
 form[class="solenoid-server-username"] div[class="item"][id="3"] div {
+  display: flex;
   margin-left: 0;
   padding-left: 0;
 }
