@@ -1,5 +1,5 @@
-# Solenoid
-## A minimal, yet functional third-party revolt.chat client
+# Solenoid [![Build Status](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml/badge.svg)](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml)
+A minimal, yet functional third-party revolt.chat client
 
 ### Reasons to use it
 
