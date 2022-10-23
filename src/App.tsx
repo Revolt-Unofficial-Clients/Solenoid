@@ -485,7 +485,6 @@ const App: Component = () => {
             </div>
             <ServerList
               client={rvCLient}
-              servers={servers.server_list}
               setter={setServer}
             />
           </div>

@@ -2,7 +2,6 @@ import { Component, For, createSignal } from "solid-js";
 import type { Server, Client } from "revolt.js";
 
 interface ServerListComponent {
-  servers: Server[] | undefined;
   client: Client;
   setter: any;
 }
@@ -10,7 +9,6 @@ interface ServerListComponent {
 const [serverlist, setServerList] = createSignal<Server[] | undefined>();
 
 const ServerList: Component<ServerListComponent> = ({
-  servers,
   client,
   setter,
 }) => {

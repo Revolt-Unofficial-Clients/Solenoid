@@ -149,7 +149,9 @@ const Login: Component<LoginComponent> = ({
                         throw e;
                       }
                     );
-                  } catch (e) {}
+                  } catch (e) {
+                    console.error(e);
+                  }
                 }
               }}
             >

@@ -75,8 +75,7 @@ export const Picker: Component<props> = (props) => {
         });
     } catch (e) {
       setError(e as string);
-    } finally {
-    }
+    } 
   }
 
   createEffect(async () => {
