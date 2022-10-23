@@ -51,7 +51,6 @@ const rvCLient = new Client();
 const [login, setLogin] = createStore<loginValues>({});
 const [newMessage, setNewMessage] = createSignal<string>("");
 const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
-const [captchaToken, setCaptchaToken] = createSignal<string>();
 const [usr, setUser] = createStore<user>({
   user_id: undefined,
   username: undefined,
@@ -103,7 +102,7 @@ const [statuslist, setStatusList] = createLocalSignal<status[]>(
   "statusList",
   []
 );
-const [captchaKey, setCaptchaKey] = createSignal<string>(
+const [captchaKey] = createSignal<string>(
   "3daae85e-09ab-4ff6-9f24-e8f4f335e433"
 );
 // Experimental Emoji Picker
@@ -114,7 +113,7 @@ let notification_access: boolean;
 
 // Request notification permission
 (async () => {
-  let permission = await Notification.requestPermission();
+  const permission = await Notification.requestPermission();
   if (permission === "granted") {
     notification_access = true;
   } else {
@@ -150,16 +149,8 @@ const onImageChange = (e: any) => {
   setImages([...e.target.files]);
 };
 const onAvatarChange = (e: Event & {currentTarget: HTMLInputElement; target: Element;}) => {
-  setAvatarImage(e.currentTarget.files![0]);
+  if(e.currentTarget.files) setAvatarImage(e.currentTarget.files[0]);
 };
-
-// Dealing with Textarea Height
-function calcHeight(value: any) {
-  let numberOfLineBreaks = (value.match(/\n/g) || []).length;
-  // min-height + lines x line-height + padding + border
-  let newHeight = 20 + numberOfLineBreaks * 20 + 12 + 2;
-  return newHeight;
-}
 
 // Setup
 rvCLient.on("ready", async () => {
@@ -248,6 +239,7 @@ async function sendFile(content: string) {
       const file = files[i];
       attachments.push(
         await uploadFile(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           rvCLient.configuration!.features.autumn.url,
           "attachments",
           file,
@@ -269,13 +261,13 @@ async function sendFile(content: string) {
   const nonce = ulid();
 
   try {
-    await servers.current_channel!.sendMessage({
+    await servers.current_channel?.sendMessage({
       content,
       nonce,
       attachments,
     });
-  } catch (e: any) {
-    if (settings.debug) console.log(e.message);
+  } catch (e: unknown) {
+    if (settings.debug) console.log((e as any).message);
   }
 }
 
@@ -286,13 +278,13 @@ async function sendMessage(message: string) {
     if (images()) {
       await sendFile(message);
     } else if (replies()) {
-      servers.current_channel!.sendMessage({
+      servers.current_channel?.sendMessage({
         content: message,
         replies: replies(),
         nonce,
       });
     } else {
-      servers.current_channel!.sendMessage({
+      servers.current_channel?.sendMessage({
         content: message,
         nonce,
       });
@@ -309,7 +301,9 @@ function setChannel(channel_id: string) {
   setServers(
     "current_channel",
     servers.current_server_channels?.find(
-      (channel) => channel!["_id"] === channel_id
+      (channel) => {
+        if(channel) return channel["_id"] === channel_id
+      }
     )
   );
   getMessagesFromChannel();
@@ -328,20 +322,6 @@ function setServer(server_id: string) {
   );
   fetchChannels();
   if (settings.debug) console.log(servers.current_server);
-}
-
-// Fetch joined servers
-async function fetchServers() {
-  try {
-    setServers("server_list", Array.from(rvCLient.servers.values()));
-    if (settings.debug) console.log(servers.server_list);
-  } catch (e: any) {
-    if (settings.debug) {
-      console.log(e);
-    } else {
-      alert(e);
-    }
-  }
 }
 // Get Current Status from API
 async function getStatus() {
@@ -393,21 +373,23 @@ function updateStatus(
 }
 
 // AutoLogin
-async function loginWithSession(session: any & { action: "LOGIN" }) {
+async function loginWithSession(session: unknown & { action: "LOGIN" }) {
   try {
-    await rvCLient.useExistingSession(session);
+    await rvCLient.useExistingSession(session).catch((e) => {
+      throw e;
+    });
     setSettings("session_type", "email");
     setSettings("session", session);
     setLoggedIn(true);
   } catch (e) {
-    throw e;
+    console.error(e);
   }
 }
 
 // Get Role Colour from Message
 function getrolecolour(message: Message) {
   if (!message.member) return "#fff";
-  for (const [_, { colour }] of message.member!.orderedRoles) {
+  for (const [_, { colour }] of message.member.orderedRoles) {
     if (settings.debug) console.log(colour);
     if (colour) {
       return colour;
@@ -429,6 +411,7 @@ rvCLient.on("message", (msg) => {
         }
       })
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const notification = new Notification(
         `${msg.author?.username} mentioned you:`,
         {
@@ -544,7 +527,7 @@ const App: Component = () => {
                 if (settings.debug) console.log(message.attachments);
                 if (settings.debug) console.log(message);
                 if (settings.debug) console.log(message.member?.orderedRoles);
-                let colour = getrolecolour(message);
+                const colour = getrolecolour(message);
                 return (
                   <>
                     <MessageComponent
@@ -700,7 +683,6 @@ const App: Component = () => {
               <form class="solenoid-server-username" onSubmit={async (e) => {
                 console.log("Clicked")
                 e.preventDefault();
-                const cancel = Axios.CancelToken.source();
                 const file = await uploadAttachment(`solenoid-avatar-${rvCLient.user?._id}`, avatarImage(), "avatars")
                 console.log(file);
                 servers.current_server?.member?.edit({
