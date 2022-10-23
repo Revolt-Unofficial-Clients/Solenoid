@@ -53,5 +53,5 @@ jobs:
       run: pnpm run lint
       
     - name: Check if build completes
-      run: pnpm run build --if-present
+      run: pnpm run build
       
