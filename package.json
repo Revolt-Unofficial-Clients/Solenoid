@@ -15,7 +15,7 @@
     "vite-plugin-solid": "latest"
   },
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "^1.1.3",
     "gifbox.js": "^0.9.0",
     "mobx": "^6.6.2",
     "revolt-toolset": "^0.0.17",
