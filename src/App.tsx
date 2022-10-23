@@ -41,7 +41,7 @@ import {
   FiSettings,
   FiX,
   FiXCircle,
-  FiUpload
+  FiUpload,
 } from "solid-icons/fi";
 
 // Revolt Client
@@ -51,7 +51,7 @@ const rvCLient = new Client();
 const [login, setLogin] = createStore<loginValues>({});
 const [newMessage, setNewMessage] = createSignal<string>("");
 const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
-const [usr, setUser] = createStore<user>({
+const [usr, setUser] = createLocalStore<user>("user_info", {
   user_id: undefined,
   username: undefined,
   session_type: undefined,
@@ -111,16 +111,6 @@ const [showPicker, setShowPicker] = createSignal<boolean>(false);
 // Way to know if user notifications are enabled
 let notification_access: boolean;
 
-// Request notification permission
-(async () => {
-  const permission = await Notification.requestPermission();
-  if (permission === "granted") {
-    notification_access = true;
-  } else {
-    notification_access = false;
-  }
-})();
-
 // Functions
 const onInputChange = (
   e: InputEvent & { currentTarget: HTMLInputElement; target: HTMLElement },
@@ -148,8 +138,10 @@ const onInputChange = (
 const onImageChange = (e: any) => {
   setImages([...e.target.files]);
 };
-const onAvatarChange = (e: Event & {currentTarget: HTMLInputElement; target: Element;}) => {
-  if(e.currentTarget.files) setAvatarImage(e.currentTarget.files[0]);
+const onAvatarChange = (
+  e: Event & { currentTarget: HTMLInputElement; target: Element }
+) => {
+  if (e.currentTarget.files) setAvatarImage(e.currentTarget.files[0]);
 };
 
 // Setup
@@ -300,11 +292,9 @@ async function sendMessage(message: string) {
 function setChannel(channel_id: string) {
   setServers(
     "current_channel",
-    servers.current_server_channels?.find(
-      (channel) => {
-        if(channel) return channel["_id"] === channel_id
-      }
-    )
+    servers.current_server_channels?.find((channel) => {
+      if (channel) return channel["_id"] === channel_id;
+    })
   );
   getMessagesFromChannel();
   if (settings.debug) console.log(servers.current_channel);
@@ -375,14 +365,21 @@ function updateStatus(
 // AutoLogin
 async function loginWithSession(session: unknown & { action: "LOGIN" }) {
   try {
-    await rvCLient.useExistingSession(session).catch((e) => {
+    if (usr.session_type === "email" && session) {
+      await rvCLient.useExistingSession(session).catch((e) => {
       throw e;
     });
     setSettings("session_type", "email");
     setSettings("session", session);
     setLoggedIn(true);
+    } else {
+      return;
+    }
   } catch (e) {
-    console.error(e);
+    setSettings("session", null);
+    setUser("session_type", undefined);
+    setUser("user_id", undefined);
+    setUser("username", undefined);
   }
 }
 
@@ -483,15 +480,13 @@ const App: Component = () => {
             >
               Solenoid Home
             </div>
-            <ServerList
-              client={rvCLient}
-              setter={setServer}
-            />
+            <ServerList client={rvCLient} setter={setServer} />
           </div>
           {servers.current_server && (
             <ChannelList
               server={servers.current_server}
               channelSetter={setChannel}
+              current_channel={servers.current_channel}
             />
           )}
           <div class="solenoid-messages">
@@ -603,18 +598,20 @@ const App: Component = () => {
               maxlength={2000}
               autofocus
             />
-            {settings.experiments.picker && <div
-              class="solenoid-toggle"
-              onClick={() => {
-                showPicker() ? setShowPicker(false) : setShowPicker(true);
-                setPickerType("emoji");
-              }}
-              role="button"
-            >
-              <span>
-                <FiSmile />
-              </span>
-            </div>}
+            {settings.experiments.picker && (
+              <div
+                class="solenoid-toggle"
+                onClick={() => {
+                  showPicker() ? setShowPicker(false) : setShowPicker(true);
+                  setPickerType("emoji");
+                }}
+                role="button"
+              >
+                <span>
+                  <FiSmile />
+                </span>
+              </div>
+            )}
             <div
               class="solenoid-send-button"
               aria-label="Send"
@@ -653,7 +650,11 @@ const App: Component = () => {
             <h3>
               Logged In as{" "}
               <img
-                src={rvCLient.user?.avatar ? `${rvCLient.configuration?.features.autumn.url}/avatars/${rvCLient.user?.avatar?._id}` : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`} 
+                src={
+                  rvCLient.user?.avatar
+                    ? `${rvCLient.configuration?.features.autumn.url}/avatars/${rvCLient.user?.avatar?._id}`
+                    : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`
+                }
                 class="solenoid-pfp"
                 width={25}
                 height={25}
@@ -671,7 +672,7 @@ const App: Component = () => {
                 Server Avatar:{" "}
                 <img
                   src={`${rvCLient.configuration?.features.autumn.url}/avatars/${servers.current_server.member.avatar._id}`}
-                  class="pfp"
+                  class="solenoid-pfp"
                   width={25}
                   height={25}
                 />
@@ -679,33 +680,79 @@ const App: Component = () => {
             )}
             {/* TODO: Add server username/avatar changing */}
             {servers.current_server && settings.experiments.nick && (
-              <form class="solenoid-server-username" onSubmit={async (e) => {
-                console.log("Clicked")
-                e.preventDefault();
-                const file = await uploadAttachment(`solenoid-avatar-${rvCLient.user?._id}`, avatarImage(), "avatars")
-                console.log(file);
-                servers.current_server?.member?.edit({
-                  avatar: file || servers.current_server.member.avatar?._id || null,
-                  nickname: nickname() || null
-                })
-              }}>
+              <form
+                class="solenoid-server-username"
+                onSubmit={async (e) => {
+                  console.log("Clicked");
+                  e.preventDefault();
+                  const file = await uploadAttachment(
+                    `solenoid-avatar-${rvCLient.user?._id}`,
+                    avatarImage(),
+                    "avatars"
+                  );
+                  console.log(file);
+                  servers.current_server?.member?.edit({
+                    avatar:
+                      file || servers.current_server.member.avatar?._id || null,
+                    nickname: nickname() || null,
+                  });
+                }}
+              >
                 <div class="item" id="1">
                   <h4>Server Identity</h4>
-                  <span class="subtitle">Edit how you look in the {servers.current_server.name} server</span>
+                  <span class="subtitle">
+                    Edit how you look in the {servers.current_server.name}{" "}
+                    server
+                  </span>
                 </div>
                 <div class="item" id="2">
-                  <h4 title="Nickname shown to everyone on the server" class="title">Nickname</h4>
-                  <input class="nickname" placeholder={servers.current_server.member?.nickname || rvCLient.user?.username ||  "New Nickname"} value={nickname() || ""} onChange={(e) => setNickname(e.currentTarget.value)}/>
+                  <h4
+                    title="Nickname shown to everyone on the server"
+                    class="title"
+                  >
+                    Nickname
+                  </h4>
+                  <input
+                    class="nickname"
+                    placeholder={
+                      servers.current_server.member?.nickname ||
+                      rvCLient.user?.username ||
+                      "New Nickname"
+                    }
+                    value={nickname() || ""}
+                    onChange={(e) => setNickname(e.currentTarget.value)}
+                  />
                 </div>
                 <div class="item" id="3">
-                  <h4 title="Avatar shown to everyone on the server" class="title">Avatar</h4>
+                  <h4
+                    title="Avatar shown to everyone on the server"
+                    class="title"
+                  >
+                    Avatar
+                  </h4>
                   <div>
-                    <img class="solenoid-pfp"
-                    src={avatarImage() ? URL.createObjectURL(avatarImage()) : servers.current_server.member?.avatar || rvCLient.user?.avatar ? `https://autumn.revolt.chat/avatars/${servers.current_server.member?.avatar?._id || rvCLient.user?.avatar?._id}` : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`}
-                    width={64}
-                    height={64}
+                    <img
+                      class="solenoid-pfp"
+                      src={
+                        avatarImage()
+                          ? URL.createObjectURL(avatarImage())
+                          : servers.current_server.member?.avatar ||
+                            rvCLient.user?.avatar
+                          ? `https://autumn.revolt.chat/avatars/${
+                              servers.current_server.member?.avatar?._id ||
+                              rvCLient.user?.avatar?._id
+                            }`
+                          : `https://api.revolt.chat/users/${rvCLient.user?._id}/default_avatar`
+                      }
+                      width={64}
+                      height={64}
                     />
-                    <label title="Upload New Avatar" role="button" class="noattach" for="avatar-upload">
+                    <label
+                      title="Upload New Avatar"
+                      role="button"
+                      class="noattach"
+                      for="avatar-upload"
+                    >
                       <FiPlusCircle />
                     </label>
                   </div>
@@ -716,14 +763,31 @@ const App: Component = () => {
                     id="avatar-upload"
                     accept="image/png,image/jpeg,image/gif"
                     onChange={(e) => {
-                      onAvatarChange(e)
-                      console.log(avatarImage())
-                    }
-                    }/>
+                      onAvatarChange(e);
+                      console.log(avatarImage());
+                    }}
+                  />
                 </div>
-                <button role="button" class="button change"><span><FiUpload /> Submit</span></button>
-            </form>
+                <button role="button" class="button change">
+                  <span>
+                    <FiUpload /> Submit
+                  </span>
+                </button>
+              </form>
             )}
+          </div>
+          <div id="solenoid-setting solenoid-notifications">
+            <h3>Notifications</h3>
+            <p>Notifications provided through solenoid.</p>
+            <button onClick={ async () => {
+              const permission = await Notification.requestPermission();
+              if (permission === "granted") {
+                notification_access = true;
+              } else {
+                notification_access = false;
+              }
+              }}
+              disabled={Notification.permission === "granted"}>Grant Permission</button>
           </div>
           <div id="solenoid-setting solenoid-showUsernames">
             <h3>Suffix</h3>
@@ -883,23 +947,21 @@ const App: Component = () => {
             </button>
             <h4>Compact Mode</h4>
             <button
-              onClick={() =>{
+              onClick={() => {
                 settings.experiments.compact
                   ? setSettings("experiments", "compact", false)
-                  : setSettings("experiments", "compact", true)
-              }
-              }
+                  : setSettings("experiments", "compact", true);
+              }}
             >
               {settings.experiments.compact ? "Enabled" : "Disabled"}
             </button>
             <h4>Serverside Nickname Changer</h4>
             <button
-              onClick={() =>{
+              onClick={() => {
                 settings.experiments.compact
                   ? setSettings("experiments", "nick", false)
-                  : setSettings("experiments", "nick", true)
-              }
-              }
+                  : setSettings("experiments", "nick", true);
+              }}
             >
               {settings.experiments.nick ? "Enabled" : "Disabled"}
             </button>

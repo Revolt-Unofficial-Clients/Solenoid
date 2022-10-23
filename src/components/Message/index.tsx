@@ -13,7 +13,7 @@ import { createSignal } from "solid-js";
 import { Picker } from "../Picker";
 import type { Badges } from "../../assets/badges/types"
 import badgeList from "../../assets/badges/badges.json"
-import { FiAtSign, FiRepeat } from "solid-icons/fi";
+import { FiAtSign, FiEdit, FiRepeat } from "solid-icons/fi";
 console.log(badgeList);
 
 interface MessageComponent {
@@ -165,10 +165,7 @@ const Message: Component<MessageComponent> = ({
                 )
               }}}
           </For>
-        </div>}
-        {/* {message.author?._id === "01G1V3VWVQFC8XAKYEPNYHHR2C" && (
-          <span class="solenoid-dev">Solenoid Developer 😺</span>
-        )} */}
+        </div>} 
         {
           !settings.experiments.compact && (
           <>
@@ -200,11 +197,15 @@ const Message: Component<MessageComponent> = ({
         )}
         
         {settings.experiments.compact && message.mentions?.find((e) => e?._id === client.user?._id) && (
-          <><FiAtSign class="icon" color="rgb(122, 189, 255)"/></>
+          <FiAtSign class="icon" color="rgb(122, 189, 255)"/>
+        )}
+
+        {settings.experiments.compact && message.edited && (
+          <FiEdit class="icon" color="rgb(122, 189, 255)" />
         )}
 
         {settings.suffix && <span>{settings.showSuffix ? " says " : ":"}</span>}
-
+        
         {settings.experiments.compact && <>
         {editing() && editMessageId() === message._id ? (
           <div class="message-container compact">

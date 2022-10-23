@@ -1,13 +1,15 @@
 import type { Component, Setter } from "solid-js";
 import { For } from "solid-js";
 import type { Server, Channel } from "revolt.js";
-
+import { css } from "solid-styled-components";
 interface ChannelComponent {
   server: Server;
   channelSetter: (channel_id: string) => void;
+  current_channel: Channel | undefined;
 }
 
 const ChannelList: Component<ChannelComponent> = (props) => {
+  
   return (
     <div class="solenoid-server-info-container">
       <div class="solenoid-server-banner-container">
@@ -23,8 +25,8 @@ const ChannelList: Component<ChannelComponent> = (props) => {
           {(channel: Channel | null | undefined) => (
             <div
               class={
-                "solenoid-channel" +
-                (channel!._id === props.server?._id ? " active" : "")
+                "solenoid-channel " +
+                (channel!._id === props.current_channel?._id ? "active" : "")
               }
               id={`channel_${channel!._id}`}
               onClick={() => props.channelSetter(channel!._id)}
