@@ -64,6 +64,7 @@ declare interface settings {
     experiments: {
         picker: boolean,
         compact: boolean,
-        nick: boolean
+        nick: boolean,
+        edited_format: "ISO" | "UTC" | "default" | string
     }
 }

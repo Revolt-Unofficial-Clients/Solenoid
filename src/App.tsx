@@ -48,7 +48,7 @@ import {
 const rvCLient = new Client();
 
 // Initialize Variables
-const [login, setLogin] = createStore<loginValues>({});
+const [_login, setLogin] = createStore<loginValues>({});
 const [newMessage, setNewMessage] = createSignal<string>("");
 const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
 const [usr, setUser] = createLocalStore<user>("user_info", {
@@ -95,6 +95,7 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
     picker: false,
     compact: false,
     nick: false,
+    edited_format: "default"
   },
 });
 
@@ -965,6 +966,12 @@ const App: Component = () => {
             >
               {settings.experiments.nick ? "Enabled" : "Disabled"}
             </button>
+            <h4>Edit indicator Format</h4>
+            <select id="indicator" title="Options: ISO, UTC or Default" onChange={(e) => setSettings("experiments", "edited_format", e.currentTarget.value)} value={settings.experiments.edited_format || "default"}>
+              <option value={"ISO"}>ISO Format</option>
+              <option value={"UTC"}>UTC Format</option>
+              <option value={"default"}>Browser default</option>
+            </select>
           </div>
           <div class="solenoid-setting solenoid-update">
             <button class="solenoid-update-btn" onClick={setCurrentSettings}>
