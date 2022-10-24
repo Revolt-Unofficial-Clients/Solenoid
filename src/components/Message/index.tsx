@@ -11,9 +11,14 @@ import type { settings, reply } from "../../types";
 import { css } from "solid-styled-components";
 import { createSignal } from "solid-js";
 import { Picker } from "../Picker";
+
 import type { Badges } from "../../assets/badges/types"
 import badgeList from "../../assets/badges/badges.json"
-import { FiAtSign, FiEdit, FiRepeat } from "solid-icons/fi";
+
+import { FiAtSign, FiDelete, FiEdit, FiRepeat } from "solid-icons/fi";
+import { HiSolidReply } from 'solid-icons/hi'
+import {FaRegularFaceGrin} from "solid-icons/fa"
+
 console.log(badgeList);
 
 interface MessageComponent {
@@ -252,14 +257,14 @@ const Message: Component<MessageComponent> = ({
                   setNewMessage(message.content ?? "");
                 }}
               >
-                <span>Edit</span>
+                 <span><FiEdit/> Edit</span>
               </div>
               <div
                 role="button"
                 class="delete"
                 onClick={() => deleteFunction(message)}
               >
-                <span>Delete</span>
+                 <span><FiDelete/> Delete</span>
               </div>
             </>
           )}
@@ -276,7 +281,7 @@ const Message: Component<MessageComponent> = ({
               ])
             }
           >
-            <span>Reply</span>
+            <span><HiSolidReply/> Reply</span>
           </div>
           <div
             role="button"
@@ -286,7 +291,7 @@ const Message: Component<MessageComponent> = ({
               setEditMessageId(message._id);
             }}
           >
-            <span>React</span>
+            <span><FaRegularFaceGrin/> React</span>
           </div>
         </div>
       </div>

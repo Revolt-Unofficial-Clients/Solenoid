@@ -7,16 +7,17 @@
   --bg: #000;
   --fg: #222;
   --fg-hover: #2b2b2b;
+  --fg-button: rgb(66, 66, 66);
   --fg-notimportant: #636363;
   --image-hover: #3a3a3a;
   --fg-border: rgb(63, 63, 63);
   --fg-nav-button: rgb(79, 79, 79);
-  --accent: rgb(122, 189, 255);
-  --accent-button: rgb(102, 153, 255);
-  --accent-button-hover: rgb(90, 134, 222);
-  --accent-button-active: rgb(79, 116, 191);
+  --accent: #FF5C9D;
+  --accent-button: #FF5C9D;
+  --accent-button-hover: #e36497;
+  --accent-button-active: #c76a8f;
   --masquerade-bg: #804453;
-  --dev-bg: linear-gradient(90deg, rgba(255,121,201,1) 0%, rgba(204,85,252,1) 49%, rgba(99,87,255,1) 100%);
+  --dev-bg: linear-gradient(90deg, rgba(255, 121, 201, 1) 0%, rgba(204, 85, 252, 1) 49%, rgba(99, 87, 255, 1) 100%);
   --radius: 3px;
 }
 
@@ -28,7 +29,8 @@ html body {
   height: 100%;
 }
 
-[role="button"], [class="button"] {
+[role="button"],
+[class="button"] {
   transition: 300ms;
   padding: 3px;
   margin: 3px;
@@ -39,7 +41,8 @@ html body {
   cursor: pointer;
 }
 
-div[role="button"]:not([class="noattach"], [class="edit"], [class="reply"], [class="delete"], [class="react"]), [class="userbutton"]{
+div[role="button"]:not([class="noattach"], [class="edit"], [class="reply"], [class="delete"], [class="react"]),
+[class="userbutton"] {
   display: flex;
   text-align: center;
   justify-content: center;
@@ -69,9 +72,9 @@ div[role="button"]:not([class="noattach"], [class="edit"], [class="reply"], [cla
 label[role="button"][class^="noattach"] {
   width: 4.15rem;
   height: 4.15rem;
-  margin:0;
+  margin: 0;
   margin-left: 1rem;
-  padding:0;
+  padding: 0;
 }
 
 #root {
@@ -84,32 +87,43 @@ label[role="button"][class^="noattach"] {
 
 .solenoid-login {
   color: white;
-  position: absolute;
-  left: 25%;
-  top: 25%;
-  margin-inline: auto;
-  padding: 5px;
+  display: block;
+  margin: 0;
   justify-content: center;
-  width: 50%;
-  height: 50%;
-  border-radius: 12px;
+  align-items: center;
   border: 2px solid var(--fg-border);
   background-color: var(--fg);
 }
 
-.solenoid-login > #title {
+.solenoid-login button {
+  transition: 300ms;
+  padding: 3px;
+  margin: 3px;
+  border: none;
+  width: fit-content;
+  background-color: var(--accent);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.solenoid-login>#title {
   font-size: 2.5rem;
   text-align: center;
 }
+
 .textarea {
   border: none;
   margin: 2px;
-  border-bottom: 3px solid var(--accent);
   background-color: rgb(55, 55, 55);
+  border-bottom: 3px solid rgb(55, 55, 55);
   color: white;
   border-radius: 3px;
   outline: none;
   padding: 3px;
+}
+
+.textarea:focus {
+  border-bottom: 3px solid var(--accent);
 }
 
 .solenoid-login label {
@@ -129,6 +143,7 @@ label[role="button"][class^="noattach"] {
   flex-direction: row;
   overflow-x: auto;
   overflow-y: none;
+  color: white;
 }
 
 div[class^="server"] {
@@ -141,7 +156,7 @@ div[class^="server"] {
   border-radius: 3px;
 }
 
-div[class^="server"] p[class^="name"]{
+div[class^="server"] p[class^="name"] {
   margin-left: 5px;
   color: #fff;
 }
@@ -155,11 +170,10 @@ div[class^="server"] p[class^="name"]{
 }
 
 .solenoid-messages {
-  margin-top: 10px;
-  margin-bottom: 5px;
   display: flex;
   flex-direction: column;
-  width: 98%;
+  margin: 0;
+  width: 100%;
   height: 41rem;
   align-items: center;
   overflow-y: auto;
@@ -179,11 +193,12 @@ div[class^="server"] p[class^="name"]{
 }
 
 div[class^="solenoid-message"] .mentioned {
- background-color: #446b91;
+  background-color: #67a2dd;
+  box-shadow: 0px 0px 20px #67a2dd;
 }
 
 div[class^="solenoid-message"] .mentioned:hover {
-  background-color: #365473;
+  scale: 1.1;
 }
 
 .solenoid-message:hover {
@@ -211,16 +226,15 @@ div[class^="solenoid-message"] .mentioned:hover {
 }
 
 .banner {
-  width: 90%;
-  margin: 5px;
-  padding: 5px;
+  width: 100%;
+  margin: 0px;
+  padding: 5px 0px;
   text-align: center;
-  border-radius: 5px;
-  background: rgb(255, 98, 98);
+  background: var(--fg);
   color: white;
 }
 
-.solenoid-settings > * {
+.solenoid-settings>* {
   color: white;
   background-color: rgb(63, 63, 63);
 }
@@ -231,10 +245,36 @@ div[class^="solenoid-message"] .mentioned:hover {
 }
 
 .solenoid-settings div {
-  margin: 10px;
+  margin: 0px;
+  border-bottom: 2px solid rgb(55, 55, 55);
   padding: 5px;
-  border-radius: var(--radius);
-  width: 50%;
+  width: 100%;
+}
+
+.solenoid-settings button {
+  transition: 300ms;
+  padding: 3px;
+  margin: 3px;
+  border: none;
+  width: fit-content;
+  background-color: var(--accent);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.solenoid-settings input {
+  border: none;
+  margin: 2px;
+  background-color: rgb(55, 55, 55);
+  border-bottom: 3px solid rgb(55, 55, 55);
+  color: white;
+  border-radius: 3px;
+  outline: none;
+  padding: 3px;
+}
+
+.solenoid-settings input:focus {
+  border-bottom: 3px solid var(--accent);
 }
 
 .solenoid-settings .solenoid-update {
@@ -245,7 +285,6 @@ div[class^="solenoid-message"] .mentioned:hover {
 .solenoid-send-input {
   background-color: var(--fg);
   width: 65%;
-  border-radius: var(--radius);
   border: none;
   font-size: 15px;
   color: #fff;
@@ -308,12 +347,13 @@ div[class^="solenoid-message-file"] * {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
 img[class^="solenoid-pfp"] {
   border-radius: 5px;
   aspect-ratio: auto 1920 / 1080;
 }
 
-div[id="solenoid-setting solenoid-revoltusername"] h3 img[class="solenoid-pfp"]{
+div[id="solenoid-setting solenoid-revoltusername"] h3 img[class="solenoid-pfp"] {
   margin-right: 0.3rem;
 }
 
@@ -364,7 +404,7 @@ div[class^="solenoid-message-author"] span[class^="solenoid-dev"] {
   border-radius: 3px;
 }
 
-div[class^="solenoid-message-author"] img[class="badgeIcon"]{
+div[class^="solenoid-message-author"] img[class="badgeIcon"] {
   position: relative;
   top: 4px;
 }
@@ -404,12 +444,12 @@ div[class^="solenoid-channel"] .active {
   background-color: #1B1B1B;
 }
 
-div[class^="solenoid-channel"] .active span{
+div[class^="solenoid-channel"] .active span {
   color: #F6F6F6;
 }
 
 div[class^="solenoid-channel"] span {
-  color: #323232;
+  color: #c8c8c8;
 }
 
 div[class^="solenoid-channel"] span[class^="hashicon"] {
@@ -428,10 +468,19 @@ div[class^="solenoid-userBar"] {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   width: 100%;
+  outline: none;
   margin-bottom: 10px;
-  background-color: var(--bg);
+  border: none;
+  border-bottom: 3px solid rgb(55, 55, 55);
+  background-color: var(--fg);
   overflow: none;
+}
+
+div[class ^="solenoid-userBar"] :focus {
+  border-bottom: 3px solid var(--accent);
+  outline: none;
 }
 
 div[class^="solenoid-image-galery"] {
@@ -466,7 +515,7 @@ div[class="item"][id="3"] div {
 div[class^="solenoid-picker"] {
   display: flex;
   flex-direction: column;
-/*   border: 1px solid #55aaff; */
+  /* DEBUG: border: 1px solid #55aaff; */
   width: 15rem;
   height: 27rem;
   z-index: 1;
@@ -501,9 +550,11 @@ div[class^="tab-container"] span[aria-selected="true"] {
 div[class="solenoid-picker-grid"] {
   grid-area: 2 / 1 / 2 / 2;
   display: grid;
-  grid-template-columns: repeat(auto-fill, 40px);;
-  grid-template-rows: repeat(auto-fill, 40px);;
-/*  border: 1px solid red;*/
+  grid-template-columns: repeat(auto-fill, 40px);
+  ;
+  grid-template-rows: repeat(auto-fill, 40px);
+  ;
+  /* DEBUG: border: 1px solid red;*/
   overflow: auto;
   gap: 0;
   align-items: center;
@@ -517,7 +568,7 @@ div[class="solenoid-picker-grid gifbox"] {
   grid-template-rows: minmax(min-content, max-content);
   width: 15rem;
   height: 25rem;
-/*  border: 1px solid red;*/
+  /* DEBUG: border: 1px solid red;*/
   overflow: auto;
   gap: 9px;
   align-items: center;
@@ -526,13 +577,13 @@ div[class="solenoid-picker-grid gifbox"] {
 
 
 
-div[class^="solenoid-picker"] span[class^="emoji"]{
+div[class^="solenoid-picker"] span[class^="emoji"] {
   padding: 5px;
   text-align: center;
   cursor: pointer;
 }
 
-div[class^="solenoid-picker"] div[class^="custom-container"]{
+div[class^="solenoid-picker"] div[class^="custom-container"] {
   display: flex;
   padding: 5px;
   text-align: center;
@@ -562,60 +613,66 @@ div[class^="solenoid-gifbox-login"] {
   background-color: var(--fg-hover);
 }
 
-div[class^="solenoid-gifbox-login"] span[class^="needs-login-gifbox"]{
+div[class^="solenoid-gifbox-login"] span[class^="needs-login-gifbox"] {
   color: #fff;
   font-weight: bold;
 }
+
 div[class="button-container"] {
+  transition: 300ms;
   opacity: 0;
   margin-left: 5px;
   display: flex;
 }
 
 .solenoid-message:hover div[class="button-container"],
-.solenoid-message:active div[class="button-container"]{
+.solenoid-message:active div[class="button-container"] {
   display: flex;
   opacity: 1;
 }
 
 div[class="edit"] {
-  background-color: #6dff6b;
-  color: #000;
+  background-color: var(--accent-button);
+  color: black;
 }
+
 div[class="edit"]:hover {
-  background-color: #47a545;
-  color: #6dff6b;
+  background-color: var(--accent-button-hover);
+  color: black;
 }
 
 div[class="delete"] {
-  background-color: #ff866e;
-  color: #000;
+  background-color: var(--accent-button);
+  color: black;
 }
+
 div[class="delete"]:hover {
-  background-color: #a54b43;
-  color: #ff866e;
+  background-color: var(--accent-button-hover);
+  color: black;
 }
 
 div[class="react"] {
-  background-color: #a352ff;
+  background-color: var(--accent);
   color: #000;
 }
+
 div[class="react"]:hover {
-  background-color: #7238a5;
-  color: #a352ff;
+  background-color: var(--accent-button-hover);
+  color: #000;
 }
 
 div[class="reply"] {
-  background-color: #57ffc7;
+  background-color: var(--accent-button);
   color: #000;
 }
+
 div[class="reply"]:hover {
-  background-color: #36a586;
-  color: #57ffc7;
+  background-color: var(--accent-button-hover);
+  color: var(--accent-button-hover);
 }
 
 div[class="item"] {
-  margin:0;
+  margin: 0;
   margin-top: 0.5rem;
 }
 

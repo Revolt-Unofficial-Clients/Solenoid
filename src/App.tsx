@@ -39,10 +39,12 @@ import {
   FiPlusCircle,
   FiSend,
   FiSettings,
-  FiX,
   FiXCircle,
   FiUpload,
+  FiLogOut,
 } from "solid-icons/fi";
+
+import { AiOutlineStop } from 'solid-icons/ai'
 
 // Revolt Client
 const rvCLient = new Client();
@@ -637,7 +639,7 @@ const App: Component = () => {
             {replies().length > 0 && (
               <div onClick={() => setReplies([])} role="button">
                 <span>
-                  <FiX /> Stop Replying
+                  <AiOutlineStop/>
                 </span>
               </div>
             )}
@@ -897,7 +899,7 @@ const App: Component = () => {
           </div>
           <div id="solenoid-setting solenoid-show-imgs">
             <h3>Image Rendering</h3>
-            <p>Whether to show images in Solenoid. Affects all images.</p>
+            <p>Whether to show images in Solenoid. Disabling will may save network's bandwitdh, useful when mobile data is on. [Affects all images]</p>
             <button
               onClick={() => {
                 settings.showImages
@@ -912,7 +914,7 @@ const App: Component = () => {
             <h3>Image Zoom Level</h3>
             <p>
               Smaller the number, bigger the image. 0 is original size, Affects
-              all images.
+              all images. (Don't put longer number it cause the image become very big which make then hard to fit properly)
             </p>
             <input
               type="number"
@@ -979,7 +981,7 @@ const App: Component = () => {
               }}
               id="solenoid-logout"
             >
-              Log Out
+              <FiLogOut/> Log Out
             </button>
           </div>
         </div>
