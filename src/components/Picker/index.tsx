@@ -3,8 +3,7 @@ import { For, createSignal, createEffect } from "solid-js";
 import { emojiDictionary } from "../../assets/emoji";
 import { Message } from "revolt.js";
 import { Client } from "gifbox.js";
-// import type { settings } from "../../types";
-import { Responses } from "gifbox.js";
+
 const gbClient = new Client({
   baseURL: "https://api.gifbox.me/",
 });

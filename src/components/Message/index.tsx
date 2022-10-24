@@ -2,8 +2,7 @@ import {
   Component,
   Setter,
   Accessor,
-  For,
-  enableExternalSource,
+  For
 } from "solid-js";
 import { Message as MSG, Client } from "revolt.js";
 import SolidMarkdown from "solid-markdown";
@@ -12,8 +11,8 @@ import { css } from "solid-styled-components";
 import { createSignal } from "solid-js";
 import { Picker } from "../Picker";
 
-import type { Badges } from "../../assets/badges/types"
-import badgeList from "../../assets/badges/badges.json"
+import type { Badges } from "../../assets/badges/types";
+import badgeList from "../../assets/badges/badges.json";
 
 import { FiAtSign, FiDelete, FiEdit, FiRepeat } from "solid-icons/fi";
 import { HiSolidReply } from 'solid-icons/hi'
@@ -50,52 +49,57 @@ const Message: Component<MessageComponent> = ({
     <div
       class={
         "solenoid-message " +
-        (!settings.experiments.compact && message.mentions?.find((e) => e?._id === client.user?._id)
+        (!settings.experiments.compact &&
+        message.mentions?.find((e) => e?._id === client.user?._id)
           ? "mentioned"
           : "")
       }
     >
       <div class="solenoid-message-author">
-        { !settings.experiments.compact && <>{message.masquerade?.avatar ? (
-          <img
-            style={{
-              "max-width": "50px",
-              "max-height": "50px",
-            }}
-            class="solenoid-pfp"
-            src={message.masquerade?.avatar}
-          ></img>
-        ) : message.member?.avatar ?(
-          <img
-            style={{
-              "max-width": "50px",
-              "max-height": "50px",
-            }}
-            class="solenoid-pfp"
-            src={`${client.configuration?.features?.autumn?.url}/avatars/${message.member?.avatar?._id}`}
-            title={`${message.member?.avatar?.filename}`}
-          ></img>
-        ) : message.author?.avatar ? (
-          <img
-            style={{
-              "max-width": "50px",
-              "max-height": "50px",
-            }}
-            class="solenoid-pfp"
-            src={`${client.configuration?.features?.autumn?.url}/avatars/${message.author?.avatar?._id}`}
-            title={`${message.author?.avatar?.filename}`}
-          ></img>
-        ) : (
-          <img
-            style={{
-              "max-width": "50px",
-              "max-height": "50px",
-            }}
-            class="solenoid-pfp"
-            title="Default Avatar"
-            src={`https://api.revolt.chat/users/${message.author?._id}/default_avatar`}
-          ></img>
-        )}</>}
+        {!settings.experiments.compact && (
+          <>
+            {message.masquerade?.avatar ? (
+              <img
+                style={{
+                  "max-width": "50px",
+                  "max-height": "50px",
+                }}
+                class="solenoid-pfp"
+                src={message.masquerade?.avatar}
+              ></img>
+            ) : message.member?.avatar ? (
+              <img
+                style={{
+                  "max-width": "50px",
+                  "max-height": "50px",
+                }}
+                class="solenoid-pfp"
+                src={`${client.configuration?.features?.autumn?.url}/avatars/${message.member?.avatar?._id}`}
+                title={`${message.member?.avatar?.filename}`}
+              ></img>
+            ) : message.author?.avatar ? (
+              <img
+                style={{
+                  "max-width": "50px",
+                  "max-height": "50px",
+                }}
+                class="solenoid-pfp"
+                src={`${client.configuration?.features?.autumn?.url}/avatars/${message.author?.avatar?._id}`}
+                title={`${message.author?.avatar?.filename}`}
+              ></img>
+            ) : (
+              <img
+                style={{
+                  "max-width": "50px",
+                  "max-height": "50px",
+                }}
+                class="solenoid-pfp"
+                title="Default Avatar"
+                src={`https://api.revolt.chat/users/${message.author?._id}/default_avatar`}
+              ></img>
+            )}
+          </>
+        )}
         <span
           class={
             colour && colour.includes("gradient")
@@ -122,64 +126,97 @@ const Message: Component<MessageComponent> = ({
           <span class="solenoid-masquerade">(Masquerade)</span>
         )}
         {message.author?.bot && <span class="solenoid-bot">(Bot)</span>}
-        { !settings.experiments.compact &&<div class="badges">
-          <For each={badgeList}>
-            {(element: Badges) => {
-              if (element.id instanceof Array<string>) {
-                return (
-                  <For each={element.id}>
-                    {(e) => {
-                      if (e === message.author_id){
-                        return (
-                          <span class={element.bkg?.includes("gradient") ? css`
-                          background: ${element.bkg};
-                          font-weight: bold;
-                          padding: 2px;
-                          border-radius: 3px;
-                          margin-left: 0.5rem;
-                          margin-right: 0.5rem;
-                          color: ${element.colour ?? "#000"};
-                        ` : css`
-                          background-color: ${element.bkg ?? "#212121"};
-                          padding: 2px;
-                          border-radius: 3px;
-                          margin-left: 0.5rem;
-                          margin-right: 0.5rem;
-                          color: ${element.colour ?? "#fff"};
-                        `}>{element.title} {element.url && <img src={element.url} width={20} height={20} class="badgeIcon"/>}</span>
-                        )
+        {!settings.experiments.compact && (
+          <div class="badges">
+            <For each={badgeList}>
+              {(element: Badges) => {
+                if (element.id instanceof Array<string>) {
+                  return (
+                    <For each={element.id}>
+                      {(e) => {
+                        if (e === message.author_id) {
+                          return (
+                            <span
+                              class={
+                                element.bkg?.includes("gradient")
+                                  ? css`
+                                      background: ${element.bkg};
+                                      font-weight: bold;
+                                      padding: 2px;
+                                      border-radius: 3px;
+                                      margin-left: 0.5rem;
+                                      margin-right: 0.5rem;
+                                      color: ${element.colour ?? "#000"};
+                                    `
+                                  : css`
+                                      background-color: ${element.bkg ??
+                                      "#212121"};
+                                      padding: 2px;
+                                      border-radius: 3px;
+                                      margin-left: 0.5rem;
+                                      margin-right: 0.5rem;
+                                      color: ${element.colour ?? "#fff"};
+                                    `
+                              }
+                            >
+                              {element.title}{" "}
+                              {element.url && (
+                                <img
+                                  src={element.url}
+                                  width={20}
+                                  height={20}
+                                  class="badgeIcon"
+                                />
+                              )}
+                            </span>
+                          );
+                        }
+                      }}
+                    </For>
+                  );
+                } else if (
+                  typeof element.id === "string" &&
+                  message.author?._id === element.id
+                ) {
+                  return (
+                    <span
+                      class={
+                        element.bkg && element.bkg.includes("gradient")
+                          ? css`
+                              background: ${element.bkg};
+                              padding: 2px;
+                              border-radius: 3px;
+                              margin-left: 0.5rem;
+                              margin-right: 0.5rem;
+                            `
+                          : css`
+                              background-color: ${element.bkg ?? "#212121"};
+                              padding: 2px;
+                              border-radius: 3px;
+                              margin-left: 0.5rem;
+                              margin-right: 0.5rem;
+                            `
                       }
-                    }}
-                  </For>
-                )
-              } else if (typeof element.id === "string" && message.author?._id === element.id){
-                return (
-                  <span class={element.bkg && element.bkg.includes("gradient") ? css`
-                  background: ${element.bkg};
-                  padding: 2px;
-                  border-radius: 3px;
-                  margin-left: 0.5rem;
-                  margin-right: 0.5rem;
-                  ` : css`
-                    background-color: ${element.bkg ?? "#212121"};
-                    padding: 2px;
-                    border-radius: 3px;
-                    margin-left: 0.5rem;
-                    margin-right: 0.5rem;
-                  `}>{element.title} {element.url && <img src={element.url} width={15} height={15}/>}</span>
-                )
-              }}}
-          </For>
-        </div>} 
-        {
-          !settings.experiments.compact && (
+                    >
+                      {element.title}{" "}
+                      {element.url && (
+                        <img src={element.url} width={15} height={15} />
+                      )}
+                    </span>
+                  );
+                }
+              }}
+            </For>
+          </div>
+        )}
+        {!settings.experiments.compact && (
           <>
-            {message.reply_ids && message.reply_ids.length > 1 ?  (
+            {message.reply_ids && message.reply_ids.length > 1 ? (
               <span class="notimportant">
                 {" "}
                 (Replying to {message?.reply_ids?.length} messages)
               </span>
-              ) : (
+            ) : (
               <For each={message.reply_ids}>
                 {(r) => {
                   const msg = message.channel?.client.messages.get(r);
@@ -190,60 +227,73 @@ const Message: Component<MessageComponent> = ({
                   );
                 }}
               </For>
-        )}
+            )}
           </>
-          )
-        }
+        )}
 
         {settings.experiments.compact && message.reply_ids && (
           <>
-            <FiRepeat class="icon" color="#636363"/><span style="margin-right:5px">{message.reply_ids.length}</span>
+            <FiRepeat class="icon" color="#636363" />
+            <span style="margin-right:5px">{message.reply_ids.length}</span>
           </>
         )}
-        
-        {settings.experiments.compact && message.mentions?.find((e) => e?._id === client.user?._id) && (
-          <FiAtSign class="icon" color="rgb(122, 189, 255)"/>
-        )}
+
+        {settings.experiments.compact &&
+          message.mentions?.find((e) => e?._id === client.user?._id) && (
+            <FiAtSign class="icon" color="rgb(122, 189, 255)" />
+          )}
 
         {settings.experiments.compact && message.edited && (
           <FiEdit class="icon" color="rgb(122, 189, 255)" />
         )}
+        {!settings.experiments.compact && message.edited && (
+          <span class="notimportant">
+            Edited:{" "}
+            {settings.experiments.edited_format === "ISO"
+              ? message.edited.toISOString()
+              : settings.experiments.edited_format === "UTC"
+              ? message.edited.toUTCString()
+              : message.edited.toLocaleString()}
+          </span>
+        )}
 
         {settings.suffix && <span>{settings.showSuffix ? " says " : ":"}</span>}
-        
-        {settings.experiments.compact && <>
-        {editing() && editMessageId() === message._id ? (
-          <div class="message-container compact">
-            <textarea
-              value={newMessage()}
-              onChange={(e) => setNewMessage(e.currentTarget.value)}
-              autofocus
-              class="solenoid-send-input compact"
-            />
-            <div
-              role="button"
-              class="done"
-              onClick={() => {
-                message
-                  .edit({
-                    content: newMessage(),
-                  })
-                  .then(() => {
-                    setEditing(false);
-                    setNewMessage();
-                  });
-              }}
-            >
-              <span class="edit done">Done</span>
-            </div>
-          </div>
-        ) : (
-          <SolidMarkdown
-            class="solenoid-md compact"
-            children={message.content ?? undefined}
-        />
+
+        {settings.experiments.compact && (
+          <>
+            {editing() && editMessageId() === message._id ? (
+              <div class="message-container compact">
+                <textarea
+                  value={newMessage()}
+                  onChange={(e) => setNewMessage(e.currentTarget.value)}
+                  autofocus
+                  class="solenoid-send-input compact"
+                />
+                <div
+                  role="button"
+                  class="done"
+                  onClick={() => {
+                    message
+                      .edit({
+                        content: newMessage(),
+                      })
+                      .then(() => {
+                        setEditing(false);
+                        setNewMessage();
+                      });
+                  }}
+                >
+                  <span class="edit done">Done</span>
+                </div>
+              </div>
+            ) : (
+              <SolidMarkdown
+                class="solenoid-md compact"
+                children={message.content ?? undefined}
+              />
+            )}
+          </>
         )}
-        </>}
 
         <div class="button-container">
           {message.author?._id === client.user?._id && !editing() && (
@@ -295,39 +345,41 @@ const Message: Component<MessageComponent> = ({
           </div>
         </div>
       </div>
-      { !settings.experiments.compact && <div class="content">
-        {editing() && editMessageId() === message._id ? (
-          <div>
-            <textarea
-              value={newMessage()}
-              onChange={(e) => setNewMessage(e.currentTarget.value)}
-              autofocus
-              class="solenoid-send-input"
-            />
-            <div
-              role="button"
-              class="done"
-              onClick={() => {
-                message
-                  .edit({
-                    content: newMessage(),
-                  })
-                  .then(() => {
-                    setEditing(false);
-                    setNewMessage();
-                  });
-              }}
-            >
-              <span>Done</span>
+      {!settings.experiments.compact && (
+        <div class="content">
+          {editing() && editMessageId() === message._id ? (
+            <div>
+              <textarea
+                value={newMessage()}
+                onChange={(e) => setNewMessage(e.currentTarget.value)}
+                autofocus
+                class="solenoid-send-input"
+              />
+              <div
+                role="button"
+                class="done"
+                onClick={() => {
+                  message
+                    .edit({
+                      content: newMessage(),
+                    })
+                    .then(() => {
+                      setEditing(false);
+                      setNewMessage();
+                    });
+                }}
+              >
+                <span>Done</span>
+              </div>
             </div>
-          </div>
-        ) : (
-          <SolidMarkdown
-            class="solenoid-md"
-            children={message.content ?? undefined}
-          />
-        )}
-      </div>}
+          ) : (
+            <SolidMarkdown
+              class="solenoid-md"
+              children={message.content ?? undefined}
+            />
+          )}
+        </div>
+      )}
       {showPicker() &&
         editMessageId() === message._id &&
         settings.experiments.picker && (
