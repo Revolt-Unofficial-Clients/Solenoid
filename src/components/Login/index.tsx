@@ -130,7 +130,7 @@ const Login: Component<LoginComponent> = ({
                 type="text"
                 class="textarea"
                 placeholder="Token"
-                value={token()}
+                value={token() || ""}
                 onInput={(e: any) => setToken(e.currentTarget.value)}
               ></input>
               <button id="submit" type="submit">
@@ -162,7 +162,7 @@ const Login: Component<LoginComponent> = ({
                   id="email"
                   type="email"
                   placeholder="Email"
-                  value={email()}
+                  value={email() || ""}
                   onInput={(e: any) => setEmail(e.currentTarget.value)}
                 ></input>
                 <input
@@ -170,7 +170,7 @@ const Login: Component<LoginComponent> = ({
                   id="password"
                   type="password"
                   placeholder="Password"
-                  value={password()}
+                  value={password() || ""}
                   onInput={(e: any) => setPassword(e.currentTarget.value)}
                 ></input>
                 <input
