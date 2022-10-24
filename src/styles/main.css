@@ -12,11 +12,11 @@
   --image-hover: #3a3a3a;
   --fg-border: rgb(63, 63, 63);
   --fg-nav-button: rgb(79, 79, 79);
-  --accent: #FF5C9D;
-  --accent-button: #FF5C9D;
-  --accent-button-hover: #e36497;
-  --accent-button-active: #c76a8f;
-  --masquerade-bg: #804453;
+  --accent: #a8d5ff;
+  --accent-button: #5cc3ff;
+  --accent-button-hover: #64bfe3;
+  --accent-button-active: #6aa9c7;
+  --masquerade-bg: #5b4480;
   --dev-bg: linear-gradient(90deg, rgba(255, 121, 201, 1) 0%, rgba(204, 85, 252, 1) 49%, rgba(99, 87, 255, 1) 100%);
   --radius: 3px;
 }
@@ -195,10 +195,6 @@ div[class^="server"] p[class^="name"] {
 div[class^="solenoid-message"] .mentioned {
   background-color: #67a2dd;
   box-shadow: 0px 0px 20px #67a2dd;
-}
-
-div[class^="solenoid-message"] .mentioned:hover {
-  scale: 1.1;
 }
 
 .solenoid-message:hover {
