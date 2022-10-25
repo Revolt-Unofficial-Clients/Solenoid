@@ -83,8 +83,6 @@ const [newMode, setNewMode] = createSignal<
 >();
 const [newStatus, setNewStatus] = createSignal<string | null>();
 
-const [typing, setTyping] = createSignal<boolean>(false);
-
 // Solenoid Default Settings
 const [settings, setSettings] = createLocalStore<config>("settings", {
   show: false,
@@ -101,7 +99,8 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
     picker: false,
     compact: false,
     nick: false,
-    edited_format: "default"
+    edited_format: "default",
+    disappear: false
   },
 });
 
@@ -428,11 +427,11 @@ rvCLient.on("message", (msg) => {
 });
 
 function stopTyping() {
-  rvCLient.websocket.send({ type: "EndTyping", channel: servers.current_channel?._id})
+  if (!settings.experiments.disappear) rvCLient.websocket.send({ type: "EndTyping", channel: servers.current_channel?._id})
 }
 
 function startTyping() {
-  rvCLient.websocket.send({ type: "BeginTyping", channel: servers.current_channel?._id})
+  if (!settings.experiments.disappear) rvCLient.websocket.send({ type: "BeginTyping", channel: servers.current_channel?._id})
 }
 
 const debouncedStopTyping = createMemo(debounce(stopTyping as (...args: unknown[]) => void, 1000))
@@ -807,7 +806,7 @@ const App: Component = () => {
           </div>
           <div id="solenoid-setting solenoid-notifications">
             <h3>Notifications</h3>
-            <p>Notifications provided through solenoid.</p>
+            {Notification.permission !== "granted" && <p>Enable solenoid notifications on mention.</p>}
             <button onClick={ async () => {
               const permission = await Notification.requestPermission();
               if (permission === "granted") {
@@ -819,8 +818,8 @@ const App: Component = () => {
               disabled={Notification.permission === "granted"}>Grant Permission</button>
           </div>
           <div id="solenoid-setting solenoid-showUsernames">
-            <h3>Suffix</h3>
-            <p>Whether to add "says:" after a username.</p>
+            <h3>Suffix Style</h3>
+            <p>Change how suffixes look.</p>
             <button
               onClick={() => {
                 if (settings.newShowSuffix) {
@@ -835,7 +834,7 @@ const App: Component = () => {
           </div>
           <div id="solenoid-setting solenoid-nosuffix">
             <h3>Toggle Suffix</h3>
-            <p>Whether to show the suffix</p>
+            <p>Whether to show a suffix after a message. Works better with compact mode.</p>
             <button
               onClick={() =>
                 settings.suffix
@@ -925,8 +924,8 @@ const App: Component = () => {
             </button>
           </div>
           <div id="solenoid-setting solenoid-show-imgs">
-            <h3>Image Rendering</h3>
-            <p>Whether to show images in Solenoid. Disabling will may save network's bandwitdh, useful when mobile data is on. [Affects all images]</p>
+            <h3>Attachment Rendering</h3>
+            <p>Whether to show attachments in Solenoid. Disabling attachments may save network's bandwidth, useful when mobile data is on.</p>
             <button
               onClick={() => {
                 settings.showImages
@@ -937,21 +936,10 @@ const App: Component = () => {
               {settings.showImages ? "True" : "False"}
             </button>
           </div>
-          <div id="solenoid-setting solenoid-img-zoom">
-            <h3>Image Zoom Level</h3>
-            <p>
-              Smaller the number, bigger the image. 0 is original size, Affects
-              all images. (Don't put longer number it cause the image become very big which make then hard to fit properly)
-            </p>
-            <input
-              type="number"
-              value={settings.zoomLevel}
-              onChange={(e: any) => onInputChange(e, "zoom")}
-            ></input>
-          </div>
           <div id="solenoid-setting solenoid-debug">
-            <h3>Debug Mode</h3>
-            <p>Enables Logging and stuff</p>
+            <h3>Debug</h3>
+            <h4>Enable logging</h4>
+            <p>This enables logging some useful information to console.</p>
             <button
               onClick={() =>
                 settings.debug
@@ -965,6 +953,7 @@ const App: Component = () => {
           <div id="solenoid-setting solenoid-experiments">
             <h3>Experiments</h3>
             <h4>Emoji Picker</h4>
+            <p>Enable experimental emoji/gif picker.</p>
             <button
               onClick={() =>
                 settings.experiments.picker
@@ -975,6 +964,7 @@ const App: Component = () => {
               {settings.experiments.picker ? "Enabled" : "Disabled"}
             </button>
             <h4>Compact Mode</h4>
+            <p>Enable experimental Compact mode. Makes solenoid more compact and sleek.</p>
             <button
               onClick={() => {
                 settings.experiments.compact
@@ -985,16 +975,29 @@ const App: Component = () => {
               {settings.experiments.compact ? "Enabled" : "Disabled"}
             </button>
             <h4>Serverside Nickname Changer</h4>
+            <p>Enable an Server Identity changer.</p>
             <button
               onClick={() => {
-                settings.experiments.compact
+                settings.experiments.nick
                   ? setSettings("experiments", "nick", false)
                   : setSettings("experiments", "nick", true);
               }}
             >
               {settings.experiments.nick ? "Enabled" : "Disabled"}
             </button>
+            <h4>Dissapear</h4>
+            <p>Do not appear on typing indicators</p>
+            <button
+              onClick={() => {
+                settings.experiments.nick
+                  ? setSettings("experiments", "disappear", false)
+                  : setSettings("experiments", "disappear", true);
+              }}
+            >
+              {settings.experiments.disappear ? "Enabled" : "Disabled"}
+            </button>
             <h4>Edit indicator Format</h4>
+            <p>Change how edit indicators show dates.</p>
             <select id="indicator" title="Options: ISO, UTC or Default" onChange={(e) => setSettings("experiments", "edited_format", e.currentTarget.value)} value={settings.experiments.edited_format || "default"}>
               <option value={"ISO"}>ISO Format</option>
               <option value={"UTC"}>UTC Format</option>

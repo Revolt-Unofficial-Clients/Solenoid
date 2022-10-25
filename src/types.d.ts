@@ -65,6 +65,7 @@ declare interface settings {
         picker: boolean,
         compact: boolean,
         nick: boolean,
-        edited_format: "ISO" | "UTC" | "default" | string
+        edited_format: "ISO" | "UTC" | "default" | string,
+        disappear: boolean
     }
 }
