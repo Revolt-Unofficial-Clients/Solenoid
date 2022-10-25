@@ -264,6 +264,7 @@ async function sendFile(content: string) {
       content,
       nonce,
       attachments,
+      replies: replies()
     });
   } catch (e: unknown) {
     if (settings.debug) console.log((e as any).message);
@@ -426,18 +427,12 @@ rvCLient.on("message", (msg) => {
   }
 });
 
-// FIXME: this
-function stopTyping(force?: boolean) {
-  if (force || typing()) {
-    servers.current_channel?.stopTyping();
-    setTyping(false);
-  }
+function stopTyping() {
+  rvCLient.websocket.send({ type: "EndTyping", channel: servers.current_channel?._id})
 }
 
-// FIXME: that
 function startTyping() {
-  servers.current_channel?.startTyping();
-  setTyping(true);
+  rvCLient.websocket.send({ type: "BeginTyping", channel: servers.current_channel?._id})
 }
 
 const debouncedStopTyping = createMemo(debounce(stopTyping as (...args: unknown[]) => void, 1000))
@@ -620,7 +615,9 @@ const App: Component = () => {
               }
               value={newMessage()}
               onChange={(e: any) => {
-                onInputChange(e, "newMessage")
+                onInputChange(e, "newMessage") 
+              }}
+              onInput={(e) => {
                 startTyping();
               }}
               onKeyDown={(e) => {
