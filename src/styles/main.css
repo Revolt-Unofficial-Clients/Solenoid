@@ -423,7 +423,7 @@ div[class="solenoid-channelList"] {
 img[class^="solenoid-banner"] {
   width: 35rem;
   height: 102%;
-  border: 1px solid red;
+  /* DEBUG: border: 1px solid red; */
   filter: blur(4px) grayscale(50%);
 }
 

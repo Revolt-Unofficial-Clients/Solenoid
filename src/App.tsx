@@ -4,11 +4,13 @@ import {
   enableExternalSource,
   For,
   createEffect,
+  on,
+  createMemo,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import { Client, Message } from "revolt.js";
 import { Reaction, runInAction } from "mobx";
-import { createLocalStore, createLocalSignal } from "./utils";
+import { createLocalStore, createLocalSignal, debounce } from "./utils";
 import Axios from "axios";
 import "./styles/main.css";
 import { ulid } from "ulid";
@@ -80,6 +82,8 @@ const [newMode, setNewMode] = createSignal<
   "Online" | "Idle" | "Focus" | "Busy" | "Invisible" | undefined | null
 >();
 const [newStatus, setNewStatus] = createSignal<string | null>();
+
+const [typing, setTyping] = createSignal<boolean>(false);
 
 // Solenoid Default Settings
 const [settings, setSettings] = createLocalStore<config>("settings", {
@@ -422,6 +426,22 @@ rvCLient.on("message", (msg) => {
   }
 });
 
+// FIXME: this
+function stopTyping(force?: boolean) {
+  if (force || typing()) {
+    servers.current_channel?.stopTyping();
+    setTyping(false);
+  }
+}
+
+// FIXME: that
+function startTyping() {
+  servers.current_channel?.startTyping();
+  setTyping(true);
+}
+
+const debouncedStopTyping = createMemo(debounce(stopTyping as (...args: unknown[]) => void, 1000))
+
 rvCLient.on("message/delete", (id) => {
   const newArray = servers.messages?.filter((e) => id == e._id);
   setServers("messages", newArray);
@@ -452,6 +472,8 @@ setInterval(() => {
     });
   }
 }, 2000);
+
+
 
 // Automatically log in when session is found and not logged in
 if (settings.session && !loggedIn()) loginWithSession(settings.session);
@@ -593,10 +615,17 @@ const App: Component = () => {
                     }`
                   : replies().length === 1
                   ? `Replying to ${replies()[0].id}`
-                  : "Type What you Think"
+                  : servers.current_channel?.typing ? `Type What you Think, ${servers.current_channel.typing.length} users typing.`
+                  : "Type what you think."
               }
               value={newMessage()}
-              onChange={(e: any) => onInputChange(e, "newMessage")}
+              onChange={(e: any) => {
+                onInputChange(e, "newMessage")
+                startTyping();
+              }}
+              onKeyDown={(e) => {
+                debouncedStopTyping();
+              }}
               wrap="soft"
               maxlength={2000}
               autofocus
