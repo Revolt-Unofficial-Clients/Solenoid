@@ -402,7 +402,7 @@ const Message: Component<MessageComponent> = ({
           } else if (attachment.metadata.type === "Image") {
             //Basic image support :D
             return (
-              <img
+              <a href={`https://autumn.revolt.chat/attachments/${attachment._id}`} target="_blank" rel="noopener noreferrer"><img
                 class="solenoid-message-image"
                 src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
                 width={
@@ -416,6 +416,7 @@ const Message: Component<MessageComponent> = ({
                     : attachment.metadata.height
                 }
               />
+            </a>
             );
           } else if (attachment.metadata.type === "Video") {
             return (
