@@ -59,7 +59,7 @@ export const Picker: Component<props> = (props) => {
   }
 
   function addToText(s: string) {
-    props.setMessage(props.message() + " " + s);
+    props.setMessage(props.message() + s);
   }
 
   async function searchGB() {
