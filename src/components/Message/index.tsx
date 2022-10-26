@@ -28,6 +28,8 @@ interface MessageComponent {
   setter: Setter<reply[]>;
   colour: string | undefined;
   deleteFunction: any;
+  setTextbox?: Setter<string> | any;
+  textbox?: Accessor<string> | any;
 }
 
 const [editing, setEditing] = createSignal<boolean>(false);
@@ -44,6 +46,8 @@ const Message: Component<MessageComponent> = ({
   signal,
   colour,
   deleteFunction,
+  textbox,
+  setTextbox
 }) => {
   return (
     <div
@@ -57,7 +61,7 @@ const Message: Component<MessageComponent> = ({
     >
       <div class="solenoid-message-author">
         {!settings.experiments.compact && (
-          <>
+          <a onClick={() => setTextbox(textbox() + `<@${message.author?._id}>`)}>
             {message.masquerade?.avatar ? (
               <img
                 style={{
@@ -98,7 +102,7 @@ const Message: Component<MessageComponent> = ({
                 src={`https://api.revolt.chat/users/${message.author?._id}/default_avatar`}
               ></img>
             )}
-          </>
+          </a>
         )}
         <span
           class={

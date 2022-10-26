@@ -551,6 +551,8 @@ const App: Component = () => {
                       setter={setReplies}
                       signal={replies}
                       deleteFunction={deleteMessage}
+                      textbox={newMessage}
+                      setTextbox={setNewMessage}
                     />
                   </>
                 );
