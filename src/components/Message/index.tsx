@@ -394,7 +394,8 @@ const Message: Component<MessageComponent> = ({
             setOpen={setShowPicker}
           />
         )}
-      <For each={message.attachments}>
+        <div class="attachments">
+          <For each={message.attachments}>
         {(attachment) => {
           if (!settings.showImages) {
             return (
@@ -450,6 +451,7 @@ const Message: Component<MessageComponent> = ({
           }
         }}
       </For>
+        </div>
     </div>
   );
 };
