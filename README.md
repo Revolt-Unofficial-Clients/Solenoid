@@ -1,4 +1,4 @@
-# Solenoid [![Build Status](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml/badge.svg)](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml)
+# <img src="https://github.com/stationaryStation/Solenoid/blob/ui/src/assets/favicon.png?raw=true" width="24" height="24" /> Solenoid [![Build Status](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml/badge.svg)](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml)
 A minimal, yet functional third-party revolt.chat client
 
 ### Reasons to use it
