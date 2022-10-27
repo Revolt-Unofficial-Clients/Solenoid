@@ -1,0 +1,22 @@
+@font-face {
+    font-family: "Inter Bold";
+    src: url("./Inter/Inter-Bold.ttf");
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: "Inter Regular";
+    src: url("./Inter/Inter-Regular.ttf");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: "Poppins Regular";
+    src: url("./Poppins/Poppins-Regular.ttf");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: "Red Hat Display Regular";
+    src: url("./RedHatDisplay/RedHatDisplay-Regular.ttf");
+}

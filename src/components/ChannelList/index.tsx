@@ -10,11 +10,12 @@ interface ChannelComponent {
 const ChannelList: Component<ChannelComponent> = (props) => {
   
   return (
-    <div class="solenoid-server-info-container">
+    <>
       <div class="solenoid-server-banner-container">
         {props.server.banner && (
           <img
             class="solenoid-banner"
+            width={256}
             src={`https://autumn.revolt.chat/banners/${props.server.banner?._id}`}
           />
         )}
@@ -46,7 +47,7 @@ const ChannelList: Component<ChannelComponent> = (props) => {
           )}
         </For>
       </div>
-    </div>
+    </>
   );
 };
 

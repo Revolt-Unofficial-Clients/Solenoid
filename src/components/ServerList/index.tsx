@@ -17,14 +17,15 @@ const ServerList: Component<ServerListComponent> = ({
     <For each={serverlist()}>
       {(server) => (
         <div onClick={() => setter(server._id)} class={"server"}>
-          {server.icon && (
+          {server.icon ? (
             <img
               src={`${client.configuration?.features?.autumn?.url}/icons/${server.icon._id}?max-side=256`}
               width={32}
               height={32}
             />
+          ) : (
+            <div class="icon">{server.name.toLocaleUpperCase().substring(0,2)}</div>
           )}
-          <p class="name">{server.name}</p>
         </div>
       )}
     </For>
