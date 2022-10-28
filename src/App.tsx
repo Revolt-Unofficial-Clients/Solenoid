@@ -490,6 +490,7 @@ const App: Component = () => {
           <ServerList
             client={rvCLient}
             setter={setServer}
+            server_list={servers.server_list}
             />
         </div>
         <div class="channelcontainer">

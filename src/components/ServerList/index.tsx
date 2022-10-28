@@ -4,6 +4,7 @@ import type { Server, Client } from "revolt.js";
 interface ServerListComponent {
   client: Client;
   setter: any;
+  server_list?: Server[] | undefined;
 }
 
 const [serverlist, setServerList] = createSignal<Server[] | undefined>();
@@ -11,10 +12,11 @@ const [serverlist, setServerList] = createSignal<Server[] | undefined>();
 const ServerList: Component<ServerListComponent> = ({
   client,
   setter,
+  server_list
 }) => {
   setServerList(Array.from(client.servers.values()));
   return (
-    <For each={serverlist()}>
+    <For each={server_list || serverlist()}>
       {(server) => (
         <div onClick={() => setter(server._id)} class={"server"}>
           {server.icon ? (
