@@ -90,8 +90,8 @@
 .grad {
   background: linear-gradient(0deg,#000,transparent);
   position: absolute;
-  height: 10rem;
-  width: 26.8vmin;
+  height: 9rem;
+  width: 27vmin;
   top: 90px;
   z-index: 5;
 }
@@ -107,6 +107,8 @@ div[class="solenoid-channelList"] {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  overflow-y: scroll;
+  height: 77%;
 }
 
 div[class~="solenoid-channel"] {
@@ -127,7 +129,7 @@ div[class="solenoid-channel active"] {
 .userbar {
   grid-area: 4/1;
   height: 10vmin;
-  background-color: var(--teritary);
+  background-color: var(--tertiary);
   font-family: "Red Hat Display Regular";
   display: flex;
   align-items: center;
@@ -144,7 +146,7 @@ div[class="solenoid-channel active"] {
 
 .textbox {
   grid-area: 4/2;
-  background-color: var(--teritary);
+  background-color: var(--tertiary);
   height: 10vmin;
   display: flex;
 }
@@ -173,6 +175,7 @@ div[class="solenoid-channel active"] {
   height: auto;
   display: block;
   overflow: hidden;
+  color: #fff;
 }
 
 .solenoid-message .attachments {
@@ -188,9 +191,9 @@ div[class="solenoid-channel active"] {
 }
 
 .solenoid-message-author {
-  border: 1px solid red;
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .badges {
@@ -220,3 +223,6 @@ div[class="solenoid-channel active"] {
   opacity: 1;
 }
 
+.solenoid-pfp {
+  border-radius: 5px;
+}
