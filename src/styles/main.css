@@ -47,7 +47,7 @@
   height: 32px;
 }
 
-.serverbar > .server:hover {
+.server:hover {
   background-color: rgb(47, 47, 47);
 }
 
@@ -71,11 +71,12 @@
   display: block;
   top: 75%;
   margin-left: 15px;
+  z-index: 6;
 }
 
 .solenoid-server-banner-container {
-  background: linear-gradient(0deg,#000,transparent);
   height: 10rem;
+  margin-bottom: 10px;
 }
 
 .solenoid-banner {
@@ -84,6 +85,15 @@
   top:-14%;
   height: 90%;
   width: 100%;
+}
+
+.grad {
+  background: linear-gradient(0deg,#000,transparent);
+  position: absolute;
+  height: 10rem;
+  width: 26.8vmin;
+  top: 90px;
+  z-index: 5;
 }
 
 .channelcontainer {
@@ -117,7 +127,7 @@ div[class="solenoid-channel active"] {
 .userbar {
   grid-area: 4/1;
   height: 10vmin;
-  background-color: rgb(94, 106, 138);
+  background-color: var(--teritary);
   font-family: "Red Hat Display Regular";
   display: flex;
   align-items: center;
@@ -134,7 +144,7 @@ div[class="solenoid-channel active"] {
 
 .textbox {
   grid-area: 4/2;
-  background-color: blue;
+  background-color: var(--teritary);
   height: 10vmin;
   display: flex;
 }
@@ -152,7 +162,7 @@ div[class="solenoid-channel active"] {
 
 .messages {
   grid-area: 2/2/4/2;
-  background-color: bisque;
+  background-color: var(--messages-background);
   overflow-y: auto;
   font-family: 'Red Hat Display Regular';
   word-wrap: break-word;

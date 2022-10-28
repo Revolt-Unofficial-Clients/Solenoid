@@ -63,8 +63,7 @@ const Login: Component<LoginComponent> = ({
         .login({
           email: email,
           password: password,
-          friendly_name: "Solenoid Client Beta",
-          captcha: captchaToken(),
+          friendly_name: "Solenoid Client Beta"
         })
         .catch((e) => {
           throw e;
@@ -150,7 +149,7 @@ const Login: Component<LoginComponent> = ({
                       }
                     );
                   } catch (e) {
-                    console.error(e);
+                   setError((e as any)); 
                   }
                 }
               }}
@@ -180,10 +179,6 @@ const Login: Component<LoginComponent> = ({
                   placeholder="2fa Token (Optional, Not yet implemented)"
                   disabled
                 ></input>
-                <HCaptcha
-                  sitekey={captchaKey}
-                  onVerify={(token) => setCaptchaToken(token)}
-                />
                 <button id="submit" type="submit">
                   Login
                 </button>

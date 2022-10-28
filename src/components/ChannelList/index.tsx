@@ -1,6 +1,7 @@
 import type { Component} from "solid-js";
 import { For } from "solid-js";
 import type { Server, Channel } from "revolt.js";
+import { css } from "solid-styled-components";
 interface ChannelComponent {
   server: Server;
   channelSetter: (channel_id: string) => void;
@@ -11,8 +12,9 @@ const ChannelList: Component<ChannelComponent> = (props) => {
   
   return (
     <>
-      <div class="solenoid-server-banner-container">
+      <div class={"solenoid-server-banner-container"}>
         <span class="servername">{props.server.name}</span>
+        <div class="grad" />
         {props.server.banner && (
           <img
             class="solenoid-banner"
