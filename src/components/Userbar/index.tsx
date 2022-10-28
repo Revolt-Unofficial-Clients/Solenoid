@@ -13,8 +13,8 @@ const UserInfo: Component<user_information> = (props) => {
     return (
         <>  
             <img src={avatar_url} width={32} height={32} />
-            <span>@{props.client.user?.username}</span>
-            <span>Settings</span>
+            <span class="userbar-username">@{props.client.user?.username}</span>
+            <span class="userbar-icon">Settings</span>
         </>
     )
 }

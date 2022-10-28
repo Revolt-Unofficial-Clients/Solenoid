@@ -410,16 +410,8 @@ const Message: Component<MessageComponent> = ({
               <a href={`https://autumn.revolt.chat/attachments/${attachment._id}`} target="_blank" rel="noopener noreferrer"><img
                 class="solenoid-message-image"
                 src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
-                width={
-                  attachment.metadata.width > 500
-                    ? attachment.metadata.width / settings.zoomLevel
-                    : attachment.metadata.width
-                }
-                height={
-                  attachment.metadata.height > 500
-                    ? attachment.metadata.height / settings.zoomLevel
-                    : attachment.metadata.height
-                }
+                width={attachment.metadata.width}
+                height={attachment.metadata.height}
               />
             </a>
             );
@@ -428,6 +420,8 @@ const Message: Component<MessageComponent> = ({
               <video
                 class="solenoid-message-video"
                 src={`${client.configuration?.features.autumn.url}/attachments/${attachment._id}`}
+                width={attachment.metadata.width}
+                height={attachment.metadata.height}
                 controls
               />
             );

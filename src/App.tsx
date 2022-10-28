@@ -507,10 +507,17 @@ const App: Component = () => {
             }
             </For>
         </div>
-        <div class="settings">
+        <div class="userbar">
           <UserInfo client={rvCLient} />
         </div>
-        <div class="textbox"></div>
+        <div class="textbox">{
+          servers.current_channel && 
+          <>
+            <div role="button"><FiUpload/></div>
+            <textarea value={newMessage() || ""} onChange={(e) => setNewMessage(e.currentTarget.value)} />
+            <div role="button" onClick={() => sendMessage(newMessage())}><span>Send</span></div>
+          </>
+        }</div>
       </div>
     </>
   );

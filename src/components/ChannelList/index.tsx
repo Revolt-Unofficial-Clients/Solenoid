@@ -12,12 +12,13 @@ const ChannelList: Component<ChannelComponent> = (props) => {
   return (
     <>
       <div class="solenoid-server-banner-container">
+        <span class="servername">{props.server.name}</span>
         {props.server.banner && (
           <img
             class="solenoid-banner"
             width={256}
             src={`https://autumn.revolt.chat/banners/${props.server.banner?._id}`}
-          />
+          ></img>
         )}
       </div>
       <div class="solenoid-channelList">

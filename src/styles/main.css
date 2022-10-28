@@ -1,4 +1,5 @@
 @import url("./fonts/fonts.css");
+@import url("./colors.css");
 
 #root, body {
   margin: 0;
@@ -9,15 +10,17 @@
 }
 
 .grid {
+  margin: 0;
+  padding: 0;
   border: red 1px solid;
   display: grid;
-  grid-template-rows: 7vmin 74vmin 10vmin;
-  grid-template-columns: 25vmin auto; 
+  grid-template-rows: 7vmin 74vmin 8vmin;
+  grid-template-columns: 27vmin auto; 
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   grid-auto-flow: row dense;
   width: 100%;
-  height: 101vmin;
+  height: 100%;
 }
 .serverbar {
   grid-area: 1/1/1/3;
@@ -32,23 +35,61 @@
 .serverbar > .server {
   display: flex;
   background-color: rgb(92, 92, 92);
-  padding: 5px;
-  margin-left: 5px;
+  padding: 10px;
+  margin-left: 0px;
   margin-right: 5px;
+  margin:5px;
   align-items: center;
+  justify-content: center;
   gap: 5px;
+  border-radius: 5px;
+  width: 32px;
+  height: 32px;
+}
+
+.serverbar > .server:hover {
+  background-color: rgb(47, 47, 47);
 }
 
 .serverbar > .server > .icon {
   padding: 5px;
+  border-radius: 2px;
   background-color: black;
-  color: white
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  color: white;
+  border-radius: 5px;
+}
+
+.solenoid-server-banner-container .servername  {
+  font-family: "Red Hat Display Bold";
+  font-size: 20px;
+  color: #fff;
+  z-index: 2;
+  position: relative;
+  display: block;
+  top: 75%;
+  margin-left: 15px;
+}
+
+.solenoid-server-banner-container {
+  background: linear-gradient(0deg,#000,transparent);
+  height: 10rem;
+}
+
+.solenoid-banner {
+  position: relative;
+  display: block;
+  top:-14%;
+  height: 90%;
+  width: 100%;
 }
 
 .channelcontainer {
   grid-area: 2/2/4/1;
   height: 100%;
-  background-color: rgb(27, 34, 59);
+  background-color: var(--sidebar-background);
   font-family: "Inter Regular";
 }
 
@@ -58,33 +99,114 @@ div[class="solenoid-channelList"] {
   gap: 5px;
 }
 
-div[class="solenoid-channel "] {
+div[class~="solenoid-channel"] {
   display: flex;
   align-items: center;
   gap: 5px;
   padding: 5px;
-  margin: 10px;
+  background-color: inherit;
   margin-top: 5px;
   margin-bottom: 5px;
-  background-color: aquamarine;
+  color: var(--foreground);
 }
 
-.settings {
+div[class="solenoid-channel active"] {
+  background-color: var(--accent);
+}
+
+.userbar {
   grid-area: 4/1;
   height: 10vmin;
   background-color: rgb(94, 106, 138);
   font-family: "Red Hat Display Regular";
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.settings img {
+  border-radius: 5px;
+}
+
+.settings span {
+  float: right;
 }
 
 .textbox {
   grid-area: 4/2;
   background-color: blue;
   height: 10vmin;
+  display: flex;
+}
+
+.textbox textarea {
+  width: 100%;
+}
+
+.textbox div {
+  display: flex;
+  margin-left: 10px;
+  margin-right: 10px;
+  align-items: center;
 }
 
 .messages {
   grid-area: 2/2/4/2;
   background-color: bisque;
   overflow-y: auto;
+  font-family: 'Red Hat Display Regular';
+  word-wrap: break-word;
+}
+
+.solenoid-message {
+  width: 99.8%;
+  height: auto;
+  display: block;
+  overflow: hidden;
+}
+
+.solenoid-message .attachments {
+  display: block;
+  width: 100%;
+  height: auto;
+  flex-direction: column;
+}
+
+.solenoid-message .solenoid-message-image {
+  width: 60%; 
+  height: 60%;
+}
+
+.solenoid-message-author {
+  border: 1px solid red;
+  display: flex;
+  align-items: center;
+}
+
+.badges {
+  font-family: "Red Hat Display Bold";
+  display: flex;
+  align-items: center;
+}
+
+.badges span {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.messages div[class^="button-container"] {
+  transition: all 300ms;
+  display: flex;
+  gap: 10px;
+  margin-left: 5px;
+  opacity: 0;
+  background-color: lightsalmon;
+  padding: 2px 5px;
+}
+
+.solenoid-message:hover div[class^="button-container"] {
+  opacity: 1;
 }
 
