@@ -86,7 +86,7 @@
 }
 
 .grad {
-  background: linear-gradient(0deg,#000,transparent);
+  background: linear-gradient(0deg,var(--sidebar-background),transparent);
   position: absolute;
   height: 9rem;
   width: 27vmin;
@@ -98,13 +98,12 @@
   grid-area: 2/2/4/1;
   height: 100%;
   background-color: var(--sidebar-background);
-  font-family: "Inter Regular";
+  font-family: "Red Hat Display Regular";
 }
 
 div[class="solenoid-channelList"] {
   display: flex;
   flex-direction: column;
-  gap: 5px;
   overflow-y: scroll;
   height: 77%;
 }
@@ -114,14 +113,26 @@ div[class~="solenoid-channel"] {
   align-items: center;
   gap: 5px;
   padding: 5px;
+  width: auto;
+  height: 48px;
   background-color: inherit;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  padding-left: 10px;
   color: var(--foreground);
 }
 
 div[class="solenoid-channel active"] {
-  background-color: var(--accent);
+  background-color: var(--active);
+  font-family: "Red Hat Display Bold";
+}
+
+.hashicon:not(img) {
+  font-size: 24px;
+  font-family: "Poppins Bold";
+  color: #1D6394;
+}
+
+div[class="solenoid-channel active"] .hashicon:not(img) {
+  color: #CDE4F5;
 }
 
 .userbar {
@@ -210,7 +221,11 @@ div[class="solenoid-channel active"] {
   font-family: "Inter Regular";
 }
 
-.solenoid-message .solenoid-message-image {
+span.noicon {
+  font-family: "Red Hat Display Bold";
+}
+
+.solenoid-message .solenoid-message-image, .solenoid-message .solenoid-message-video {
   width: 30%; 
   height: auto;
 }

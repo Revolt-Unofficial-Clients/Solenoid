@@ -5,7 +5,8 @@ import { css } from "solid-styled-components";
 import server_type from "../../assets/servers/servers.json";
 
 
-import RVerified from "../../assets/servers/revolt_r.svg?component";
+import client from "../../assets/servers/client.png";
+import server from "../../assets/servers/verified.png"
 interface ChannelComponent {
   server: Server;
   channelSetter: (channel_id: string) => void;
@@ -18,8 +19,8 @@ const ChannelList: Component<ChannelComponent> = (props) => {
     <>
       <div class={"solenoid-server-banner-container"}>
         <span class="servername">
-        {server_type.find((e) => e.id === props.server._id && e.type === "r") && <img src="/src/assets/servers/verified.png"width={24} height={24} />} 
-        {server_type.find((e) => e.id === props.server._id && e.type === "s") && <img src="/src/assets/servers/client.png" width={24} height={24} />}
+        {server_type.find((e) => e.id === props.server._id && e.type === "r") && <img src={server} width={24} height={24} />} 
+        {server_type.find((e) => e.id === props.server._id && e.type === "s") && <img src={client} width={24} height={24} />}
         {props.server.name}</span>
         <div class="grad" />
         {props.server.banner && (

@@ -26,7 +26,7 @@ const ServerList: Component<ServerListComponent> = ({
               height={32}
             />
           ) : (
-            <div class="icon"><span>{server.name.toLocaleUpperCase().substring(0,2)}</span></div>
+            <div class="icon"><span class="noicon">{server.name.toLocaleUpperCase().substring(0,2)}</span></div>
           )}
         </div>
       )}

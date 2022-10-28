@@ -17,6 +17,12 @@
 }
 
 @font-face {
+    font-family: "Poppins Bold";
+    src: url("./Poppins/Poppins-SemiBold.ttf");
+    font-weight: 700;
+}
+
+@font-face {
     font-family: "Red Hat Display Regular";
     src: url("./RedHatDisplay/RedHatDisplay-Regular.ttf");
 }
