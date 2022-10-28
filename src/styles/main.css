@@ -26,7 +26,7 @@
   grid-area: 1/1/1/3;
   width: auto;
   height: 100%;
-  background-color: rgb(61, 79, 136);
+  background-color: var(--server-background);
   display: flex;
   flex-direction: row;
   overflow: auto;
@@ -34,7 +34,7 @@
 
 .serverbar > .server {
   display: flex;
-  background-color: rgb(92, 92, 92);
+  background-color: var(--tertiary);
   padding: 10px;
   margin-left: 0px;
   margin-right: 5px;
@@ -48,16 +48,14 @@
 }
 
 .server:hover {
-  background-color: rgb(47, 47, 47);
+  background-color: var(--hover);
 }
 
 .serverbar > .server > .icon {
-  padding: 5px;
   border-radius: 2px;
-  background-color: black;
-  width: 24px;
-  height: 24px;
-  text-align: center;
+  background-color: inherit;
+  align-items: center;
+  justify-content: center;
   color: white;
   border-radius: 5px;
 }
@@ -66,12 +64,12 @@
   font-family: "Red Hat Display Bold";
   font-size: 20px;
   color: #fff;
-  z-index: 2;
-  position: relative;
-  display: block;
-  top: 75%;
-  margin-left: 15px;
   z-index: 6;
+  position: relative;
+  display: flex;
+  gap: 10px;
+  top: 70%;
+  margin-left: 15px;
 }
 
 .solenoid-server-banner-container {
@@ -152,6 +150,12 @@ div[class="solenoid-channel active"] {
   flex-direction: column;
 }
 
+.textbox div.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .textbox textarea {
   width: 100%;
 }
@@ -180,12 +184,15 @@ div[class="solenoid-channel active"] {
 }
 
 .solenoid-message {
-  width: 99%;
+  width: 100%;
   height: auto;
   display: block;
   overflow: hidden;
   color: #fff;
-  margin: 10px;
+}
+
+.solenoid-message .solenoid-message-author, .solenoid-message .solenoid-md {
+  margin:5px
 }
 
 .solenoid-message.mentioned {
@@ -199,9 +206,13 @@ div[class="solenoid-channel active"] {
   flex-direction: column;
 }
 
+.solenoid-md {
+  font-family: "Inter Regular";
+}
+
 .solenoid-message .solenoid-message-image {
-  width: 60%; 
-  height: 60%;
+  width: 30%; 
+  height: auto;
 }
 
 .solenoid-message-author {
@@ -214,6 +225,17 @@ div[class="solenoid-channel active"] {
   font-family: "Red Hat Display Bold";
   display: flex;
   align-items: center;
+}
+
+.uploadimg {
+  display: none;
+}
+
+.attachmentbar {
+  position: absolute;
+  display: flex;
+  width: 10rem;
+  height: 25rem;
 }
 
 .badges span {

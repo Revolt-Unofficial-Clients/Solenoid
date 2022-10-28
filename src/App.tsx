@@ -511,7 +511,16 @@ const App: Component = () => {
         <div class="userbar">
           <UserInfo client={rvCLient} />
         </div>
-        {images() && <div class="attachmentbar"></div>}
+        {images() && imgUrls() && <div class="attachmentbar">
+            <For each={imgUrls()}>
+              {(img) => <img class="preview" src={img} />}
+            </For>
+            <div onclick={() => {
+              setImages(null);
+              setImgUrls(null);
+            }}
+            class="remove"/>
+        </div>}
         <div class="textbox">{
           servers.current_channel && 
           <>
@@ -523,7 +532,7 @@ const App: Component = () => {
                   x.relationship !== "Blocked",
               )}>{
                 (user) => {
-                  return <img width={32} height={32} src={user?.generateAvatarURL({max_side: 256})}/>
+                  return <img width={32} height={32} src={user?.generateAvatarURL({max_side: 256})} class="solenoid-pfp"/>
                 }
               }</For> 
               <span>{() => {
@@ -554,7 +563,8 @@ const App: Component = () => {
 
               }}}</span></div>
               <div class="tb">
-                <div role="button"><FiUpload/></div>
+                <input class="uploadimg" type="file" multiple name="upload" id="upload" accept="image/png,image/jpeg,image/gif,video/mp4" onchange={onImageChange} />
+                <label for="upload" role="button"><FiUpload/></label>
                 <textarea value={newMessage() || ""} onChange={(e) => setNewMessage(e.currentTarget.value)} />
                 <div role="button" onClick={() => sendMessage(newMessage())}><span>Send</span></div>
               </div>

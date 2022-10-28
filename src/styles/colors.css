@@ -4,8 +4,10 @@
     --messages-background: #001C2A;
     --foreground: #E6FAFC;
     --active: #0075C4;
-    --inactive: #60435f;
-    --tertiary: #002B48;
-    --server-background: #406F87;
+    --inactive: #728A97;
+    --hover: #485962;
+    --tertiary: #677F8C;
+    --server-background: #476D80;
     --mention: #014d3f;
+    --badge-default: #0171AA;
 }

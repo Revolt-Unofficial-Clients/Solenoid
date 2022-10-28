@@ -18,6 +18,12 @@ import { FiAtSign, FiDelete, FiEdit, FiRepeat } from "solid-icons/fi";
 import { HiSolidReply } from 'solid-icons/hi'
 import {FaRegularFaceGrin} from "solid-icons/fa"
 
+import rehypeKatex from "rehype-katex"
+import rehypePrism from "rehype-prism"
+import remarkBreaks from "remark-breaks"
+import remarkGfm from "remark-gfm"
+import remarkMath from "remark-math"
+
 console.log(badgeList);
 
 interface MessageComponent {
@@ -194,7 +200,7 @@ const Message: Component<MessageComponent> = ({
                               margin-right: 0.5rem;
                             `
                           : css`
-                              background-color: ${element.bkg ?? "#212121"};
+                              background-color: ${element.bkg ?? "var(--badge-default)"};
                               padding: 2px;
                               border-radius: 3px;
                               margin-left: 0.5rem;
@@ -293,7 +299,10 @@ const Message: Component<MessageComponent> = ({
             ) : (
               <SolidMarkdown
                 class="solenoid-md compact"
+                rehypePlugins={[rehypeKatex, rehypePrism]}
+                remarkPlugins={[remarkBreaks, remarkGfm, remarkMath]}
                 children={message.content ?? undefined}
+                
               />
             )}
           </>
@@ -379,6 +388,8 @@ const Message: Component<MessageComponent> = ({
           ) : (
             <SolidMarkdown
               class="solenoid-md"
+              rehypePlugins={[rehypeKatex, rehypePrism]}
+              remarkPlugins={[remarkBreaks, remarkGfm, remarkMath]}
               children={message.content ?? undefined}
             />
           )}
@@ -407,11 +418,13 @@ const Message: Component<MessageComponent> = ({
           } else if (attachment.metadata.type === "Image") {
             //Basic image support :D
             return (
-              <a href={`https://autumn.revolt.chat/attachments/${attachment._id}`} target="_blank" rel="noopener noreferrer"><img
+              <a href={`https://autumn.revolt.chat/attachments/${attachment._id}`} target="_blank" rel="noopener noreferrer">
+                <img
                 class="solenoid-message-image"
                 src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
                 width={attachment.metadata.width}
                 height={attachment.metadata.height}
+                title={`Click to mention @${message.author?.username}`}
               />
             </a>
             );
