@@ -485,7 +485,7 @@ const App: Component = () => {
       solenoid_config={settings}
       userSetter={setUser}
       />
-      <div class="grid">
+      {loggedIn() && <div class="grid">
         <div class="serverbar">
           <ServerList
             client={rvCLient}
@@ -519,7 +519,7 @@ const App: Component = () => {
             <div role="button" onClick={() => sendMessage(newMessage())}><span>Send</span></div>
           </>
         }</div>
-      </div>
+      </div>}
     </>
   );
 };
