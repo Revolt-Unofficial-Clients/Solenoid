@@ -149,33 +149,47 @@ div[class="solenoid-channel active"] {
   background-color: var(--tertiary);
   height: 10vmin;
   display: flex;
+  flex-direction: column;
 }
 
 .textbox textarea {
   width: 100%;
 }
 
-.textbox div {
+.textbox .tb {
   display: flex;
   margin-left: 10px;
   margin-right: 10px;
   align-items: center;
+  gap: 10px;
+  height: 100%;
+}
+
+.textbox {
+  color: #fff;
+  font-family: "Inter Regular";
 }
 
 .messages {
   grid-area: 2/2/4/2;
   background-color: var(--messages-background);
   overflow-y: auto;
+  overflow-x: hidden;
   font-family: 'Red Hat Display Regular';
   word-wrap: break-word;
 }
 
 .solenoid-message {
-  width: 99.8%;
+  width: 99%;
   height: auto;
   display: block;
   overflow: hidden;
   color: #fff;
+  margin: 10px;
+}
+
+.solenoid-message.mentioned {
+  background-color: var(--mention);
 }
 
 .solenoid-message .attachments {

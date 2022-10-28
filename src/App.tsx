@@ -511,12 +511,53 @@ const App: Component = () => {
         <div class="userbar">
           <UserInfo client={rvCLient} />
         </div>
+        {images() && <div class="attachmentbar"></div>}
         <div class="textbox">{
           servers.current_channel && 
           <>
-            <div role="button"><FiUpload/></div>
-            <textarea value={newMessage() || ""} onChange={(e) => setNewMessage(e.currentTarget.value)} />
-            <div role="button" onClick={() => sendMessage(newMessage())}><span>Send</span></div>
+            <div class="typing-indicator">
+             <For each={servers.current_channel?.typing.filter(
+                (x) =>
+                  typeof x !== "undefined" &&
+                  x._id !== x.client.user!._id &&
+                  x.relationship !== "Blocked",
+              )}>{
+                (user) => {
+                  return <img width={32} height={32} src={user?.generateAvatarURL({max_side: 256})}/>
+                }
+              }</For> 
+              <span>{() => {
+              const users = servers.current_channel?.typing.filter(
+                (x) =>
+                  typeof x !== "undefined" &&
+                  x._id !== x.client.user!._id &&
+                  x.relationship !== "Blocked",
+              );
+
+              if ( users && users.length > 0) {
+                users!.sort((a, b) =>
+                    a!._id.toUpperCase().localeCompare(b!._id.toUpperCase()),
+                );
+        
+                if (users.length >= 5) {
+                    return "Many people are talking..."
+                } else if (users.length > 1) {
+                    const userlist = [...users].map((x) => x!.username);
+                    const user = userlist.pop();
+        
+                    return (
+                       `${user}, ${userlist.join(", ")} are typing...`
+                    );
+                } else {
+                    return `${users[0]?.username} is typing...`
+                }
+
+              }}}</span></div>
+              <div class="tb">
+                <div role="button"><FiUpload/></div>
+                <textarea value={newMessage() || ""} onChange={(e) => setNewMessage(e.currentTarget.value)} />
+                <div role="button" onClick={() => sendMessage(newMessage())}><span>Send</span></div>
+              </div>
           </>
         }</div>
       </div>}
