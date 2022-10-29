@@ -299,7 +299,7 @@ const Message: Component<MessageComponent> = ({
             ) : (
               <SolidMarkdown
                 class="solenoid-md compact"
-                rehypePlugins={[rehypeKatex, rehypePrism]}
+                rehypePlugins={[[rehypeKatex, {maxSize: 10, maxExpand: 0, trust: false, strict: false, output: "html", throwOnError: false, errorColor:"#eb4034"}], rehypePrism]}
                 remarkPlugins={[remarkBreaks, remarkGfm, remarkMath]}
                 children={message.content ?? undefined}
                 
