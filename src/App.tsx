@@ -476,7 +476,7 @@ if (settings.session && !loggedIn()) loginWithSession(settings.session);
 const App: Component = () => {
   return (
     <>
-    <LoginComponent
+    {!loggedIn() && <LoginComponent
       captchaKey={captchaKey()}
       client={rvCLient}
       configSetter={setSettings}
@@ -484,7 +484,7 @@ const App: Component = () => {
       logged={loggedIn}
       solenoid_config={settings}
       userSetter={setUser}
-      />
+      />}
       {loggedIn() && <div class="grid">
         <div class="serverbar">
           <ServerList

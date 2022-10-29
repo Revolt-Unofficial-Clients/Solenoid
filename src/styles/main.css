@@ -87,11 +87,11 @@
 }
 
 .grad {
-  background: linear-gradient(0deg,var(--sidebar-background),transparent);
+  background: linear-gradient(to top,var(--sidebar-background)0%, transparent 130%);
   position: absolute;
-  height: 11rem;
-  width: 15.65rem;
-  top: 90px;
+  height: 10rem;
+  width: 15.55rem;
+  top: 62px;
   z-index: 5;
 }
 
