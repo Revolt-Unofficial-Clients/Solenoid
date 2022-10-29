@@ -6,16 +6,17 @@
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
+  display: flex;
+  flex-direction: column;
 }
 
 .grid {
   margin: 0;
   padding: 0;
-  border: red 1px solid;
   display: grid;
-  grid-template-rows: 7vmin 74vmin 8vmin;
-  grid-template-columns: 27vmin auto; 
+  grid-template-rows: 3.9rem 42rem 4.5rem;
+  grid-template-columns: 15.55rem auto; 
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   grid-auto-flow: row dense;
@@ -25,7 +26,7 @@
 .serverbar {
   grid-area: 1/1/1/3;
   width: auto;
-  height: 100%;
+  height: auto;
   background-color: var(--server-background);
   display: flex;
   flex-direction: row;
@@ -80,16 +81,16 @@
 .solenoid-banner {
   position: relative;
   display: block;
-  top:-14%;
-  height: 90%;
+  top:-15%;
+  height: 95%;
   width: 100%;
 }
 
 .grad {
   background: linear-gradient(0deg,var(--sidebar-background),transparent);
   position: absolute;
-  height: 9rem;
-  width: 27vmin;
+  height: 11rem;
+  width: 15.65rem;
   top: 90px;
   z-index: 5;
 }
