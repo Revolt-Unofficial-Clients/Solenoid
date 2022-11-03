@@ -509,7 +509,7 @@ const App: Component = () => {
             </For>
         </div>
         <div class="userbar">
-          <UserInfo client={rvCLient} />
+          <UserInfo client={rvCLient} setSettings={setSettings} />
         </div>
         {images() && imgUrls() && <div class="attachmentbar">
             <For each={imgUrls()}>
@@ -525,7 +525,7 @@ const App: Component = () => {
           servers.current_channel && 
           <>
             <div class="typing-indicator">
-             <For each={servers.current_channel?.typing.filter(
+              <For each={servers.current_channel?.typing.filter(
                 (x) =>
                   typeof x !== "undefined" &&
                   x._id !== x.client.user!._id &&
@@ -555,7 +555,7 @@ const App: Component = () => {
                     const user = userlist.pop();
         
                     return (
-                       `${user}, ${userlist.join(", ")} are typing...`
+                      `${user}, ${userlist.join(", ")} are typing...`
                     );
                 } else {
                     return `${users[0]?.username} is typing...`
@@ -569,7 +569,33 @@ const App: Component = () => {
                 <div role="button" onClick={() => sendMessage(newMessage())}><span>Send</span></div>
               </div>
           </>
-        }</div>
+        }
+                <div class="overlay" id={settings.show ? "show" : "hide"}>
+                  <div class="settings">
+                    <div class="titlebar">
+                      <h3 class="title">Settings</h3>
+                      <div class="close" role="button" onClick={() => {
+                        setSettings("show", false);
+                        console.log("you should hide settings... NOW")
+                      }}>
+                        <FiXCircle />
+                      </div>
+                    </div> 
+                    <div class="content">
+                      <div class="sidebar">
+                        <div class="item" id="si1">User</div>
+                        <div class="item" id="si2">Server</div>
+                        <div class="item" id="si3">Experiments</div>
+                        <div class="item" id="si4">About</div>
+                        <div class="item" id="silogout">Logout</div>
+                      </div>
+                      <div class="setting">
+                        this is some content that might change later :) 
+                      </div>
+                    </div>
+                  </div>
+                </div>
+        </div>
       </div>}
     </>
   );

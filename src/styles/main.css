@@ -1,14 +1,16 @@
 @import url("./fonts/fonts.css");
 @import url("./colors.css");
+@import url("./animations.css");
 
 #root, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  /* overflow: hidden; */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: auto;
 }
 
 .grid {
@@ -146,6 +148,19 @@ div[class="solenoid-channel active"] .hashicon:not(img) {
   gap: 5px;
 }
 
+.userinfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .settings img {
   border-radius: 5px;
 }
@@ -193,6 +208,7 @@ div[class="solenoid-channel active"] .hashicon:not(img) {
   overflow-x: hidden;
   font-family: 'Red Hat Display Regular';
   word-wrap: break-word;
+
 }
 
 .solenoid-message {
@@ -277,4 +293,86 @@ span.noicon {
 
 .solenoid-pfp {
   border-radius: 5px;
+}
+
+#show {
+  display: inherit;
+  animation-name: popup;
+  animation-duration: 350ms;
+  animation-iteration-count: 1;
+  animation-timing-function: cubic-bezier(.4,.18,0,1.01);
+}
+
+#hide {
+  animation: popdown 350ms forwards cubic-bezier(.4,.18,0,1.01);
+}
+
+.overlay {
+  display: flex;
+  flex: auto;
+  /* border: 1px solid red; */
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -140%);
+  width: 40rem;
+  height: 25rem;
+  background-color: var(--server-background);
+  border-radius: 10px;
+}
+
+.overlay .settings {
+  height: auto;
+  width: 100%;
+}
+
+.settings > .titlebar {
+  display: flex;
+  align-items: center;
+  border-bottom: 3px solid var(--titlebar-contrast);
+  margin-bottom: 5px;
+}
+
+.settings > .titlebar > .close {
+  margin-left: auto;
+  margin-right: 25px;
+}
+
+.settings > .titlebar > .title {
+  margin-left: 25px;
+}
+
+.settings > .content {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  height: 85%;
+  /* border: 1px solid blue; */
+}
+
+.settings > .content > .sidebar {
+  width: 10rem;
+  height: 100%;
+  /* border: 1px solid blue; */
+}
+
+.settings > .content > .setting {
+  width: 100%;
+}
+
+.sidebar > .item {
+  padding: 5px;
+  font-family: 'Inter Regular';
+}
+
+.sidebar > #silogout {
+  background-color: var(--danger-bkg);
+  color: var(--danger);
+  font-family: 'Inter Bold';
+  transform: translateY(645%);
+  border-bottom-left-radius: 10px;
+}
+
+.settings > .content > * {
+  /* This is for debugging purposes */
+  /* border: 1px solid #fff; */
 }

@@ -1,8 +1,13 @@
 import type { Client } from "revolt.js";
 import type { Component } from "solid-js";
 
+import {FiSettings } from "solid-icons/fi";
+import { SetStoreFunction } from "solid-js/store/types";
+import { settings } from "../../types";
+
 interface user_information {
-    client: Client
+    client: Client,
+    setSettings: SetStoreFunction<settings>
 }
 
 const UserInfo: Component<user_information> = (props) => {
@@ -13,8 +18,13 @@ const UserInfo: Component<user_information> = (props) => {
     return (
         <>  
             <img src={avatar_url} width={32} height={32} />
-            <span class="userbar-username">@{props.client.user?.username}</span>
-            <span class="userbar-icon">Settings</span>
+            <div class="userinfo">
+                <span class="userbar-username">@{props.client.user?.username}</span>
+                <div class="box" role="button" onClick={() => {
+                    props.setSettings("show", true)
+                    console.log("you should show settings... NOW")
+                    }}><FiSettings /></div>
+            </div>
         </>
     )
 }
