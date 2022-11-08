@@ -2,7 +2,8 @@
 @import url("./colors.css");
 @import url("./animations.css");
 
-#root, body {
+#root,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -16,17 +17,11 @@
 .grid {
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-rows: 3.9rem 42rem 4.5rem;
-  grid-template-columns: 15.55rem auto; 
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
-  grid-auto-flow: row dense;
   width: 100%;
   height: 100%;
+  position: relative;
 }
 .serverbar {
-  grid-area: 1/1/1/3;
   width: auto;
   height: auto;
   background-color: var(--server-background);
@@ -41,7 +36,7 @@
   padding: 10px;
   margin-left: 0px;
   margin-right: 5px;
-  margin:5px;
+  margin: 5px;
   align-items: center;
   justify-content: center;
   gap: 5px;
@@ -62,46 +57,52 @@
   color: white;
   border-radius: 5px;
 }
-
-.solenoid-server-banner-container .servername  {
+.servername {
   font-family: "Red Hat Display Bold";
   font-size: 20px;
   color: #fff;
-  z-index: 6;
-  position: relative;
   display: flex;
   gap: 10px;
-  top: 70%;
+  position: relative;
+  top: 7rem;
   margin-left: 15px;
 }
 
 .solenoid-server-banner-container {
   height: 10rem;
+  width: 100%;
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .solenoid-banner {
   position: relative;
   display: block;
-  top:-15%;
+  top: -15%;
   height: 95%;
   width: 100%;
 }
 
 .grad {
-  background: linear-gradient(to top,var(--sidebar-background)0%, transparent 130%);
-  position: absolute;
+  background: linear-gradient(
+    to top,
+    var(--sidebar-background) 0%,
+    transparent 130%
+  );
   height: 10rem;
-  width: 15.55rem;
-  top: 62px;
+  width: 100vw;
+  max-width: 17.9rem;
+  top: 0;
   z-index: 5;
+  display: block;
 }
 
 .channelcontainer {
-  grid-area: 2/2/4/1;
-  height: 100%;
+  height: 75.4vmin;
   background-color: var(--sidebar-background);
   font-family: "Red Hat Display Regular";
+  width: 21rem;
 }
 
 div[class="solenoid-channelList"] {
@@ -131,21 +132,22 @@ div[class="solenoid-channel active"] {
 .hashicon:not(img) {
   font-size: 24px;
   font-family: "Poppins Bold";
-  color: #1D6394;
+  color: #1d6394;
 }
 
 div[class="solenoid-channel active"] .hashicon:not(img) {
-  color: #CDE4F5;
+  color: #cde4f5;
 }
 
 .userbar {
-  grid-area: 4/1;
-  height: 10vmin;
+  height: 100%;
   background-color: var(--tertiary);
   font-family: "Red Hat Display Regular";
   display: flex;
   align-items: center;
   gap: 5px;
+  float: left;
+  bottom: 0;
 }
 
 .userinfo {
@@ -170,9 +172,9 @@ div[class="solenoid-channel active"] .hashicon:not(img) {
 }
 
 .textbox {
-  grid-area: 4/2;
   background-color: var(--tertiary);
-  height: 10vmin;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -201,14 +203,32 @@ div[class="solenoid-channel active"] .hashicon:not(img) {
   font-family: "Inter Regular";
 }
 
+.row2 {
+  display: flex;
+  flex-direction: row;
+  height: 85%;
+  position: relative;
+}
+
+.row3 {
+  display: flex;
+  height: 4.6rem;
+  width: 100%;
+  flex-direction: row;
+  position: relative;
+  bottom: 0;
+  left: 0;
+}
+
 .messages {
-  grid-area: 2/2/4/2;
+  position: relative;
   background-color: var(--messages-background);
   overflow-y: auto;
   overflow-x: hidden;
-  font-family: 'Red Hat Display Regular';
+  font-family: "Red Hat Display Regular";
   word-wrap: break-word;
-
+  height: 75.4vmin;
+  width: 100%;
 }
 
 .solenoid-message {
@@ -219,8 +239,9 @@ div[class="solenoid-channel active"] .hashicon:not(img) {
   color: #fff;
 }
 
-.solenoid-message .solenoid-message-author, .solenoid-message .solenoid-md {
-  margin:5px
+.solenoid-message .solenoid-message-author,
+.solenoid-message .solenoid-md {
+  margin: 5px;
 }
 
 .solenoid-message.mentioned {
@@ -242,8 +263,9 @@ span.noicon {
   font-family: "Red Hat Display Bold";
 }
 
-.solenoid-message .solenoid-message-image, .solenoid-message .solenoid-message-video {
-  width: 30%; 
+.solenoid-message .solenoid-message-image,
+.solenoid-message .solenoid-message-video {
+  width: 30%;
   height: auto;
 }
 
@@ -300,11 +322,11 @@ span.noicon {
   animation-name: popup;
   animation-duration: 350ms;
   animation-iteration-count: 1;
-  animation-timing-function: cubic-bezier(.4,.18,0,1.01);
+  animation-timing-function: cubic-bezier(0.4, 0.18, 0, 1.01);
 }
 
 #hide {
-  animation: popdown 350ms forwards cubic-bezier(.4,.18,0,1.01);
+  animation: popdown 350ms forwards cubic-bezier(0.4, 0.18, 0, 1.01);
 }
 
 .overlay {
@@ -361,13 +383,13 @@ span.noicon {
 
 .sidebar > .item {
   padding: 5px;
-  font-family: 'Inter Regular';
+  font-family: "Inter Regular";
 }
 
 .sidebar > #silogout {
   background-color: var(--danger-bkg);
   color: var(--danger);
-  font-family: 'Inter Bold';
+  font-family: "Inter Bold";
   transform: translateY(645%);
   border-bottom-left-radius: 10px;
 }

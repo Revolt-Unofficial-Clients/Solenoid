@@ -493,7 +493,8 @@ const App: Component = () => {
             server_list={servers.server_list}
             />
         </div>
-        <div class="channelcontainer">
+        <div class="row2">
+          <div class="channelcontainer">
           {servers.current_server && <ChannelList
           channelSetter={setChannel}
           current_channel={servers.current_channel}
@@ -508,7 +509,9 @@ const App: Component = () => {
             }
             </For>
         </div>
-        <div class="userbar">
+        </div>
+        <div class="row3">
+          <div class="userbar">
           <UserInfo client={rvCLient} setSettings={setSettings} />
         </div>
         {images() && imgUrls() && <div class="attachmentbar">
@@ -587,7 +590,7 @@ const App: Component = () => {
                         <div class="item" id="si2">Server</div>
                         <div class="item" id="si3">Experiments</div>
                         <div class="item" id="si4">About</div>
-                        <div class="item" id="silogout">Logout</div>
+                        <div class="item" id="silogout" onClick={logoutFromRevolt}>Logout</div>
                       </div>
                       <div class="setting">
                         this is some content that might change later :) 
@@ -595,6 +598,7 @@ const App: Component = () => {
                     </div>
                   </div>
                 </div>
+        </div>
         </div>
       </div>}
     </>

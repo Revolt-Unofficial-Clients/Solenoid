@@ -18,18 +18,22 @@ const ChannelList: Component<ChannelComponent> = (props) => {
   return (
     <>
       <div class={"solenoid-server-banner-container"}>
-        <span class="servername">
-        {server_type.find((e) => e.id === props.server._id && e.type === "r") && <img src={server} width={24} height={24} />} 
-        {server_type.find((e) => e.id === props.server._id && e.type === "s") && <img src={client} width={24} height={24} />}
-        {props.server.name}</span>
-        <div class="grad" />
-        {props.server.banner && (
-          <img
-            class="solenoid-banner"
-            width={256}
-            src={`https://autumn.revolt.chat/banners/${props.server.banner?._id}`}
-          ></img>
-        )}
+        <div class={css`
+          ${props.server.banner ? `background-image: linear-gradient(
+    to top,
+    var(--sidebar-background) 0%,
+    transparent 130%
+  ), url(https://autumn.revolt.chat/banners/${props.server.banner?._id})` : `background: transparent`};
+          background-size: cover;
+          width: 100%;
+          height: 20rem;
+        `} id="banner">
+          <span class="servername">
+            {server_type.find((e) => e.id === props.server._id && e.type === "r") && <img src={server} width={24} height={24} />} 
+            {server_type.find((e) => e.id === props.server._id && e.type === "s") && <img src={client} width={24} height={24} />}
+            {props.server.name}
+          </span>
+        </div>
       </div>
       <div class="solenoid-channelList">
         <For each={Array.from(props.server.channels.values())}>
