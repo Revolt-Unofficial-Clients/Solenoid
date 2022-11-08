@@ -91,7 +91,7 @@ body {
     transparent 130%
   );
   height: 10rem;
-  width: 100vw;
+  width: 100%;
   max-width: 17.9rem;
   top: 0;
   z-index: 5;
@@ -99,17 +99,18 @@ body {
 }
 
 .channelcontainer {
-  height: 75.4vmin;
-  background-color: var(--sidebar-background);
   font-family: "Red Hat Display Regular";
-  width: 21rem;
+  width: 30%;
+  background-color: var(--sidebar-background);
+  display: flex;
+  flex-direction: column;
 }
 
 div[class="solenoid-channelList"] {
   display: flex;
   flex-direction: column;
   overflow-y: scroll;
-  height: 77%;
+  height: 100%;
 }
 
 div[class~="solenoid-channel"] {
@@ -206,8 +207,10 @@ div[class="solenoid-channel active"] .hashicon:not(img) {
 .row2 {
   display: flex;
   flex-direction: row;
-  height: 85%;
+  height: 100%;
   position: relative;
+  top: 0;
+  left: 0;
 }
 
 .row3 {
@@ -223,12 +226,12 @@ div[class="solenoid-channel active"] .hashicon:not(img) {
 .messages {
   position: relative;
   background-color: var(--messages-background);
-  overflow-y: auto;
+  overflow-y: scroll;
   overflow-x: hidden;
   font-family: "Red Hat Display Regular";
   word-wrap: break-word;
-  height: 75.4vmin;
   width: 100%;
+  height: 86vh;
 }
 
 .solenoid-message {
@@ -397,4 +400,24 @@ span.noicon {
 .settings > .content > * {
   /* This is for debugging purposes */
   /* border: 1px solid #fff; */
+}
+
+@media screen and (max-width: 800px) {
+  .row2 {
+    flex-direction: column;
+  }
+  .channelcontainer {
+    height: 25vh;
+    width: 100%;
+  }
+  .messages {
+    height: 61vh;
+  }
+  #banner {
+    height: 7rem;
+  }
+
+  span.servername {
+    top: 50%;
+  }
 }
