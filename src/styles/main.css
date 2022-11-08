@@ -393,8 +393,6 @@ span.noicon {
   background-color: var(--danger-bkg);
   color: var(--danger);
   font-family: "Inter Bold";
-  transform: translateY(645%);
-  border-bottom-left-radius: 10px;
 }
 
 .settings > .content > * {

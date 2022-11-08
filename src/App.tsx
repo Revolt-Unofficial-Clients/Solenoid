@@ -48,6 +48,7 @@ import {
 
 import { AiOutlineStop } from 'solid-icons/ai'
 import { UserInfo } from "./components/Userbar";
+import { Settings } from "./components/Settings";
 
 // Revolt Client
 const rvCLient = new Client();
@@ -574,29 +575,11 @@ const App: Component = () => {
           </>
         }
                 <div class="overlay" id={settings.show ? "show" : "hide"}>
-                  <div class="settings">
-                    <div class="titlebar">
-                      <h3 class="title">Settings</h3>
-                      <div class="close" role="button" onClick={() => {
-                        setSettings("show", false);
-                        console.log("you should hide settings... NOW")
-                      }}>
-                        <FiXCircle />
-                      </div>
-                    </div> 
-                    <div class="content">
-                      <div class="sidebar">
-                        <div class="item" id="si1">User</div>
-                        <div class="item" id="si2">Server</div>
-                        <div class="item" id="si3">Experiments</div>
-                        <div class="item" id="si4">About</div>
-                        <div class="item" id="silogout" onClick={logoutFromRevolt}>Logout</div>
-                      </div>
-                      <div class="setting">
-                        this is some content that might change later :) 
-                      </div>
-                    </div>
-                  </div>
+                  <Settings
+                    setSettings={setSettings}
+                    logout={logoutFromRevolt}
+                    settings={settings}
+                  />
                 </div>
         </div>
         </div>
