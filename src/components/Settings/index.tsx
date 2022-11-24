@@ -4,11 +4,15 @@ import { settings } from "../../types";
 
 import { FiXCircle } from "solid-icons/fi";
 
+import { Client } from "revolt.js";
+
 interface componentProps {
     setSettings: SetStoreFunction<settings>
     settings: Store<settings>
     logout: () => void;
+    client: Client;
 }
+
 
 // Current Tab:
 // 0: User Settings
@@ -43,6 +47,8 @@ const Settings: Component<componentProps> = (props) => {
                     {currentTab() === 0 ? (
                         <div>
                             <h3>User Settings</h3>
+                            <h4>Revolt Username: @{props.client.user?.username || "No user Logged?"}</h4>
+                            <h4>Server Nickname: Not Implemented yet</h4>
                         </div>
                     ) : currentTab() === 1 ? (
                         <div>
@@ -51,6 +57,10 @@ const Settings: Component<componentProps> = (props) => {
                     ) : currentTab() === 2 ? (
                         <div>
                             <h3>Client Settings</h3>
+                            <h4>Chat Preferences</h4>
+                            <span class="subtitle">Show Suffix</span>
+                            <span class="description">Show an optional message after the username</span>
+                            <button class="toggle">Toggle</button>
                         </div>
                     ) : currentTab() === 3 ?(
                         <div>
@@ -59,11 +69,11 @@ const Settings: Component<componentProps> = (props) => {
                     ): currentTab() === 4 ? (
                         <div>
                             <h3>About Solenoid</h3>
+                            <p>Solenoid Client 1.0.0</p>
                         </div>
                     ) : (
                         <div>
-                            <h3>GET THE FUCK OUT OF MY PALACE</h3>
-                            <p>- Gabriel Ultrakill, 2022</p>
+                            <h3>Super Secret Settings Panel That You Arent Supposed To See</h3>
                         </div>
                     )}
                 </div>

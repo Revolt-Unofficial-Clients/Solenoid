@@ -579,7 +579,8 @@ const App: Component = () => {
                     setSettings={setSettings}
                     logout={logoutFromRevolt}
                     settings={settings}
-                  />
+                    client={rvCLient}  
+		/>
                 </div>
         </div>
         </div>
