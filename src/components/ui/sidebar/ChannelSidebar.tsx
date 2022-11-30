@@ -1,12 +1,24 @@
+import { styled } from "solid-styled-components";
 import { selectedServer } from "../servers";
 import ChannelList from "../servers/lists/ChannelList";
 
+const ChannelSidebarBase = styled("div")`
+    background-color: ${props => props.theme["primary-background"]};
+    width: 16rem;
+    height: 100vh;
+    margin: 0px;
+    display: flex;
+    flex-shrink: 0;
+    flex-grow: 0;
+    overflow-y: scroll;
+`
+
 const ChannelSidebar = () => {
     return (
-        <div class="bg-slate-300 dark:bg-slate-800 h-screen w-64 m-0 flex shrink-0 grow-0 overflow-scroll">
+        <ChannelSidebarBase>
             {/* TODO: Add Direct Message Support */}
             <ChannelList server={selectedServer()} />
-        </div>
+        </ChannelSidebarBase>
     );
 };
 

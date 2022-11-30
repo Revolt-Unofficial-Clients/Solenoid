@@ -3,6 +3,19 @@ import ServerList from "../servers/lists/ServerList";
 
 import { clearStorage, getFromStorage } from "~/libs/storage/user";
 import { client as revolt } from "~/libs/revolt";
+import { styled } from "solid-styled-components";
+
+const ServerSidebarBase = styled("div")`
+    background-color: ${props => props.theme.background};
+    height: 100vh;
+    width: fit-content;
+    display: flex;
+    margin: 0px;
+    flex-direction: column;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+`
 
 const ServerSidebar = () => {
     const navigate = useNavigate();
@@ -21,7 +34,7 @@ const ServerSidebar = () => {
     };
 
     return (
-        <div class="bg-slate-200 dark:bg-slate-700 h-screen w-fit m-0 flex flex-col shrink-0 justify-center items-center">
+        <ServerSidebarBase>
             {/* TODO: Add Direct Message Support */}
             <img class="rounded-full m-2" title={`Logged in as ${revolt.user?.username}`} src={revolt.user?.animatedAvatarURL || revolt.user?.generateAvatarURL() || revolt.user?.defaultAvatarURL} width={42}/>
             <div class="h-1 bg-slate-300 dark:bg-slate-600 w-5 mt-1 mb-1 p-0"/>
@@ -42,7 +55,7 @@ const ServerSidebar = () => {
             >
                 Logout
             </button>
-        </div>
+        </ServerSidebarBase>
     );
 };
 

@@ -15,7 +15,7 @@ interface MessageProps {
 // TODO: Audio/Video Support
 
 const converter = new showdown.Converter();
-converter.setFlavor("github")
+converter.setFlavor("github");
 converter.setOption("simplifiedAutoLink", true);
 converter.setOption("tables", true);
 converter.setOption("emoji", true);
@@ -24,6 +24,38 @@ const MessageBaseContainer = styled("div")`
     margin: 0.5rem;
     width: 100%;
     height: fit-content;
+`;
+const MessageContent = styled("div")`
+    word-break: break-all;
+    color: ${(props) => props.theme.foreground};
+`;
+
+const MessageReplyBase = styled("div")`
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    width: fit-content;
+    margin-bottom: 0.5rem;
+    background-color: ${(props) => props.theme["primary-background"]};
+    border-left-width: 4px;
+    border-left-color: ${(props) => props.theme.accent};
+    align-items: center;
+`;
+
+const MessageReplyUserChip = styled("span")`
+    display: inline-flex;
+    align-items: center;
+    border-radius: 99999px;
+    background-color: ${props => props.theme.background};
+    padding: 0.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    color: ${props => props.theme.accent};
+`
+
+const MessageReplyContent = styled("span")`
+    text-overflow: elipsis;
+    color: ${props => props.theme.foreground};
 `
 
 const MessageBase = (props: MessageProps) => {
@@ -31,17 +63,31 @@ const MessageBase = (props: MessageProps) => {
         <MessageBaseContainer>
             {props.message.reply_ids && (
                 <For each={props.message.reply_ids}>
-                {(reply) => {
-                    const msg =
-                        props.message.channel?.client.messages.get(reply);
-                    return (
-                        <div class="p-2 mb-2 w-fit bg-gray-400 border-l-4 border-l-cyan-100 items-center">
-                            <img src={msg?.author.avatarURL || msg?.author.generateAvatarURL() || msg?.author.defaultAvatarURL} width={24} class="rounded-full inline-flex mr-2" />
-                            <span class="rounded-full bg-gray-500 p-1 pl-2 pr-2 text-cyan-100">@{msg?.member.nickname || msg?.username || "Unknown User"}</span> <span class="break-all">{msg?.content}</span>
-                        </div>
-                    );
-                }}
-            </For>
+                    {(reply) => {
+                        const msg =
+                            props.message.channel?.client.messages.get(reply);
+                        return (
+                            <MessageReplyBase>
+                                <MessageReplyUserChip>
+                                <img
+                                    src={
+                                        msg?.author.avatarURL ||
+                                        msg?.author.generateAvatarURL() ||
+                                        msg?.author.defaultAvatarURL
+                                    }
+                                    width={24}
+                                    class="rounded-full inline-flex mr-2"
+                                />
+                                    @
+                                    {msg?.member.nickname ||
+                                        msg?.username ||
+                                        "Unknown User"}
+                                </MessageReplyUserChip>
+                                <MessageReplyContent class="break-all">{msg?.content}</MessageReplyContent>
+                            </MessageReplyBase>
+                        );
+                    }}
+                </For>
             )}
             <div class="flex items-center">
                 <img
@@ -59,7 +105,9 @@ const MessageBase = (props: MessageProps) => {
                 </h1>
             </div>
             <div>
-                <div class="break-all" innerHTML={converter.makeHtml(props.message.content)} />
+                <MessageContent
+                    innerHTML={converter.makeHtml(props.message.content)}
+                />
                 <For each={props.message.attachments}>
                     {(attachment) => {
                         if (attachment.metadata.type === "Image") {

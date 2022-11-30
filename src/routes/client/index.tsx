@@ -58,7 +58,7 @@ export default function About() {
                 </Suspense>
             </Show>
             <Show when={selectedChannel()}>
-                    <div class="flex flex-col h-screen w-full m-0 p-0 overflow-scroll">
+                    <div class="flex grow-0 flex-col h-screen w-full overflow-scroll overflow-x-hidden">
                         <Show
                             when={messages() && messages().length !== 0}
                             fallback={

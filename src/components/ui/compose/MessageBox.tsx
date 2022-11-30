@@ -4,7 +4,7 @@ import { setNewMessage, newMessage } from "~/routes/client";
 import { styled, DefaultTheme } from "solid-styled-components";
 
 const MessageBoxContainer = styled("div")`
-    background: ${props => props.theme["primary-background"]};
+    background: ${props => props.theme["tertiary-background"]};
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -22,15 +22,11 @@ const MessageBoxContainer = styled("div")`
 const MessageBoxForm = styled("form")`
     display: flex;
     align-items: center;
-    height: 100%;
-    flex-grow: 0;
     gap: 0.5rem;
 `
 
 const MessageBoxInput = styled("input")`
-    background: ${props => props.theme["primary-background"]};
-    height: 100%;
-    width: 100%;
+    background: ${props => props.theme["tertiary-background"]};
 `
 
 const MessageBoxSendBtn = styled("button")`
@@ -58,9 +54,9 @@ const MessageBox = () => {
                     value={newMessage()}
                     onChange={(e) => setNewMessage(e.currentTarget.value)}
                     placeholder={`Message ${selectedChannel()?.name}`}
-                    class="h-full w-full"
+                    class="flex-1 h-full w-full"
                 />
-                <MessageBoxSendBtn class="mr-2 text-white" type="submit">
+                <MessageBoxSendBtn class="ml-2 text-white" type="submit">
                     Send
                 </MessageBoxSendBtn>
             </MessageBoxForm>
