@@ -3,4 +3,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [solid({ ssr: false })],
+  build: {
+    rollupOptions: {
+      external: true
+    }
+  }
 });
