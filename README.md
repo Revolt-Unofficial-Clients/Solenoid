@@ -1,72 +1,30 @@
-# <img src="https://github.com/stationaryStation/Solenoid/blob/ui/src/assets/favicon.png?raw=true" width="24" height="24" /> Solenoid [![Build Status](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml/badge.svg)](https://github.com/stationaryStation/Solenoid/actions/workflows/node.js.yml)
-A minimal, yet functional third-party revolt.chat client
+# SolidStart
 
-### Reasons to use it
+Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
 
-1. Fast
-2. Clean Looking
-3. Full of useful features
-
-### How 2 run
-Right now you can run it using `pnpm`
+## Creating a project
 
 ```bash
-# Clone Repo
-git clone https://github.com/stationarystation/Solenoid.git
+# create a new project in the current directory
+npm init solid
 
-# Go to repo
-cd Solenoid
-
-# Install Deps
-pnpm i --shamefully-hoist
-
-# Run Solenoid from localhost:3000.
-pnpm run dev
-
+# create a new project in my-app
+npm init solid my-app
 ```
 
-Or you can go to [the official site](https://ui.solenoid.vercel.app)
+## Developing
 
-### Features
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-- [x] Send Messages
-- [x] Get Messages
-- [x] Server Switching
-- [x] Status Updating
-- [x] Basic Markdown Support
-- [x] Image Support
-- [x] Video Support
-- [x] File Downloads
-- [x] Avatar Support
-- [x] Role Colors
-- [x] Emoji Picker
-- [x] GIFBox Support
+```bash
+npm run dev
 
-### Features Missing
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
 
-- [ ] Everything else
+## Building
 
-### Why
-I wanted to learn SolidJS because I heard it was blazingly fast and cool, so I decided to make a revolt.chat client to challenge my brain (and my sanity).
+Solid apps are built with _adapters_, which optimise your project for deployment to different environments.
 
-
-### Special thanks
-
-> Insert: Helped me with Revolt.js and  Mobx.
-
-> RyanSolid: Made me understand that I don't know anything about Mobx, also [this code snippet](https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js)
-
-> VeliedProduct80: Helped me realize i forgot the masquerade part
-
-> Mclnooted: Requested **sex**
-
-> Infi: Helped me with GIFBox
-
-> Bloom: Helped me with css
-
-### Other Third-party clients to check out
-
-- [ReductV3 by DoruDoLaso](https://dorudolasu.github.io/ReductV3/)
-- [Unvolt by Vale](https://vale.rocks/unvolt)
-- [Retaped by Error 404: Null not Found](https://error-404-null-not-found.github.io/retaped)
-
+By default, `npm run build` will generate a Node app that you can run with `npm start`. To use a different adapter, add it to the `devDependencies` in `package.json` and specify in your `vite.config.js`.
