@@ -46,22 +46,22 @@ const MessageReplyUserChip = styled("span")`
     display: inline-flex;
     align-items: center;
     border-radius: 99999px;
-    background-color: ${props => props.theme.background};
+    background-color: ${(props) => props.theme.background};
     padding: 0.25rem;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
-    color: ${props => props.theme.accent};
-`
+    color: ${(props) => props.theme.accent};
+`;
 
 const MessageReplyContent = styled("span")`
     text-overflow: elipsis;
-    color: ${props => props.theme.foreground};
-`
+    color: ${(props) => props.theme.foreground};
+`;
 
 const EditedIndicator = styled("span")`
     margin-left: 0.5rem;
-    color: ${props => props.theme["secondary-foreground"]};
-`
+    color: ${(props) => props.theme["secondary-foreground"]};
+`;
 
 const MessageBase = (props: MessageProps) => {
     return (
@@ -74,21 +74,24 @@ const MessageBase = (props: MessageProps) => {
                         return (
                             <MessageReplyBase>
                                 <MessageReplyUserChip>
-                                <img
-                                    src={
-                                        msg?.author.avatarURL ||
-                                        msg?.author.generateAvatarURL() ||
-                                        msg?.author.defaultAvatarURL
-                                    }
-                                    width={24}
-                                    class="rounded-full inline-flex mr-2"
-                                />
+                                    <img
+                                        src={
+                                            msg?.generateMasqAvatarURL() ||
+                                            msg?.author.avatarURL ||
+                                            msg?.author.generateAvatarURL() ||
+                                            msg?.author.defaultAvatarURL
+                                        }
+                                        width={24}
+                                        class="rounded-full inline-flex mr-2"
+                                    />
                                     @
-                                    {msg?.member.nickname ||
+                                    {msg?.member?.nickname ||
                                         msg?.username ||
                                         "Unknown User"}
                                 </MessageReplyUserChip>
-                                <MessageReplyContent class="break-all">{msg?.content}</MessageReplyContent>
+                                <MessageReplyContent class="break-all">
+                                    {msg?.content}
+                                </MessageReplyContent>
                             </MessageReplyBase>
                         );
                     }}
@@ -97,6 +100,8 @@ const MessageBase = (props: MessageProps) => {
             <div class="flex items-center">
                 <img
                     src={
+                        props.message.masquerade?.avatar ||
+                        props.message.member?.generateAvatarURL() ||
                         props.author?.animatedAvatarURL ||
                         props.author?.generateAvatarURL() ||
                         props.author?.defaultAvatarURL ||
@@ -106,9 +111,16 @@ const MessageBase = (props: MessageProps) => {
                     class="rounded-2xl mr-2"
                 />
                 <h1 class="text-md text-white">
-                    <b>{props.author?.username || "User Not Loaded"}</b>
+                    <b>
+                        {props.message.masquerade?.name ||
+                            props.message.member?.nickname ||
+                            props.author?.username ||
+                            "User Not Loaded"}
+                    </b>
                 </h1>
-                {props.message.edited && <EditedIndicator class="ml-2">(Edited)</EditedIndicator>}
+                {props.message.edited && (
+                    <EditedIndicator class="ml-2">(Edited)</EditedIndicator>
+                )}
             </div>
             <div>
                 <MessageContent

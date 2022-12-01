@@ -14,6 +14,7 @@ const MessageContainer = lazy(
     () => import("~/components/ui/servers/messages/MessageContainer")
 );
 const MessageBox = lazy(() => import("~/components/ui/compose/MessageBox"));
+const ChannelInfo = lazy(() => import("~/components/ui/servers/channel/ChannelInfo"));
 import { Message, User } from "revolt.js";
 import { selectedChannel, selectedServer } from "~/components/ui/servers";
 import { sendMessageToChannel } from "~/libs/revolt/servers/messages";
@@ -59,6 +60,9 @@ export default function About() {
             </Show>
             <Show when={selectedChannel()}>
                     <div class="flex grow-0 flex-col h-screen w-full overflow-scroll overflow-x-hidden">
+                        <Suspense>
+                            <ChannelInfo channel={selectedChannel()}/>
+                        </Suspense>
                         <Show
                             when={messages() && messages().length !== 0}
                             fallback={
