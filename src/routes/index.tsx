@@ -1,13 +1,14 @@
 import { Session } from "revolt.js";
 import { createSignal } from "solid-js";
 import { A as Link, useNavigate } from "solid-start";
-import { loginWithEmail, loginWithToken } from "~/libs/revolt/login";
+import { LogintWithMFA, loginWithEmail, loginWithToken } from "~/libs/revolt/login";
 import { getFromStorage, store } from "~/libs/storage/user";
 import { client as Revolt } from "~/libs/revolt";
 
 const [email, setEmail] = createSignal<string>("");
 const [password, setPassword] = createSignal<string>("");
 const [token, setToken] = createSignal<string>("");
+const [mfa_token, setMfaToken] = createSignal<string>("");
 const [loading, setLoading] = createSignal<boolean>(false);
 
 
@@ -29,7 +30,7 @@ export default function Home() {
     <main>
       <h1>Solenoid Client (Rewrite // Very Beta)</h1>
       <p>This is a early rewrite of the original solenoid client</p>
-      <form id="email" onSubmit={async (e) => {
+      <form class="flex flex-col w-fit" id="email" onSubmit={async (e) => {
         try {
           e.preventDefault();
           setLoading(true)
@@ -45,11 +46,12 @@ export default function Home() {
           setLoading(false);
         }
       }}>
+        <label class="text-lg">Login With Revolt Email</label>
         <input type="email" value={email()} onChange={(e) => setEmail(e.currentTarget.value)} placeholder="Revolt Email"/>
         <input type="password" value={password()} onChange={(e) => setPassword(e.currentTarget.value)} placeholder="Account Password"/>
         <button type="submit" disabled={loading()}>Login into Solenoid</button>
       </form>
-      <form id="token" onSubmit={async (e) => {
+      <form class="flex flex-col w-fit" id="token" onSubmit={async (e) => {
         try {
           e.preventDefault();
           setLoading(true)
@@ -64,6 +66,7 @@ export default function Home() {
           setLoading(false);
         }
       }}>
+        <label class="text-lg" >Login With Bot Token</label>
         <input id="token-input" type="password" value={token()} placeholder="Revolt User/Bot Token" onChange={(e) => setToken(e.currentTarget.value)}/>
         <button type="submit" disabled={loading()}>Login with Token</button>
       </form>

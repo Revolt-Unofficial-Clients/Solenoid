@@ -58,6 +58,11 @@ const MessageReplyContent = styled("span")`
     color: ${props => props.theme.foreground};
 `
 
+const EditedIndicator = styled("span")`
+    margin-left: 0.5rem;
+    color: ${props => props.theme["secondary-foreground"]};
+`
+
 const MessageBase = (props: MessageProps) => {
     return (
         <MessageBaseContainer>
@@ -103,6 +108,7 @@ const MessageBase = (props: MessageProps) => {
                 <h1 class="text-md text-white">
                     <b>{props.author?.username || "User Not Loaded"}</b>
                 </h1>
+                {props.message.edited && <EditedIndicator class="ml-2">(Edited)</EditedIndicator>}
             </div>
             <div>
                 <MessageContent

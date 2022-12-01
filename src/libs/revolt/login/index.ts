@@ -16,6 +16,19 @@ const loginWithEmail = async (
     }
 };
 
+// FIXME Revolt.js Doesn't Support MFA Authentication 
+const LogintWithMFA = async (email: string, password: string, totp_code: string,) => {
+    try {
+        await client.login({
+            email,
+            password
+        }).then((e) => {
+            console.log(e);
+        })
+    } catch(e) {
+        console.log(e)
+    }
+}
 
 const loginWithToken = async (token: string) => {
     try {
@@ -27,4 +40,4 @@ const loginWithToken = async (token: string) => {
     }
 }
 
-export {loginWithEmail, loginWithToken};
+export {loginWithEmail, loginWithToken, LogintWithMFA};
