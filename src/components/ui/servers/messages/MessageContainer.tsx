@@ -1,7 +1,8 @@
-import { For } from "solid-js";
+import { For, Match, Switch } from "solid-js";
 import { messages } from "~/routes/client";
 import MessageBase from "./MessageBase";
 import { styled } from "solid-styled-components";
+import SystemMessageBase from "./SystemMessageBase";
 
 const MessageDivContainer = styled('div')`
     background-color: ${props => props.theme["secondary-background"]};
@@ -11,14 +12,23 @@ const MessageDivContainer = styled('div')`
 
 const MessageContainer = () => {
     return (
-        <MessageDivContainer class="w-full p-0 m-0">
+        <MessageDivContainer class="overflow-y-scroll overflow-x-hidden w-full h-full p-0 m-0">
             <For each={messages()}>
                 {message => (
-                    <MessageBase
+                    <Switch fallback={
+                        <MessageBase
                         author={message.author}
                         message={message}
-                    />
-                )}
+                        />
+                    }>
+                        <Match when={message.system}>
+                            <SystemMessageBase
+                                system={message}
+                            />
+                        </Match>
+                    </Switch>
+                )
+            }
             </For>
         </MessageDivContainer>
     )

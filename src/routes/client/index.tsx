@@ -49,7 +49,7 @@ export default function About() {
     });
 
     return (
-        <main class="text-gray-700 flex flex-row flex-1">
+        <main class="flex flex-row flex-1">
             <Suspense>
                 <ServerSidebar />
             </Suspense>
