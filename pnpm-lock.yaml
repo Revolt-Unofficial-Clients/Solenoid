@@ -14,6 +14,7 @@ specifiers:
   revolt-toolset: ^0.0.21
   revolt.js: ^6.0.19
   showdown: ^2.1.0
+  solid-icons: ^1.0.4
   solid-js: ^1.6.0
   solid-markdown: ^1.2.0
   solid-start: ^0.2.0
@@ -36,6 +37,7 @@ dependencies:
   revolt-toolset: 0.0.21
   revolt.js: 6.0.19
   showdown: 2.1.0
+  solid-icons: 1.0.4_solid-js@1.6.2
   solid-js: 1.6.2
   solid-markdown: 1.2.0_solid-js@1.6.2
   solid-start: 0.2.5_i2cnpwj3ojjdnkycik5yjsstli
@@ -3603,6 +3605,15 @@ packages:
       '@polka/url': 1.0.0-next.21
       mrmime: 1.0.1
       totalist: 3.0.0
+
+  /solid-icons/1.0.4_solid-js@1.6.2:
+    resolution: {integrity: sha512-gJTp4in3+OYCs9WvDkSLt4Los2unR3Uoder8wjh15GsfP20xiNOLfPTJllXmn+fI8+k3x7bRYtLGIgWd9fUQug==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      solid-js: '*'
+    dependencies:
+      solid-js: 1.6.2
+    dev: false
 
   /solid-js/1.6.2:
     resolution: {integrity: sha512-AZBsj+Yn1xliniTTeuQKG9V7VQVkQ8lZmSKvBjpcVSoZeF7nvt/N5f7Kcsx6QSufioa2YgvBjkIiA0cM0qhotw==}
