@@ -12,7 +12,7 @@ interface MessageProps {
 // TODO: Use Revolt GFM instead of Regular GFM
 // TODO: Custom Emoji Support (Examples: :trol:, :01GHBG2J9Z8FPH6F4C2HK1J2SW:)
 // TODO: Message Actions
-// TODO: Audio/Video Support
+// TODO: Audio Support
 
 const converter = new showdown.Converter();
 converter.setFlavor("github");
@@ -41,6 +41,9 @@ const MessageBase = (props: MessageProps) => {
         word-break: normal;
         margin-right: 2px;
         color: ${(props) => props.theme.foreground};
+        & a {
+            text-decoration: underline;
+        }
     `;
 
     const MessageReplyBase = styled("div")`
@@ -67,7 +70,7 @@ const MessageBase = (props: MessageProps) => {
     `;
 
     const MessageReplyContent = styled("span")`
-        text-overflow: elipsis;
+        text-overflow: ellipsis;
         color: ${(props) => props.theme.foreground};
     `;
 
@@ -80,7 +83,7 @@ const MessageBase = (props: MessageProps) => {
         font-weight: 700;
         font-size: 1rem;
         line-height: 1.5rem;
-        background: ${colour || "#fff"};
+        background: ${props => colour || props.theme.foreground};
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;

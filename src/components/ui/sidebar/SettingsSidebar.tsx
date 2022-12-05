@@ -9,13 +9,16 @@ import {
     BiRegularExit,
     BiRegularInfoCircle,
     BiRegularX,
-    BiRegularPalette
+    BiRegularPalette,
 } from "solid-icons/bi";
-import { setShowSettings } from "~/routes/client";
-import { createSignal, Match, Show, Switch } from "solid-js";
+import { setShowSettings, usersTyping } from "~/routes/client";
+import { createSignal, For, Match, Show, Switch } from "solid-js";
 import { useNavigate } from "solid-start";
 import { clearStorage } from "~/libs/storage/user";
 import { client } from "~/libs/revolt";
+import { badges } from "~/libs/solenoid";
+import { createStore } from "solid-js/store";
+import Showdown from "showdown";
 
 const SidebarBase = styled("div")`
     background-color: ${(props) => props.theme["primary-background"]};
@@ -66,10 +69,19 @@ const Setting = styled("div")`
 
 const [tab, setTab] = createSignal<number>(0);
 
+const [profile, setProfile] = createStore();
 
+const converter = new Showdown.Converter();
+converter.setFlavor("github");
+converter.setOption("simplifiedAutoLink", true);
+converter.setOption("tables", true);
+converter.setOption("emoji", true);
+
+client.user.fetchProfile().then((e) => {
+    setProfile(e);
+});
 
 const SettingsSidebar = () => {
-    
     const navigate = useNavigate();
 
     const logoutFromRevolt = async () => {
@@ -81,11 +93,24 @@ const SettingsSidebar = () => {
         } else {
             clearStorage("session");
             client.logout();
-            navigate("/", {replace: true});
+            navigate("/", { replace: true });
         }
     };
 
-    console.log("ServerSidebar rendered");
+    console.log("Settings has been rendered");
+
+    const ProfilePreview = styled("div")`
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+            url(${client.configuration.features.autumn.url}/backgrounds/${(profile as any).background?._id}),
+            ${(props) => props.theme["primary-background"]};
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #fff;
+        padding: 0.5rem;
+        border-radius: 5px;
+    `;
+
     return (
         <SidebarBase>
             <ItemSidebar>
@@ -125,7 +150,11 @@ const SettingsSidebar = () => {
                         Utilities
                     </Item>
                     <span class="ml-4 text-sm">Experimental</span>
-                    <Item class="Item" data-active={tab() === 4 ? "true" : "false"} onClick={() => setTab(4)}>
+                    <Item
+                        class="Item"
+                        data-active={tab() === 4 ? "true" : "false"}
+                        onClick={() => setTab(4)}
+                    >
                         <BiRegularPalette />
                         Themes
                     </Item>
@@ -138,10 +167,16 @@ const SettingsSidebar = () => {
                         Experiments
                     </Item>
                 </ul>
-                <button class="ml-4 mt-auto mb-5 text-left flex items-center gap-[5px]" onClick={() => setTab(6)}>
+                <button
+                    class="ml-4 mt-auto mb-5 text-left flex items-center gap-[5px]"
+                    onClick={() => setTab(6)}
+                >
                     <BiRegularInfoCircle /> About Solenoid
                 </button>
-                <button class="ml-4 mb-5 text-left flex items-center gap-[5px]" onClick={logoutFromRevolt}>
+                <button
+                    class="ml-4 mb-5 text-left flex items-center gap-[5px]"
+                    onClick={logoutFromRevolt}
+                >
                     <BiRegularExit /> Logout
                 </button>
             </ItemSidebar>
@@ -170,17 +205,70 @@ const SettingsSidebar = () => {
                                 <h1>Username</h1>
                                 <div class="flex flex-row">
                                     <span>{client.user.username}</span>
-                                    <button class="ml-auto" disabled title="TODO: Edit Username">Edit</button>
+                                    <button
+                                        class="ml-auto"
+                                        disabled
+                                        title="TODO: Edit Username"
+                                    >
+                                        Edit
+                                    </button>
+                                </div>
+                                <div class="mt-5">
+                                    <h1>Status</h1>
+                                    <div class="flex flex-row">
+                                        <span>{client.user.status.text}</span>
+                                        <button
+                                            class="ml-auto"
+                                            disabled
+                                            title="TODO: Change Status"
+                                        >
+                                            Edit
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="mt-5">
-                                <h1>Badges</h1>
-                                <p>TODO: Add Badges</p>
+                                <h1>Solenoid Badges</h1>
                                 <div class="flex flex-row gap-5 mt-2">
-                                    <div class="p-5 bg-slate-300 w-5" />
-                                    <div class="p-5 bg-red-300 w-5" />
-                                    <div class="p-5 bg-green-300 w-5" />
-                                    <div class="p-5 bg-blue-300 w-5" />
+                                    <For each={badges}>
+                                        {(badge) => {
+                                            if (
+                                                badge.id instanceof
+                                                Array<string>
+                                            ) {
+                                                return (
+                                                    <For each={badge.id}>
+                                                        {(e) => {
+                                                            if (
+                                                                e ===
+                                                                client.user._id
+                                                            )
+                                                                return (
+                                                                    <div
+                                                                        style={{
+                                                                            background:
+                                                                                badge.bkg,
+                                                                            padding:
+                                                                                "5px",
+                                                                            "border-radius":
+                                                                                "99999px",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            badge.title
+                                                                        }
+                                                                    </div>
+                                                                );
+                                                        }}
+                                                    </For>
+                                                );
+                                            } else if (
+                                                badge.id === client.user._id
+                                            ) {
+                                                return <div>{badge.title}</div>;
+                                            }
+                                        }}
+                                    </For>
                                 </div>
                             </div>
                         </div>
@@ -188,8 +276,28 @@ const SettingsSidebar = () => {
                 </Match>
                 <Match when={tab() === 1}>
                     <Setting>
-                        <h1>My Profile</h1>
-                        <p>TODO: Add Profile Customization</p>
+                        <h1 class="mb-2">My Profile</h1>
+                        <div class="rounded-sm">
+                            <ProfilePreview>
+                                <img
+                                    width={64}
+                                    src={client.user.generateAvatarURL()}
+                                    class="rounded-full"
+                                />
+                                <div>
+                                    <h1>{client.user.username}</h1>
+                                    <h2>{client.user.status.text}</h2>
+                                </div>
+                            </ProfilePreview>
+                            <h1>Information</h1>
+                            <div
+                                innerHTML={converter.makeHtml(
+                                    (profile as any).content
+                                )}
+                                class="p-5"
+                            />
+                        </div>
+                        <h1>TODO: Edit Profiles</h1>
                     </Setting>
                 </Match>
                 <Match when={tab() === 2}>
@@ -226,20 +334,20 @@ const SettingsSidebar = () => {
                                 Solenoid is a Revolt.chat Client designed from
                                 the ground up by StationaryStation, which
                                 started from a small lightweight client and
-                                scaled to a full featured for the web.
+                                scaled to a full featured client for the web.
                             </p>
                             <h2 class="text-3xl">Credits</h2>
                             <div class="mt-2">
                                 <h3 class="text-xl">Main Contributors</h3>
-                                <p>
-                                    StationaryStation: Creator of Solenoid
-                                </p>
+                                <p>StationaryStation: Creator of Solenoid</p>
                                 <p>
                                     Bloom: Helped with the old client interface
                                 </p>
                             </div>
                             <div class="mt-2">
-                                <h3 class="text-xl">Revolt Unofficial Clients Server</h3>
+                                <h3 class="text-xl">
+                                    Revolt Unofficial Clients Server
+                                </h3>
                                 <p>ItsMeow: Helped with testing</p>
                                 <p>
                                     Lokicalmito (Lo-kiss): Helped with testing
@@ -277,7 +385,9 @@ const SettingsSidebar = () => {
                                     and with system messages
                                 </p>
                             </div>
-                            <a href="https://github.com/revolt-unofficial-clients/solenoid">Github</a>
+                            <a href="https://github.com/revolt-unofficial-clients/solenoid">
+                                Github
+                            </a>
                         </div>
                     </Setting>
                 </Match>
