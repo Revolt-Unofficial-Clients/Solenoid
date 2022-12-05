@@ -15,14 +15,18 @@ const MessageContainer = lazy(
 );
 const MessageBox = lazy(() => import("~/components/ui/compose/MessageBox"));
 const ChannelInfo = lazy(() => import("~/components/ui/servers/channel/ChannelInfo"));
+const SettingsSidebar = lazy(() => import("~/components/ui/sidebar/SettingsSidebar"));
 import { Message, User } from "revolt.js";
 import { selectedChannel, selectedServer } from "~/components/ui/servers";
-import { sendMessageToChannel } from "~/libs/revolt/servers/messages";
+
+import MessageFallback from "~/components/ui/servers/messages/MessageFallback";
 
 export const [newMessage, setNewMessage] = createSignal<string>("");
 export const [usersTyping, setUsersTyping] = createSignal<User[]>();
 
 export const [messages, setMessages] = createSignal<Message[]>();
+
+export const [showSettings, setShowSettings] = createSignal<boolean>(false);
 
 export default function About() {
     const navigate = useNavigate();
@@ -66,12 +70,7 @@ export default function About() {
                         <Show
                             when={messages() && messages().length !== 0}
                             fallback={
-                                <div>
-                                    {/* TODO: Polish UI */}
-                                    {/* TODO: Move Fallback to Separate Component */}
-                                    <h1>This channel has no messages yet.</h1>
-                                    <p>Be the first to talk here!</p>
-                                </div>
+                                <MessageFallback />
                             }
                         >
                             <Suspense fallback={<MSGLoadingFallback />}>
@@ -82,6 +81,11 @@ export default function About() {
                             <MessageBox />
                         </Suspense>
                     </div>
+            </Show>
+            <Show when={showSettings()}>
+                <Suspense>
+                    <SettingsSidebar />
+                </Suspense>
             </Show>
         </main>
     );

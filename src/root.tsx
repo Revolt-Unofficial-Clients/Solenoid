@@ -15,6 +15,7 @@ import {
 import { ThemeProvider } from "solid-styled-components";
 import { theme } from "./components/solenoid/ui/DefaultTheme";
 import "./root.css";
+import { currentTheme } from "~/components/solenoid/ui/DefaultTheme";
 
 // TODO: Backend: Add ThemeProvider
 
@@ -30,7 +31,7 @@ export default function Root() {
                 />
             </Head>
             <Body>
-                <ThemeProvider theme={theme}>
+                <ThemeProvider theme={currentTheme() || theme}>
                     <Suspense>
                         <ErrorBoundary>
                             <Routes>

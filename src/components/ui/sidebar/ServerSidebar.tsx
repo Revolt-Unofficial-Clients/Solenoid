@@ -5,6 +5,9 @@ import { clearStorage, getFromStorage } from "~/libs/storage/user";
 import { client as revolt } from "~/libs/revolt";
 import { styled } from "solid-styled-components";
 
+import { showSettings, setShowSettings } from "~/routes/client"
+import { setSelectedChannel, setSelectedServer } from "../servers";
+
 const ServerSidebarBase = styled("div")`
     background-color: ${props => props.theme.background};
     height: 100vh;
@@ -18,21 +21,6 @@ const ServerSidebarBase = styled("div")`
 `
 
 const ServerSidebar = () => {
-    const navigate = useNavigate();
-
-    const logoutFromRevolt = async () => {
-        const CURRENT_SESSION: object = await getFromStorage("session");
-
-        if (!CURRENT_SESSION) {
-            revolt.websocket.disconnect();
-            navigate("/");
-        } else {
-            clearStorage("session");
-            revolt.logout();
-            navigate("/");
-        }
-    };
-
     return (
         <ServerSidebarBase>
             {/* TODO: Add Direct Message Support */}
@@ -42,18 +30,13 @@ const ServerSidebar = () => {
             {/* FIXME: Use icons instead of text */}
             <button
                 class="bottom-0 text-slate-800 dark:text-white p-2"
-                disabled
+                disabled={showSettings()}
                 title="TODO: Settings"
-                onClick={() => console.log("Settings Toggle")}
+                onClick={() => {
+                    setShowSettings(true)
+                }}
             >
                 Settings
-            </button>
-            <button
-                class="bottom-0 text-slate-800 dark:text-white p-2"
-                title="FIXME: Login not working after user logout"
-                onClick={() => logoutFromRevolt()}
-            >
-                Logout
             </button>
         </ServerSidebarBase>
     );
