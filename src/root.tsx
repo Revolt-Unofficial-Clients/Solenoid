@@ -7,6 +7,7 @@ import {
     FileRoutes,
     Head,
     Html,
+    Link,
     Meta,
     Routes,
     Scripts,
@@ -29,9 +30,10 @@ export default function Root() {
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
+                <Link rel="icon" href="/favicon.svg" />
             </Head>
             <Body>
-                <ThemeProvider theme={currentTheme() || theme}>
+                <ThemeProvider theme={theme}>
                     <Suspense>
                         <ErrorBoundary>
                             <Routes>

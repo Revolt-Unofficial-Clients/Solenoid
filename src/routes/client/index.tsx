@@ -20,6 +20,7 @@ import { Message, User } from "revolt.js";
 import { selectedChannel, selectedServer } from "~/components/ui/servers";
 
 import MessageFallback from "~/components/ui/servers/messages/MessageFallback";
+import Home from "~/components/ui/sidebar/Home";
 
 export const [newMessage, setNewMessage] = createSignal<string>("");
 export const [usersTyping, setUsersTyping] = createSignal<User[]>();
@@ -27,6 +28,8 @@ export const [usersTyping, setUsersTyping] = createSignal<User[]>();
 export const [messages, setMessages] = createSignal<Message[]>();
 
 export const [showSettings, setShowSettings] = createSignal<boolean>(false);
+
+export const [home, setHome] = createSignal<boolean>(true);
 
 export default function About() {
     const navigate = useNavigate();
@@ -57,6 +60,9 @@ export default function About() {
             <Suspense>
                 <ServerSidebar />
             </Suspense>
+            <Show when={home()}>
+                <Home />
+            </Show>
             <Show when={selectedServer()}>
                 <Suspense>
                     <ChannelSidebar />

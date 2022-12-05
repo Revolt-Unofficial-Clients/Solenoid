@@ -8,7 +8,8 @@ import {
     BiRegularCodeCurly,
     BiRegularExit,
     BiRegularInfoCircle,
-    BiRegularX
+    BiRegularX,
+    BiRegularPalette
 } from "solid-icons/bi";
 import { setShowSettings } from "~/routes/client";
 import { createSignal, Match, Show, Switch } from "solid-js";
@@ -123,16 +124,21 @@ const SettingsSidebar = () => {
                         <BiRegularPackage />
                         Utilities
                     </Item>
+                    <span class="ml-4 text-sm">Experimental</span>
+                    <Item class="Item" data-active={tab() === 4 ? "true" : "false"} onClick={() => setTab(4)}>
+                        <BiRegularPalette />
+                        Themes
+                    </Item>
                     <Item
                         class="Item"
-                        data-active={tab() === 4 ? "true" : "false"}
-                        onClick={() => setTab(4)}
+                        data-active={tab() === 5 ? "true" : "false"}
+                        onClick={() => setTab(5)}
                     >
                         <BiRegularCodeCurly />
                         Experiments
                     </Item>
                 </ul>
-                <button class="ml-4 mt-auto mb-5 text-left flex items-center gap-[5px]" onClick={() => setTab(5)}>
+                <button class="ml-4 mt-auto mb-5 text-left flex items-center gap-[5px]" onClick={() => setTab(6)}>
                     <BiRegularInfoCircle /> About Solenoid
                 </button>
                 <button class="ml-4 mb-5 text-left flex items-center gap-[5px]" onClick={logoutFromRevolt}>
@@ -200,11 +206,17 @@ const SettingsSidebar = () => {
                 </Match>
                 <Match when={tab() === 4}>
                     <Setting>
+                        <h1>Themes</h1>
+                        <p>TODO: Theme Settings</p>
+                    </Setting>
+                </Match>
+                <Match when={tab() === 5}>
+                    <Setting>
                         <h1>Experiments</h1>
                         <p>TODO: Add Experiments</p>
                     </Setting>
                 </Match>
-                <Match when={tab() === 5}>
+                <Match when={tab() === 6}>
                     <Setting>
                         <div class="mb-5">
                             <h1>About Solenoid Client</h1>

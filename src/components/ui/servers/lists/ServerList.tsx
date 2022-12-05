@@ -2,6 +2,7 @@ import { For } from "solid-js"
 import { client } from "~/libs/revolt"
 import { Server } from "revolt.js"
 import { setSelectedServer } from ".."
+import { setHome } from "~/routes/client"
 
 const ServerList = () => {
     const SERVERS = Array.from(client.servers.values());
@@ -12,7 +13,8 @@ const ServerList = () => {
                 {(server: Server) => (
                     <div class="p-2 max-w-fit cursor-pointer" onClick={() => {
                         setSelectedServer(null);
-                        setSelectedServer(server)
+                        setSelectedServer(server);
+                        setHome(false);
                         }}>
                         {server.icon ? <img
                             src={`${client.configuration.features.autumn.url}/icons/${server.icon._id}`}

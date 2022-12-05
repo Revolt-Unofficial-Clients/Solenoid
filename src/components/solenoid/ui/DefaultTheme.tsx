@@ -1,6 +1,7 @@
-import { DEFAULT_THEME } from "revolt-toolset";
+import { DEFAULT_THEME, ThemeSettings } from "revolt-toolset";
 import { DefaultTheme } from "solid-styled-components";
-import { createSignal } from "solid-js";
-export const [currentTheme, setCurrentTheme] = createSignal<DefaultTheme>();
+import { createStore } from "solid-js/store";
 
-export const theme: DefaultTheme = currentTheme() || DEFAULT_THEME;
+export const [currentTheme, setCurrentTheme] = createStore<ThemeSettings>(DEFAULT_THEME);
+
+export const theme: DefaultTheme = currentTheme;
