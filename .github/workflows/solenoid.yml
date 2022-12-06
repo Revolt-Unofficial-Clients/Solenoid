@@ -1,6 +1,10 @@
+name: Check for Linting/Build Errors
+run-name: ${{github.actor}} is checking for errors
 on:
-  - push
-  - pull_request
+   push:
+    branches: ["redesign"]
+   pull_request:
+    branches: ["redesign"]
 
 jobs:
   cache-and-install:
