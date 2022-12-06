@@ -1,11 +1,9 @@
-import { client } from "~/libs/revolt";
-import { Message, User } from "revolt.js";
-import { For, Match, Switch } from "solid-js";
-import showdown from "showdown";
+import { Message } from "revolt.js";
+import { Match, Switch } from "solid-js";
 import { styled } from "solid-styled-components";
 
 interface MessageProps {
-    system: Message
+    system: Message;
 }
 
 // TODO Random Kick/Ban Messages
@@ -20,18 +18,6 @@ const MessageContent = styled("div")`
     word-break: normal;
     margin-right: 4px;
     color: ${(props) => props.theme.foreground};
-`;
-
-const MessageReplyBase = styled("div")`
-    display: flex;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    width: fit-content;
-    margin-bottom: 0.5rem;
-    background-color: ${(props) => props.theme["primary-background"]};
-    border-left-width: 4px;
-    border-left-color: ${(props) => props.theme.accent};
-    align-items: center;
 `;
 
 const SystemMessageChip = styled("span")`

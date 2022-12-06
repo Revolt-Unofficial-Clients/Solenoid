@@ -1,4 +1,4 @@
-const store = (keyName: string, keyValue: any) => {
+const store = <T>(keyName: string, keyValue: T | object) => {
     const obj = JSON.stringify(keyValue);
     localStorage.setItem(keyName, obj);
 }

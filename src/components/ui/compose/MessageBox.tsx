@@ -1,10 +1,10 @@
 import { sendMessageToChannel } from "~/libs/revolt/servers/messages";
 import { selectedChannel } from "../servers";
 import { setNewMessage, newMessage } from "~/routes/client";
-import { styled, DefaultTheme } from "solid-styled-components";
+import { styled } from "solid-styled-components";
 
 const MessageBoxContainer = styled("div")`
-    background: ${props => props.theme["tertiary-background"]};
+    background: ${(props) => props.theme["tertiary-background"]};
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
@@ -17,22 +17,22 @@ const MessageBoxContainer = styled("div")`
     justify-content: center;
     flex-grow: 1;
     z-index: 1;
-`
+`;
 
 const MessageBoxForm = styled("form")`
     display: flex;
     align-items: center;
     gap: 0.5rem;
-`
+`;
 
 const MessageBoxInput = styled("input")`
-    background: ${props => props.theme["tertiary-background"]};
-`
+    background: ${(props) => props.theme["tertiary-background"]};
+`;
 
 const MessageBoxSendBtn = styled("button")`
     margin-right: 0.5rem;
-    color: ${props => props.theme.foreground}
-`
+    color: ${(props) => props.theme.foreground};
+`;
 
 const MessageBox = () => {
     return (

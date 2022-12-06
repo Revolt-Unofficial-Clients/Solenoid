@@ -1,22 +1,15 @@
 import { Channel, Server } from "revolt.js";
-import { For } from "solid-js";
+import { createEffect, For } from "solid-js";
 import { selectedChannel, setSelectedChannel } from "..";
 import { setMessages } from "~/routes/client";
 import { styled } from "solid-styled-components";
 import { client } from "~/libs/revolt";
 
-import {BiRegularHash, BiRegularSpeaker} from "solid-icons/bi"
+import { BiRegularHash, BiRegularSpeaker } from "solid-icons/bi";
 
 interface ChannelListProps {
     server: Server;
 }
-
-const ChannelContainer = styled("div")`
-    background-color: ${(props) => props.theme["primary-background"]};
-    padding: 0.5rem;
-    margin-bottom: 0.25rem;
-    cursor: pointer;
-`;
 
 const Item = styled("li")`
     background-color: ${(props) => props.theme["secondary-background"]};
@@ -37,17 +30,14 @@ const Item = styled("li")`
 `;
 
 const ChannelList = (props: ChannelListProps) => {
-    if (!props.server) return;
+    createEffect(() => {
+        if (!props.server) return;
+    });
 
     const CHANNELS = props.server.channels;
 
     const ChannelBanner = styled("div")`
-        background: linear-gradient(
-                to top,
-                ${(props) => props.theme["primary-background"]},
-                transparent
-            ),
-            url(${client.configuration.features.autumn.url}/banners/${props.server.banner._id}),
+        background: linear-gradient(to top, ${(props) => props.theme["primary-background"]}, transparent), url(${client.configuration.features.autumn.url}/banners/${props.server.banner._id}),
             ${(props) => props.theme["secondary-background"]};
         background-size: cover;
         background-position: center;
@@ -60,11 +50,11 @@ const ChannelList = (props: ChannelListProps) => {
     `;
 
     const ChannelTitle = styled("h1")`
-        color: ${props => props.theme.foreground};
-        margin: .5rem;
+        color: ${(props) => props.theme.foreground};
+        margin: 0.5rem;
         position: absolute;
         bottom: 0px;
-    `
+    `;
     return (
         <div class="flex-1">
             {/* TODO: Move Channel Title to ChannelSidebar Component */}
@@ -94,7 +84,8 @@ const ChannelList = (props: ChannelListProps) => {
                             }}
                             data-active={channel._id === selectedChannel()?._id ? "true" : "false"}
                         >
-                            {channel.channel_type === "TextChannel" ? <BiRegularHash /> : channel.channel_type === "VoiceChannel" && <BiRegularSpeaker />}{channel.name}
+                            {channel.channel_type === "TextChannel" ? <BiRegularHash /> : channel.channel_type === "VoiceChannel" && <BiRegularSpeaker />}
+                            {channel.name}
                         </Item>
                     )}
                 </For>

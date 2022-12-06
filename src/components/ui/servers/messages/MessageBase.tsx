@@ -83,7 +83,7 @@ const MessageBase = (props: MessageProps) => {
         font-weight: 700;
         font-size: 1rem;
         line-height: 1.5rem;
-        background: ${props => colour || props.theme.foreground};
+        background: ${(props) => colour || props.theme.foreground};
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -95,30 +95,19 @@ const MessageBase = (props: MessageProps) => {
             {props.message.reply_ids && (
                 <For each={props.message.reply_ids}>
                     {(reply) => {
-                        const msg =
-                            props.message.channel?.client.messages.get(reply);
+                        const msg = props.message.channel?.client.messages.get(reply);
                         return (
                             <MessageReplyBase>
                                 <MessageReplyUserChip>
                                     <img
-                                        src={
-                                            msg?.generateMasqAvatarURL() ||
-                                            msg?.author.avatarURL ||
-                                            msg?.author.generateAvatarURL() ||
-                                            msg?.author.defaultAvatarURL
-                                        }
+                                        src={msg?.generateMasqAvatarURL() || msg?.author.avatarURL || msg?.author.generateAvatarURL() || msg?.author.defaultAvatarURL}
                                         width={24}
                                         height={24}
                                         class="rounded-full inline-flex mr-2"
                                     />
-                                    @
-                                    {msg?.member?.nickname ||
-                                        msg?.username ||
-                                        "Unknown User"}
+                                    @{msg?.member?.nickname || msg?.username || "Unknown User"}
                                 </MessageReplyUserChip>
-                                <MessageReplyContent class="break-all">
-                                    {msg?.content}
-                                </MessageReplyContent>
+                                <MessageReplyContent class="break-all">{msg?.content}</MessageReplyContent>
                             </MessageReplyBase>
                         );
                     }}
@@ -138,18 +127,12 @@ const MessageBase = (props: MessageProps) => {
                     height={32}
                     class="rounded-2xl mr-2"
                 />
-                <MessageAuthorRoleColour>
-                    {props.message.masquerade?.name ||
-                        props.message.member?.nickname ||
-                        props.author?.username ||
-                        "User Not Loaded"}
-                </MessageAuthorRoleColour>
-                {props.message.edited && (
-                    <EditedIndicator class="ml-2">(Edited)</EditedIndicator>
-                )}
+                <MessageAuthorRoleColour>{props.message.masquerade?.name || props.message.member?.nickname || props.author?.username || "User Not Loaded"}</MessageAuthorRoleColour>
+                {props.message.edited && <EditedIndicator class="ml-2">(Edited)</EditedIndicator>}
             </div>
             <div>
                 <MessageContent
+                    // eslint-disable-next-line solid/no-innerhtml
                     innerHTML={converter.makeHtml(props.message.content)}
                 />
                 <For each={props.message.attachments}>
@@ -174,13 +157,7 @@ const MessageBase = (props: MessageProps) => {
                                 />
                             );
                         } else if (attachment.metadata.type === "Text") {
-                            return (
-                                <div
-                                    class={`m-w-5 m-h-4 w-64 block object-contain justify-end mt-2 rounded-md shadow-md`}
-                                >
-                                    {attachment.filename}
-                                </div>
-                            );
+                            return <div class={`m-w-5 m-h-4 w-64 block object-contain justify-end mt-2 rounded-md shadow-md`}>{attachment.filename}</div>;
                         }
                     }}
                 </For>

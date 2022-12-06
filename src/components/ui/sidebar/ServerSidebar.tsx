@@ -5,7 +5,6 @@ import { styled } from "solid-styled-components";
 
 import { showSettings, setShowSettings, setHome, setMessages, home } from "~/routes/client";
 import { setSelectedChannel, setSelectedServer } from "../servers";
-import Home from "~/routes";
 
 const ServerSidebarBase = styled("div")`
     background-color: ${(props) => props.theme.background};
@@ -26,11 +25,7 @@ const ServerSidebar = () => {
             <img
                 class="rounded-full m-2"
                 title={`Logged in as ${revolt.user?.username}`}
-                src={
-                    revolt.user?.animatedAvatarURL ||
-                    revolt.user?.generateAvatarURL() ||
-                    revolt.user?.defaultAvatarURL
-                }
+                src={revolt.user?.animatedAvatarURL || revolt.user?.generateAvatarURL() || revolt.user?.defaultAvatarURL}
                 width={42}
                 onClick={() => {
                     if (showSettings()) {

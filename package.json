@@ -3,11 +3,16 @@
   "scripts": {
     "dev": "solid-start dev",
     "build": "solid-start build",
-    "start": "solid-start start"
+    "start": "solid-start start",
+    "lint": "eslint --ext .tsx,.ts src/components/** src/libs/*/* src/libs/**"
   },
   "type": "module",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
     "autoprefixer": "^10.4.12",
+    "eslint": "8.29.0",
+    "eslint-plugin-solid": "^0.9.1",
     "postcss": "^8.4.18",
     "prettier": "^2.8.0",
     "solid-start-node": "^0.2.0",
