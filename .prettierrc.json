@@ -4,5 +4,5 @@
     "semi": true,
     "singleQuote": false,
     "singleAttributePerLine": true,
-    "printWidth": 200
+    "printWidth": 150
 }

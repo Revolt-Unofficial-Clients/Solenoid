@@ -2,6 +2,9 @@ import { sendMessageToChannel } from "~/libs/revolt/servers/messages";
 import { selectedChannel } from "../servers";
 import { setNewMessage, newMessage } from "~/routes/client";
 import { styled } from "solid-styled-components";
+import { createSignal } from "solid-js";
+
+export const [attachments, setAttachments] = createSignal<FileList>();
 
 const MessageBoxContainer = styled("div")`
     background: ${(props) => props.theme["tertiary-background"]};
@@ -43,20 +46,27 @@ const MessageBox = () => {
             <MessageBoxForm
                 onSubmit={(e) => {
                     e.preventDefault();
-                    sendMessageToChannel(selectedChannel(), newMessage()).then(
-                        () => {
-                            setNewMessage("");
-                        }
-                    );
+                    sendMessageToChannel(selectedChannel(), newMessage(), attachments()).then(() => {
+                        setNewMessage("");
+                    });
                 }}
             >
+                <input
+                    type="file"
+                    accept="image/png,image/jpg,image/gif"
+                    onChange={(e) => setAttachments(e.currentTarget.files)}
+                    multiple
+                />
                 <MessageBoxInput
                     value={newMessage()}
                     onChange={(e) => setNewMessage(e.currentTarget.value)}
                     placeholder={`Message ${selectedChannel()?.name}`}
                     class="flex-1 h-full w-full"
                 />
-                <MessageBoxSendBtn class="ml-2 text-white" type="submit">
+                <MessageBoxSendBtn
+                    class="ml-2 text-white"
+                    type="submit"
+                >
                     Send
                 </MessageBoxSendBtn>
             </MessageBoxForm>

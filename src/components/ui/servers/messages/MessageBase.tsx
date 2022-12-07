@@ -9,6 +9,10 @@ interface MessageProps {
     message: Message;
 }
 
+interface AvatarProps {
+    avatar: string;
+}
+
 // TODO: Use Revolt GFM instead of Regular GFM
 // TODO: Custom Emoji Support (Examples: :trol:, :01GHBG2J9Z8FPH6F4C2HK1J2SW:)
 // TODO: Message Actions
@@ -56,6 +60,8 @@ const MessageBase = (props: MessageProps) => {
         border-left-width: 4px;
         border-left-color: ${(props) => props.theme.accent};
         align-items: center;
+        font-size: 0.75rem;
+        line-height: 0.75rem;
     `;
 
     const MessageReplyUserChip = styled("span")`
@@ -90,6 +96,17 @@ const MessageBase = (props: MessageProps) => {
         font-weight: bold;
     `;
 
+    const UserAvatar = styled("div")((props: AvatarProps) => ({
+        background: `url(${props.avatar})`,
+        width: "32px",
+        height: "32px",
+        backgroundSize: "contain",
+        backgroundClip: "content-box",
+        backgroundPosition: "center",
+        borderRadius: "99999px",
+        marginRight: ".5rem",
+    }));
+
     return (
         <MessageBaseContainer>
             {props.message.reply_ids && (
@@ -98,15 +115,7 @@ const MessageBase = (props: MessageProps) => {
                         const msg = props.message.channel?.client.messages.get(reply);
                         return (
                             <MessageReplyBase>
-                                <MessageReplyUserChip>
-                                    <img
-                                        src={msg?.generateMasqAvatarURL() || msg?.author.avatarURL || msg?.author.generateAvatarURL() || msg?.author.defaultAvatarURL}
-                                        width={24}
-                                        height={24}
-                                        class="rounded-full inline-flex mr-2"
-                                    />
-                                    @{msg?.member?.nickname || msg?.username || "Unknown User"}
-                                </MessageReplyUserChip>
+                                <MessageReplyUserChip>@{msg?.member?.nickname || msg?.username || "Unknown User"}</MessageReplyUserChip>
                                 <MessageReplyContent class="break-all">{msg?.content}</MessageReplyContent>
                             </MessageReplyBase>
                         );
@@ -114,18 +123,14 @@ const MessageBase = (props: MessageProps) => {
                 </For>
             )}
             <div class="flex items-center">
-                <img
-                    src={
+                <UserAvatar
+                    avatar={
                         props.message.masquerade?.avatar ||
                         props.message.member?.generateAvatarURL() ||
                         props.author?.animatedAvatarURL ||
                         props.author?.generateAvatarURL() ||
-                        props.author?.defaultAvatarURL ||
-                        "https://autumn.revolt.chat/avatars/f3YE_u3ZySd-0SPGneOJNuS7YZ4e8wBZY6HykboVVZ?max_side=256"
+                        props.author?.defaultAvatarURL
                     }
-                    width={32}
-                    height={32}
-                    class="rounded-2xl mr-2"
                 />
                 <MessageAuthorRoleColour>{props.message.masquerade?.name || props.message.member?.nickname || props.author?.username || "User Not Loaded"}</MessageAuthorRoleColour>
                 {props.message.edited && <EditedIndicator class="ml-2">(Edited)</EditedIndicator>}
