@@ -22,7 +22,7 @@ const sendMessageToChannel = async (channel: Channel, content: string, attachmen
                     throw e;
                 });
 
-            setAttachments();
+            setAttachments(undefined);
         } else {
             await channel.sendMessage(content).catch((e) => {
                 throw e;
