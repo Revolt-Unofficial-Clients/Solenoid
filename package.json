@@ -4,7 +4,7 @@
     "dev": "solid-start dev",
     "build": "solid-start build",
     "start": "solid-start start",
-    "lint": "eslint --ext .tsx,.ts src/components/** src/libs/*/* src/libs/**"
+    "lint": "eslint --ext .tsx,.ts src/components/*/* src/routes/*/* src/libs/revolt/* src/libs/storage/*"
   },
   "type": "module",
   "devDependencies": {
