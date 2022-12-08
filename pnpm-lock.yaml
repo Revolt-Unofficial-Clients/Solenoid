@@ -16,7 +16,7 @@ specifiers:
   remark-gfm: ^3.0.1
   remark-math: ^5.1.1
   revolt-toolset: ^0.0.21
-  revolt.js: ^6.0.19
+  revolt.js: 6.0.18
   showdown: ^2.1.0
   solid-icons: ^1.0.4
   solid-js: ^1.6.0
@@ -39,7 +39,7 @@ dependencies:
   remark-gfm: 3.0.1
   remark-math: 5.1.1
   revolt-toolset: 0.0.21
-  revolt.js: 6.0.19
+  revolt.js: 6.0.18
   showdown: 2.1.0
   solid-icons: 1.0.4_solid-js@1.6.2
   solid-js: 1.6.2
@@ -1740,7 +1740,7 @@ packages:
   /axios/0.21.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: false
@@ -4331,6 +4331,16 @@ packages:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
 
+  /revolt-api/0.5.5-4:
+    resolution: {integrity: sha512-T4xg9RfpdU3A7ce75s2OaQBLAfLehKF2I897OfPBitIm6D8FucAH5tHJ6mOowkEiyT+yGkP9LT7B2UccAgyvpQ==}
+    dependencies:
+      '@insertish/oapi': 0.1.18
+      axios: 0.26.1
+      lodash.defaultsdeep: 4.6.1
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /revolt-api/0.5.5-5:
     resolution: {integrity: sha512-H8O1vty8pJikWZ1JIc/QFe49YPov/309G8AUUfR/EsJccjAxw8Pw1XT2dvOreCF6CrQx8k0uX0RIRcw0wS7XRA==}
     dependencies:
@@ -4347,6 +4357,27 @@ packages:
       axios: 1.2.0
       form-data: 4.0.0
       revolt.js: 6.0.19
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - utf-8-validate
+    dev: false
+
+  /revolt.js/6.0.18:
+    resolution: {integrity: sha512-NOmIzam1VYLKIYKDRgCeFbu6IcLXXtaQ5RwuqDhhCehCDFXzRyhYYXvl/l0Piz5E0ykMMDEG/G3GdIe/ZHrvlA==}
+    dependencies:
+      '@insertish/exponential-backoff': 3.1.0-patch.2
+      '@insertish/isomorphic-ws': 4.0.1_ws@8.11.0
+      axios: 0.21.4
+      eventemitter3: 4.0.7
+      lodash.defaultsdeep: 4.6.1
+      lodash.flatten: 4.4.0
+      lodash.isequal: 4.5.0
+      long: 5.2.1
+      mobx: 6.7.0
+      revolt-api: 0.5.5-4
+      ulid: 2.3.0
+      ws: 8.11.0
     transitivePeerDependencies:
       - bufferutil
       - debug

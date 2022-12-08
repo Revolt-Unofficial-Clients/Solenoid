@@ -42,5 +42,11 @@
   {
     "id": "01GG731DXCZJEANC7XZKBP0X5H",
     "title": "here is your badge :/"
+  },
+  {
+    "id": ["01FM2X4GBE4A6CN9NNT0GV0DF5", "01FH48GXF663JKTH1R13XRF747", "01FEEFJCKY5C4DMMJYZ20ACWWC", "01G8914GKC48X0KYP1DPH5E1WM", "01FESEWQKT7RESCNX5YF3JR29H"],
+    "title": "Client Dev",
+    "bkg": "#101010",
+    "colour": "#00C2B2"
   }
 ]

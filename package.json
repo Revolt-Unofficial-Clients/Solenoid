@@ -29,7 +29,7 @@
     "remark-gfm": "^3.0.1",
     "remark-math": "^5.1.1",
     "revolt-toolset": "^0.0.21",
-    "revolt.js": "^6.0.19",
+    "revolt.js": "6.0.18",
     "showdown": "^2.1.0",
     "solid-icons": "^1.0.4",
     "solid-js": "^1.6.0",

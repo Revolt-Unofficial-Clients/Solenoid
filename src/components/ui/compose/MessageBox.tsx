@@ -2,9 +2,11 @@ import { sendMessageToChannel } from "~/libs/revolt/servers/messages";
 import { selectedChannel } from "../servers";
 import { setNewMessage, newMessage } from "~/routes/client";
 import { styled } from "solid-styled-components";
-import { createSignal } from "solid-js";
+import { createSignal, Show, For, createEffect } from "solid-js";
+import { User } from "revolt.js";
 
 export const [attachments, setAttachments] = createSignal<FileList>();
+const [typing, setTyping] = createSignal<User[]>([]);
 
 const MessageBoxContainer = styled("div")`
     background: ${(props) => props.theme["tertiary-background"]};
@@ -38,11 +40,28 @@ const MessageBoxSendBtn = styled("button")`
 `;
 
 const MessageBox = () => {
+    createEffect(() => {
+        setTyping(selectedChannel()?.typing);
+        console.log(typing());
+    });
+
     return (
         <MessageBoxContainer>
             {/* TODO: Add Emoji Picker */}
             {/* TODO: Add Attachment Support */}
             {/* TODO: Finalize UI */}
+            <div>
+                <Show when={selectedChannel()?.typing}>
+                    <p class="text-white">
+                        <For each={selectedChannel()?.typing}>
+                            {(u) => {
+                                console.log(u);
+                                return <span>{u?.username || "what"}</span>;
+                            }}
+                        </For>
+                    </p>
+                </Show>
+            </div>
             <MessageBoxForm
                 onSubmit={(e) => {
                     e.preventDefault();

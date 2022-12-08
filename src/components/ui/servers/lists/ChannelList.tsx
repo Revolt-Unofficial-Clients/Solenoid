@@ -37,8 +37,8 @@ const ChannelList = (props: ChannelListProps) => {
     const CHANNELS = props.server.channels;
 
     const ChannelBanner = styled("div")`
-        background: linear-gradient(to top, ${(props) => props.theme["primary-background"]}, transparent), url(${client.configuration.features.autumn.url}/banners/${props.server.banner._id}),
-            ${(props) => props.theme["secondary-background"]};
+        background: linear-gradient(to top, ${(props) => props.theme["primary-background"]}, transparent),
+            url(${client.configuration.features.autumn.url}/banners/${props.server.banner?._id}), ${(props) => props.theme["secondary-background"]};
         background-size: cover;
         background-position: center;
         position: sticky;
@@ -84,7 +84,11 @@ const ChannelList = (props: ChannelListProps) => {
                             }}
                             data-active={channel._id === selectedChannel()?._id ? "true" : "false"}
                         >
-                            {channel.channel_type === "TextChannel" ? <BiRegularHash /> : channel.channel_type === "VoiceChannel" && <BiRegularSpeaker />}
+                            {channel.channel_type === "TextChannel" ? (
+                                <BiRegularHash />
+                            ) : (
+                                channel.channel_type === "VoiceChannel" && <BiRegularSpeaker />
+                            )}
                             {channel.name}
                         </Item>
                     )}

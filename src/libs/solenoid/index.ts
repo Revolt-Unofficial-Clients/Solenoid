@@ -1,11 +1,11 @@
 declare interface SolenoidBadge {
-    id: string[] | string,
-    title: string,
-    colour?: string,
-    bkg?: string,
-    url?: string
+    id: string[] | string;
+    title: string;
+    colour?: string;
+    bkg?: string;
+    url?: string;
 }
 
-import solenoidBadges from "./badges.json"
+import solenoidBadges from "./badges.json";
 
-export const badges: SolenoidBadge[] =  solenoidBadges;
+export const badges: SolenoidBadge[] = solenoidBadges;

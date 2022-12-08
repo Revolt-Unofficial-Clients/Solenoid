@@ -3,6 +3,7 @@ import { Message, User } from "revolt.js";
 import { For } from "solid-js";
 import showdown from "showdown";
 import { styled } from "solid-styled-components";
+import { badges } from "~/libs/solenoid";
 
 interface MessageProps {
     author: User;
@@ -55,13 +56,11 @@ const MessageBase = (props: MessageProps) => {
         gap: 0.5rem;
         padding: 0.5rem;
         width: fit-content;
-        margin-bottom: 0.5rem;
         background-color: ${(props) => props.theme["primary-background"]};
         border-left-width: 4px;
         border-left-color: ${(props) => props.theme.accent};
         align-items: center;
-        font-size: 0.75rem;
-        line-height: 0.75rem;
+        font-size: 12px;
     `;
 
     const MessageReplyUserChip = styled("span")`
@@ -94,6 +93,9 @@ const MessageBase = (props: MessageProps) => {
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     `;
 
     const UserAvatar = styled("div")((props: AvatarProps) => ({
@@ -104,8 +106,14 @@ const MessageBase = (props: MessageProps) => {
         backgroundClip: "content-box",
         backgroundPosition: "center",
         borderRadius: "99999px",
-        marginRight: ".5rem",
     }));
+
+    const Badge = styled("div")<{ bg: string; colour: string }>`
+        border-radius: 5px;
+        padding: 0.25rem;
+        background: ${(props) => props.bg || "#000"};
+        color: ${(props) => props.colour || "#fff"};
+    `;
 
     return (
         <MessageBaseContainer>
@@ -115,24 +123,57 @@ const MessageBase = (props: MessageProps) => {
                         const msg = props.message.channel?.client.messages.get(reply);
                         return (
                             <MessageReplyBase>
-                                <MessageReplyUserChip>@{msg?.member?.nickname || msg?.username || "Unknown User"}</MessageReplyUserChip>
+                                <MessageReplyUserChip>@{msg?.member?.nickname || msg?.author.username || "Unknown User"}</MessageReplyUserChip>
                                 <MessageReplyContent class="break-all">{msg?.content}</MessageReplyContent>
                             </MessageReplyBase>
                         );
                     }}
                 </For>
             )}
-            <div class="flex items-center">
+            <div class="mt-2 flex items-center gap-2">
                 <UserAvatar
                     avatar={
                         props.message.masquerade?.avatar ||
                         props.message.member?.generateAvatarURL() ||
-                        props.author?.animatedAvatarURL ||
                         props.author?.generateAvatarURL() ||
                         props.author?.defaultAvatarURL
                     }
                 />
-                <MessageAuthorRoleColour>{props.message.masquerade?.name || props.message.member?.nickname || props.author?.username || "User Not Loaded"}</MessageAuthorRoleColour>
+                <MessageAuthorRoleColour>
+                    {props.message.masquerade?.name || props.message.member?.nickname || props.author?.username || "User Not Loaded"}
+                </MessageAuthorRoleColour>
+                <For each={badges}>
+                    {(badge) => {
+                        if (badge.id instanceof Array<string>) {
+                            console.log(badge);
+                            return (
+                                <For each={badge.id}>
+                                    {(e) => {
+                                        if (e === props.message.author_id)
+                                            return (
+                                                <Badge
+                                                    bg={badge.bkg}
+                                                    colour={badge.colour}
+                                                >
+                                                    {badge.title}
+                                                </Badge>
+                                            );
+                                    }}
+                                </For>
+                            );
+                        } else if (badge.id === props.message.author_id) {
+                            console.log(badge);
+                            return (
+                                <Badge
+                                    bg={badge.bkg}
+                                    colour={badge.colour}
+                                >
+                                    {badge.title}
+                                </Badge>
+                            );
+                        }
+                    }}
+                </For>
                 {props.message.edited && <EditedIndicator class="ml-2">(Edited)</EditedIndicator>}
             </div>
             <div>
@@ -162,7 +203,9 @@ const MessageBase = (props: MessageProps) => {
                                 />
                             );
                         } else if (attachment.metadata.type === "Text") {
-                            return <div class={`m-w-5 m-h-4 w-64 block object-contain justify-end mt-2 rounded-md shadow-md`}>{attachment.filename}</div>;
+                            return (
+                                <div class={`m-w-5 m-h-4 w-64 block object-contain justify-end mt-2 rounded-md shadow-md`}>{attachment.filename}</div>
+                            );
                         }
                     }}
                 </For>
