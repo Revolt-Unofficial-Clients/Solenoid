@@ -1,4 +1,4 @@
-import { Channel } from "revolt.js";
+import { Channel, Message } from "revolt.js";
 import { uploadAttachment } from "revolt-toolset";
 import { setAttachments } from "~/components/ui/compose/MessageBox";
 
@@ -33,4 +33,15 @@ const sendMessageToChannel = async (channel: Channel, content: string, attachmen
     }
 };
 
-export { sendMessageToChannel };
+const MSGCACHE = await caches.open("MSGCache");
+const ATTACHMENTCACHE = await caches.open("AttachmentCache");
+
+const cacheMessage = async (item: string, location: Cache) => {
+    try {
+        location.add(item);
+    } catch (err) {
+        console.error("Unexpected Error while caching\n", err);
+    }
+};
+
+export { sendMessageToChannel, cacheMessage, MSGCACHE, ATTACHMENTCACHE };
