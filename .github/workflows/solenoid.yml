@@ -1,5 +1,4 @@
 name: Check for Linting/Build Errors
-run-name: ${{github.actor}} is checking for errors
 on:
    push:
     branches: ["redesign"]
@@ -46,5 +45,3 @@ jobs:
       - name: Check Linting Issues
         run: pnpm run lint
         
-      - name: Check for Build Errors
-        run: pnpm run build
