@@ -5,7 +5,8 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:solid/typescript"
     ],
     "overrides": [
     ],
@@ -15,10 +16,9 @@
         "sourceType": "module"
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "solid"
     ],
     "rules": {
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-non-null-assertion": "off"
     }
 }

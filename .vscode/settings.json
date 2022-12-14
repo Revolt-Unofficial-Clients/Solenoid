@@ -1,0 +1,14 @@
+{
+    "cSpell.language": "en-GB",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "cSpell.enableFiletypes": [
+        "!json"
+    ],
+    "marquee.widgets.npm-stats.packageNames": [
+        "solenoid-rewrite"
+    ]
+}
