@@ -33,15 +33,5 @@ const sendMessageToChannel = async (channel: Channel, content: string, attachmen
     }
 };
 
-const MSGCACHE = await caches.open("MSGCache");
-const ATTACHMENTCACHE = await caches.open("AttachmentCache");
 
-const cacheMessage = async (item: string, location: Cache) => {
-    try {
-        location.add(item);
-    } catch (err) {
-        console.error("Unexpected Error while caching\n", err);
-    }
-};
-
-export { sendMessageToChannel, cacheMessage, MSGCACHE, ATTACHMENTCACHE };
+export { sendMessageToChannel};

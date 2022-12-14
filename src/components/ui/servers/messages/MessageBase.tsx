@@ -4,7 +4,6 @@ import { For } from "solid-js";
 import showdown from "showdown";
 import { styled } from "solid-styled-components";
 import { badges } from "~/libs/solenoid";
-import { ATTACHMENTCACHE, cacheMessage, MSGCACHE } from "~/libs/revolt/servers/messages";
 
 interface MessageProps {
     author: User;
@@ -116,34 +115,6 @@ const MessageBase = (props: MessageProps) => {
         color: ${(props) => props.colour || "#fff"};
     `;
 
-    const AVATAR =
-        props.message.masquerade?.avatar ||
-        props.message.member?.generateAvatarURL() ||
-        props.author?.generateAvatarURL() ||
-        props.author?.defaultAvatarURL;
-
-    props.message.attachments &&
-        props.message.attachments.forEach((attachment) => {
-            cacheMessage(`${client.configuration.features.autumn.url}/attachments/${attachment._id}`, ATTACHMENTCACHE)
-                .then(() => console.log("Cached Attachment"))
-                .catch((e) => console.error("Failed Caching Attachment", e));
-        });
-
-    cacheMessage(AVATAR, MSGCACHE)
-        .then(() => console.log("cached message"))
-        .catch((e) => console.error("failed cache\n", e));
-    MSGCACHE.match(
-        props.message.masquerade?.avatar ||
-            props.message.member?.generateAvatarURL() ||
-            props.author?.generateAvatarURL() ||
-            props.author?.defaultAvatarURL
-    ).then(async (res) => {
-        const blob = await res.body;
-        console.log("Got: ", res.body, "\nfrom cache");
-        cachedAvatar = res.url;
-    });
-
-    let cachedAvatar: string;
 
     return (
         <MessageBaseContainer>
@@ -163,7 +134,6 @@ const MessageBase = (props: MessageProps) => {
             <div class="mt-2 flex items-center gap-2">
                 <UserAvatar
                     avatar={
-                        cachedAvatar ||
                         props.message.masquerade?.avatar ||
                         props.message.member?.generateAvatarURL() ||
                         props.author?.generateAvatarURL() ||
