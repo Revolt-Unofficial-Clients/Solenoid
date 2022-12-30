@@ -416,7 +416,7 @@ div[class="solenoid-channelList"] {
   flex-direction: column;
   overflow-y: auto;
   overflow-x: none;
-  width: 24rem;
+  width: 100%;
   height: 15.4rem;
 }
 
@@ -425,6 +425,11 @@ img[class^="solenoid-banner"] {
   height: 102%;
   /* DEBUG: border: 1px solid red; */
   filter: blur(4px) grayscale(50%);
+}
+
+div.solenoid-server-banner-container {
+  display:  flex;
+  width:    100%;
 }
 
 div[class="solenoid-channel"] {

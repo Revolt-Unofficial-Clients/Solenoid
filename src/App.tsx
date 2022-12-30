@@ -49,7 +49,7 @@ import {
 import { AiOutlineStop } from 'solid-icons/ai'
 
 // Revolt Client
-const rvCLient = new Client();
+export const rvCLient = new Client();
 
 // Initialize Variables
 const [_login, setLogin] = createStore<loginValues>({});
