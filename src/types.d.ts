@@ -1,5 +1,4 @@
 import type { Server, Message, Channel } from "revolt.js";
-import type { Responses } from "gifbox.js";
 
 declare interface user {
     user_id: string | undefined;

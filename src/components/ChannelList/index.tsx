@@ -1,7 +1,6 @@
 import type { Component} from "solid-js";
-import { For, createEffect } from "solid-js";
+import { For } from "solid-js";
 import { styled } from "solid-styled-components";
-import { rvCLient } from "../../App.tsx";
 
 import type { Server, Channel } from "revolt.js";
 
