@@ -29,7 +29,7 @@ function createLocalSignal<T extends object>(
 export function debounce(cb: (...args: unknown[]) => void, duration: number) {
   // Store the timer variable.
   let timer: any
-  // This function is given to React.
+  // This function is given to Solid.
   return (...args: unknown[]) => {
       // Get rid of the old timer.
       clearTimeout(timer);

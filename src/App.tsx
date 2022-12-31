@@ -4,7 +4,6 @@ import {
   enableExternalSource,
   For,
   createEffect,
-  on,
   createMemo,
 } from "solid-js";
 import { createStore } from "solid-js/store";
@@ -26,14 +25,7 @@ import { ChannelList } from "./components/ChannelList";
 
 // Types
 import type { AxiosRequestConfig } from "axios";
-import type {
-  user,
-  loginValues,
-  reply,
-  server,
-  settings as config,
-  status,
-} from "./types";
+import type { user, reply, server, settings as config, status } from "./types";
 
 // Icons
 import {
@@ -46,13 +38,12 @@ import {
   FiLogOut,
 } from "solid-icons/fi";
 
-import { AiOutlineStop } from 'solid-icons/ai'
+import { AiOutlineStop } from "solid-icons/ai";
 
 // Revolt Client
 export const rvCLient = new Client();
 
 // Initialize Variables
-const [_login, setLogin] = createStore<loginValues>({});
 const [newMessage, setNewMessage] = createSignal<string>("");
 const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
 const [usr, setUser] = createLocalStore<user>("user_info", {
@@ -100,7 +91,7 @@ const [settings, setSettings] = createLocalStore<config>("settings", {
     compact: false,
     nick: false,
     edited_format: "default",
-    disappear: false
+    disappear: false,
   },
 });
 
@@ -118,29 +109,6 @@ const [showPicker, setShowPicker] = createSignal<boolean>(false);
 let notification_access: boolean;
 
 // Functions
-const onInputChange = (
-  e: InputEvent & { currentTarget: HTMLInputElement; target: HTMLElement },
-  type: string
-) => {
-  if (type === "email") {
-    setLogin("email", e.currentTarget.value);
-  } else if (type === "password") {
-    setLogin("password", e.currentTarget.value);
-  } else if (type === "token") {
-    setLogin("token", e.currentTarget.value);
-  } else if (type === "mfa_token") {
-    setLogin("mfa_token", e.currentTarget.value);
-  } else if (type === "newMessage") {
-    setNewMessage(e.currentTarget.value);
-  } else if (type === "status") {
-    setSettings("statusText", e.currentTarget.value);
-  } else if (type == "zoom") {
-    setSettings("zoomLevel", parseInt(e.currentTarget.value));
-  } else {
-    throw new Error("Not Valid");
-  }
-};
-
 const onImageChange = (e: any) => {
   setImages([...e.target.files]);
 };
@@ -263,7 +231,7 @@ async function sendFile(content: string) {
       content,
       nonce,
       attachments,
-      replies: replies()
+      replies: replies(),
     });
   } catch (e: unknown) {
     if (settings.debug) console.log((e as any).message);
@@ -374,11 +342,11 @@ async function loginWithSession(session: unknown & { action: "LOGIN" }) {
   try {
     if (usr.session_type === "email" && session) {
       await rvCLient.useExistingSession(session).catch((e) => {
-      throw e;
-    });
-    setSettings("session_type", "email");
-    setSettings("session", session);
-    setLoggedIn(true);
+        throw e;
+      });
+      setSettings("session_type", "email");
+      setSettings("session", session);
+      setLoggedIn(true);
     } else {
       return;
     }
@@ -393,7 +361,7 @@ async function loginWithSession(session: unknown & { action: "LOGIN" }) {
 // Get Role Colour from Message
 function getrolecolour(message: Message) {
   if (!message.member) return "#fff";
-  for (const [_, { colour }] of message.member.orderedRoles) {
+  for (const [, { colour }] of message.member.orderedRoles) {
     if (settings.debug) console.log(colour);
     if (colour) {
       return colour;
@@ -427,14 +395,24 @@ rvCLient.on("message", (msg) => {
 });
 
 function stopTyping() {
-  if (!settings.experiments.disappear) rvCLient.websocket.send({ type: "EndTyping", channel: servers.current_channel?._id})
+  if (!settings.experiments.disappear)
+    rvCLient.websocket.send({
+      type: "EndTyping",
+      channel: servers.current_channel?._id,
+    });
 }
 
 function startTyping() {
-  if (!settings.experiments.disappear) rvCLient.websocket.send({ type: "BeginTyping", channel: servers.current_channel?._id})
+  if (!settings.experiments.disappear)
+    rvCLient.websocket.send({
+      type: "BeginTyping",
+      channel: servers.current_channel?._id,
+    });
 }
 
-const debouncedStopTyping = createMemo(debounce(stopTyping as (...args: unknown[]) => void, 1000))
+const debouncedStopTyping = createMemo(
+  debounce(stopTyping as (...args: unknown[]) => void, 1000)
+);
 
 rvCLient.on("message/delete", (id) => {
   const newArray = servers.messages?.filter((e) => id == e._id);
@@ -466,8 +444,6 @@ setInterval(() => {
     });
   }
 }, 2000);
-
-
 
 // Automatically log in when session is found and not logged in
 if (settings.session && !loggedIn()) loginWithSession(settings.session);
@@ -590,90 +566,91 @@ const App: Component = () => {
               )}
             </div>
           )}
-          <div class="solenoid-userBar">
-            <div
-              id="solenoid-userOptions"
-              aria-label="Username"
-              onClick={showSettings}
-              title={`Logged in as ${usr.username}, Click for Settings`}
-              role="button"
-            >
-              <FiSettings onClick={showSettings} />
-            </div>
-            <textarea
-              class="solenoid-send-input"
-              title="Type your message here..."
-              aria-role="input"
-              placeholder={
-                replies().length > 1
-                  ? `Replying to ${replies().length} message${
-                      replies().length > 1 ? "s" : ""
-                    }`
-                  : replies().length === 1
-                  ? `Replying to ${replies()[0].id}`
-                  : servers.current_channel?.typing ? `Type What you Think, ${servers.current_channel.typing.length} users typing.`
-                  : "Type what you think."
-              }
-              value={newMessage()}
-              onChange={(e: any) => {
-                onInputChange(e, "newMessage") 
-              }}
-              onInput={(e) => {
-                startTyping();
-              }}
-              onKeyDown={(e) => {
-                debouncedStopTyping();
-              }}
-              wrap="soft"
-              maxlength={2000}
-              autofocus
-            />
-            {settings.experiments.picker && (
-              <div
-                class="solenoid-toggle"
-                onClick={() => {
-                  showPicker() ? setShowPicker(false) : setShowPicker(true);
-                  setPickerType("emoji");
-                }}
-                role="button"
-              >
-                <span>
-                  <FiSmile />
-                </span>
-              </div>
-            )}
-            <div
-              class="solenoid-send-button"
-              aria-label="Send"
-              onClick={() => sendMessage(newMessage())}
-              role="button"
-            >
-              <span>
-                <FiSend />
-              </span>
-            </div>
-            <input
-              class="solenoid-input-image"
-              type="file"
-              multiple
-              name="upload"
-              id="files"
-              accept="image/png,image/jpeg,image/gif,video/mp4"
-              onChange={onImageChange}
-            />
-            <label for="files" role="button" class="userbutton">
-              <FiPlusCircle />
-            </label>
-            {replies().length > 0 && (
-              <div onClick={() => setReplies([])} role="button">
-                <span>
-                  <AiOutlineStop/>
-                </span>
-              </div>
-            )}
-          </div>
         </div>
       )}
+      <div class="solenoid-userBar">
+        <div
+          id="solenoid-userOptions"
+          aria-label="Username"
+          onClick={showSettings}
+          title={`Logged in as ${usr.username}, Click for Settings`}
+          role="button"
+        >
+          <FiSettings onClick={showSettings} />
+        </div>
+        <textarea
+          class="solenoid-send-input"
+          title="Type your message here..."
+          aria-role="input"
+          placeholder={
+            replies().length > 1
+              ? `Replying to ${replies().length} message${
+                  replies().length > 1 ? "s" : ""
+                }`
+              : replies().length === 1
+              ? `Replying to ${replies()[0].id}`
+              : servers.current_channel?.typing
+              ? `Type What you Think, ${servers.current_channel.typing.length} users typing.`
+              : "Type what you think."
+          }
+          value={newMessage()}
+          onChange={(e: any) => {
+            setNewMessage(e.currentTarget.value);
+          }}
+          onInput={() => {
+            startTyping();
+          }}
+          onKeyDown={() => {
+            debouncedStopTyping();
+          }}
+          wrap="soft"
+          maxlength={2000}
+          autofocus
+        />
+        {settings.experiments.picker && (
+          <div
+            class="solenoid-toggle"
+            onClick={() => {
+              showPicker() ? setShowPicker(false) : setShowPicker(true);
+              setPickerType("emoji");
+            }}
+            role="button"
+          >
+            <span>
+              <FiSmile />
+            </span>
+          </div>
+        )}
+        <div
+          class="solenoid-send-button"
+          aria-label="Send"
+          onClick={() => sendMessage(newMessage())}
+          role="button"
+        >
+          <span>
+            <FiSend />
+          </span>
+        </div>
+        <input
+          class="solenoid-input-image"
+          type="file"
+          multiple
+          name="upload"
+          id="files"
+          accept="image/png,image/jpeg,image/gif,video/mp4"
+          onChange={onImageChange}
+        />
+        <label for="files" role="button" class="userbutton">
+          <FiPlusCircle />
+        </label>
+        {replies().length > 0 && (
+          <div onClick={() => setReplies([])} role="button">
+            <span>
+              <AiOutlineStop />
+            </span>
+          </div>
+        )}
+      </div>
       {settings.show && (
         <div class="solenoid-settings" id="solenoid-settings-panel">
           <div id="solenoid-setting solenoid-revoltusername">
@@ -808,16 +785,22 @@ const App: Component = () => {
           </div>
           <div id="solenoid-setting solenoid-notifications">
             <h3>Notifications</h3>
-            {Notification.permission !== "granted" && <p>Enable solenoid notifications on mention.</p>}
-            <button onClick={ async () => {
-              const permission = await Notification.requestPermission();
-              if (permission === "granted") {
-                notification_access = true;
-              } else {
-                notification_access = false;
-              }
+            {Notification.permission !== "granted" && (
+              <p>Enable solenoid notifications on mention.</p>
+            )}
+            <button
+              onClick={async () => {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                  notification_access = true;
+                } else {
+                  notification_access = false;
+                }
               }}
-              disabled={Notification.permission === "granted"}>Grant Permission</button>
+              disabled={Notification.permission === "granted"}
+            >
+              Grant Permission
+            </button>
           </div>
           <div id="solenoid-setting solenoid-showUsernames">
             <h3>Suffix Style</h3>
@@ -836,7 +819,10 @@ const App: Component = () => {
           </div>
           <div id="solenoid-setting solenoid-nosuffix">
             <h3>Toggle Suffix</h3>
-            <p>Whether to show a suffix after a message. Works better with compact mode.</p>
+            <p>
+              Whether to show a suffix after a message. Works better with
+              compact mode.
+            </p>
             <button
               onClick={() =>
                 settings.suffix
@@ -872,7 +858,9 @@ const App: Component = () => {
             <input
               type="text"
               value={settings.statusText}
-              onChange={(e: any) => onInputChange(e, "status")}
+              onChange={(e: any) =>
+                setSettings("statusText", e.currentTarget.value)
+              }
             />
           </div>
           <div id="solenoid-setting solenoid-status-list">
@@ -927,7 +915,10 @@ const App: Component = () => {
           </div>
           <div id="solenoid-setting solenoid-show-imgs">
             <h3>Attachment Rendering</h3>
-            <p>Whether to show attachments in Solenoid. Disabling attachments may save network's bandwidth, useful when mobile data is on.</p>
+            <p>
+              Whether to show attachments in Solenoid. Disabling attachments may
+              save network's bandwidth, useful when mobile data is on.
+            </p>
             <button
               onClick={() => {
                 settings.showImages
@@ -966,7 +957,10 @@ const App: Component = () => {
               {settings.experiments.picker ? "Enabled" : "Disabled"}
             </button>
             <h4>Compact Mode</h4>
-            <p>Enable experimental Compact mode. Makes solenoid more compact and sleek.</p>
+            <p>
+              Enable experimental Compact mode. Makes solenoid more compact and
+              sleek.
+            </p>
             <button
               onClick={() => {
                 settings.experiments.compact
@@ -1000,7 +994,18 @@ const App: Component = () => {
             </button>
             <h4>Edit indicator Format</h4>
             <p>Change how edit indicators show dates.</p>
-            <select id="indicator" title="Options: ISO, UTC or Default" onChange={(e) => setSettings("experiments", "edited_format", e.currentTarget.value)} value={settings.experiments.edited_format || "default"}>
+            <select
+              id="indicator"
+              title="Options: ISO, UTC or Default"
+              onChange={(e) =>
+                setSettings(
+                  "experiments",
+                  "edited_format",
+                  e.currentTarget.value
+                )
+              }
+              value={settings.experiments.edited_format || "default"}
+            >
               <option value={"ISO"}>ISO Format</option>
               <option value={"UTC"}>UTC Format</option>
               <option value={"default"}>Browser default</option>
@@ -1019,7 +1024,7 @@ const App: Component = () => {
               }}
               id="solenoid-logout"
             >
-              <FiLogOut/> Log Out
+              <FiLogOut /> Log Out
             </button>
           </div>
         </div>

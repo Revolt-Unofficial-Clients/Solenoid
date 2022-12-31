@@ -17,7 +17,12 @@
   --accent-button-hover: #64bfe3;
   --accent-button-active: #6aa9c7;
   --masquerade-bg: #5b4480;
-  --dev-bg: linear-gradient(90deg, rgba(255, 121, 201, 1) 0%, rgba(204, 85, 252, 1) 49%, rgba(99, 87, 255, 1) 100%);
+  --dev-bg: linear-gradient(
+    90deg,
+    rgba(255, 121, 201, 1) 0%,
+    rgba(204, 85, 252, 1) 49%,
+    rgba(99, 87, 255, 1) 100%
+  );
   --radius: 3px;
 }
 
@@ -78,11 +83,15 @@ label[role="button"][class^="noattach"] {
 }
 
 #root {
-  width: 99.8%;
+  width: 100vw;
+  height: 100vh;
 }
 
 .solenoid {
   overflow-x: none;
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 
 .solenoid-login {
@@ -106,7 +115,7 @@ label[role="button"][class^="noattach"] {
   cursor: pointer;
 }
 
-.solenoid-login>#title {
+.solenoid-login > #title {
   font-size: 2.5rem;
   text-align: center;
 }
@@ -140,17 +149,18 @@ label[role="button"][class^="noattach"] {
 
 [class^="solenoid-serverList"] {
   display: flex;
-  flex-direction: row;
-  overflow-x: auto;
-  overflow-y: none;
+  flex-direction: column;
+  width: 10rem;
+  height: 100%;
   color: white;
 }
 
 div[class^="server"] {
   display: flex;
   align-items: center;
-  padding: 5px;
-  margin: 5px;
+  margin-top: 5px;
+  width: 100%;
+  text-align: center;
   background-color: var(--fg);
   width: fit-content;
   border-radius: 3px;
@@ -173,9 +183,8 @@ div[class^="server"] p[class^="name"] {
   display: flex;
   flex-direction: column;
   margin: 0;
+  height: 92vmin;
   width: 100%;
-  height: 41rem;
-  align-items: center;
   overflow-y: auto;
 }
 
@@ -184,10 +193,8 @@ div[class^="server"] p[class^="name"] {
   flex-direction: column;
   color: white;
   background-color: var(--fg);
-  width: 95vw;
   height: auto;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin: 5px;
   padding: 5px;
   border-radius: var(--radius);
 }
@@ -230,7 +237,7 @@ div[class^="solenoid-message"] .mentioned {
   color: white;
 }
 
-.solenoid-settings>* {
+.solenoid-settings > * {
   color: white;
   background-color: rgb(63, 63, 63);
 }
@@ -290,8 +297,9 @@ div[class^="solenoid-message"] .mentioned {
 
 div[class="solenoid-server-info-container"] {
   display: flex;
+  height: auto;
   width: 100%;
-  height: 15rem;
+  flex-direction: column;
 }
 
 div[class^="content"] {
@@ -321,7 +329,7 @@ div[role="button"][class="done"] {
 
 textarea[class="solenoid-send-input compact"] {
   width: 50rem;
-  height: auto
+  height: auto;
 }
 
 .solenoid-message-video {
@@ -349,7 +357,9 @@ img[class^="solenoid-pfp"] {
   aspect-ratio: auto 1920 / 1080;
 }
 
-div[id="solenoid-setting solenoid-revoltusername"] h3 img[class="solenoid-pfp"] {
+div[id="solenoid-setting solenoid-revoltusername"]
+  h3
+  img[class="solenoid-pfp"] {
   margin-right: 0.3rem;
 }
 
@@ -405,7 +415,6 @@ div[class^="solenoid-message-author"] img[class="badgeIcon"] {
   top: 4px;
 }
 
-
 span[class^="notimportant"] {
   margin-left: 0.5rem;
   color: var(--fg-notimportant);
@@ -414,10 +423,10 @@ span[class^="notimportant"] {
 div[class="solenoid-channelList"] {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: none;
+  overflow-y: scroll;
+  overflow-x: hidden;
   width: 100%;
-  height: 15.4rem;
+  height: 100%;
 }
 
 img[class^="solenoid-banner"] {
@@ -428,25 +437,26 @@ img[class^="solenoid-banner"] {
 }
 
 div.solenoid-server-banner-container {
-  display:  flex;
-  width:    100%;
+  display: flex;
+  height: 20vh;
+  width: 100%;
 }
 
 div[class="solenoid-channel"] {
   width: auto;
   height: 2rem;
-  background-color: #1E1E1E;
+  background-color: #1e1e1e;
   padding: 3px;
   border-radius: 3px;
   justify-content: center;
 }
 
 div[class^="solenoid-channel"] .active {
-  background-color: #1B1B1B;
+  background-color: #1b1b1b;
 }
 
 div[class^="solenoid-channel"] .active span {
-  color: #F6F6F6;
+  color: #f6f6f6;
 }
 
 div[class^="solenoid-channel"] span {
@@ -463,23 +473,19 @@ div[class^="solenoid-channel"] span[class^="hashicon"] {
 }
 
 div[class^="solenoid-userBar"] {
-  position: sticky;
+  position: relative;
   bottom: 0;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   width: 100%;
-  outline: none;
-  margin-bottom: 10px;
-  border: none;
-  border-bottom: 3px solid rgb(55, 55, 55);
+  height: 100%;
   background-color: var(--fg);
   overflow: none;
 }
 
-div[class ^="solenoid-userBar"] :focus {
+div[class^="solenoid-userBar"] :focus {
   border-bottom: 3px solid var(--accent);
   outline: none;
 }
@@ -552,9 +558,7 @@ div[class="solenoid-picker-grid"] {
   grid-area: 2 / 1 / 2 / 2;
   display: grid;
   grid-template-columns: repeat(auto-fill, 40px);
-  ;
   grid-template-rows: repeat(auto-fill, 40px);
-  ;
   /* DEBUG: border: 1px solid red;*/
   overflow: auto;
   gap: 0;
@@ -575,8 +579,6 @@ div[class="solenoid-picker-grid gifbox"] {
   align-items: center;
   background-color: var(--fg-hover);
 }
-
-
 
 div[class^="solenoid-picker"] span[class^="emoji"] {
   padding: 5px;
@@ -683,14 +685,21 @@ form[class="solenoid-server-username"] div[class="item"][id="3"] div {
   padding-left: 0;
 }
 
-form[class="solenoid-server-username"] div[class="item"][id="3"] div label[class="avatar-upload-btn"] {
+form[class="solenoid-server-username"]
+  div[class="item"][id="3"]
+  div
+  label[class="avatar-upload-btn"] {
   color: #000;
   display: flex;
   text-align: center;
   margin-left: 0;
 }
 
-form[class="solenoid-server-username"] div[class="item"][id="3"] div label[class="avatar-upload-btn"] svg {
+form[class="solenoid-server-username"]
+  div[class="item"][id="3"]
+  div
+  label[class="avatar-upload-btn"]
+  svg {
   position: relative;
   top: 3px;
   margin-right: 2px;

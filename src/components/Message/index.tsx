@@ -151,6 +151,7 @@ const Message: Component<MessageComponent> = ({
                                       margin-left: 0.5rem;
                                       margin-right: 0.5rem;
                                       color: ${element.colour ?? "#000"};
+                                      box-decoration-break: clone;
                                     `
                                   : css`
                                       background-color: ${element.bkg ??
@@ -160,6 +161,7 @@ const Message: Component<MessageComponent> = ({
                                       margin-left: 0.5rem;
                                       margin-right: 0.5rem;
                                       color: ${element.colour ?? "#fff"};
+                                      box-decoration-break: clone;
                                     `
                               }
                             >
