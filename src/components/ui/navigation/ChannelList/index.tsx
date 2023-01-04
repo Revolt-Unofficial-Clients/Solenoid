@@ -1,8 +1,10 @@
 import type { Component} from "solid-js";
 import { For } from "solid-js";
 import { styled } from "solid-styled-components";
+import { setServers, servers } from "../../../../lib/solenoid"; 
 
 import type { Server, Channel } from "revolt.js";
+import classNames from "classnames";
 
 interface ChannelComponent {
   server: Server;
@@ -11,36 +13,23 @@ interface ChannelComponent {
 }
 
 const ChannelList: Component<ChannelComponent> = (props) => {
-  
-  const ServerBanner = styled("div")<{
-    banner: string
-  }>`
-    display: flex;
-    background: url(https://autumn.revolt.chat/banners/${props => props.banner});
-    width: 100%;
-    height: 100%;
-    filter: blur(4px) grayscale(50%);
-    background-size: cover;
-    background-position: center;
-  `
 
   return (
-    <div class="solenoid-server-info-container">
-      <div class="solenoid-server-banner-container">
-        {props.server.banner && (
-          <ServerBanner banner={props.server.banner._id}/>
-        )}
+    <div class="btn-group btn-group-vertical h-60 overflow-scroll">
+      <div class="prose text-center">
+        <h1 >{props.server.name}</h1>
       </div>
-      <div class="solenoid-channelList">
-        <For each={Array.from(props.server.channels.values())}>
-          {(channel: Channel | null | undefined) => (
-            <div
+      <For each={servers.current_server?.channels}>
+          {(channel) => (
+            <button
               class={
-                "solenoid-channel " +
-                (channel!._id === props.current_channel?._id ? "active" : "")
+                classNames({
+                  btn: true,
+                  "btn-active": channel!._id === props.current_channel?._id
+                })
               }
               id={`channel_${channel!._id}`}
-              onClick={() => props.channelSetter(channel!._id)}
+              onClick={() => setServers("current_channel", channel)}
             >
               <span class="hashicon">
                 {channel?.icon ? (
@@ -54,10 +43,9 @@ const ChannelList: Component<ChannelComponent> = (props) => {
                 )}
               </span>
               <span class="channel_name">{channel!.name}</span>
-            </div>
+            </button>
           )}
         </For>
-      </div>
     </div>
   );
 };

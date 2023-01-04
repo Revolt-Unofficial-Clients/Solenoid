@@ -7,9 +7,8 @@ import {
   onMount,
 } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
-import type { user, settings } from "../../types";
+import type { user, settings } from "../../../../types";
 import type { Client } from "revolt.js";
-import HCaptcha from "solid-hcaptcha";
 
 interface LoginComponent {
   client: Client;
@@ -18,10 +17,7 @@ interface LoginComponent {
   logged: Accessor<boolean>;
   configSetter: SetStoreFunction<settings>;
   solenoid_config: settings;
-  captchaKey: string;
 }
-
-const [captchaToken, setCaptchaToken] = createSignal<string>();
 const [token, setToken] = createSignal<string>();
 const [email, setEmail] = createSignal<string>();
 const [password, setPassword] = createSignal<string>();
@@ -30,7 +26,6 @@ const [error, setError] = createSignal<string>();
 const Login: Component<LoginComponent> = ({
   client,
   userSetter,
-  captchaKey,
   configSetter,
   solenoid_config,
   logSetter,
@@ -64,7 +59,6 @@ const Login: Component<LoginComponent> = ({
           email: email,
           password: password,
           friendly_name: "Solenoid Client Beta",
-          captcha: captchaToken(),
         })
         .catch((e) => {
           throw e;
@@ -108,13 +102,6 @@ const Login: Component<LoginComponent> = ({
 
   return (
     <>
-      {window.location.hostname === "localhost" && (
-        <div class="solenoid-utils-local banner">
-          <span>
-            Running on a local server, some features might not be available.
-          </span>
-        </div>
-      )}
       {!logged() && (
         <div class="solenoid-login">
           <form
@@ -138,7 +125,6 @@ const Login: Component<LoginComponent> = ({
               </button>
             </div>
           </form>
-          {window.location.hostname !== "localhost" && (
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -180,10 +166,6 @@ const Login: Component<LoginComponent> = ({
                   placeholder="2fa Token (Optional, Not yet implemented)"
                   disabled
                 ></input>
-                <HCaptcha
-                  sitekey={captchaKey}
-                  onVerify={(token) => setCaptchaToken(token)}
-                />
                 <button id="submit" type="submit">
                   Login
                 </button>
@@ -194,7 +176,6 @@ const Login: Component<LoginComponent> = ({
                 )}
               </div>
             </form>
-          )}
           {solenoid_config.session && (
             <button
               id="existingsession"

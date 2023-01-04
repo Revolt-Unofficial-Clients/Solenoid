@@ -56,10 +56,10 @@ declare interface settings {
     suffix: boolean;
     session?: any | undefined;
     session_type?: string | undefined;
-    yiffbox_session: string | undefined;
     zoomLevel: number;
     showImages: boolean;
     debug: boolean;
+    emoji: "mutant" | "twemoji" | "fluent-3d" | string;
     experiments: {
         picker: boolean,
         compact: boolean,
