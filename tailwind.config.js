@@ -6,6 +6,10 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    fontFamily: {
+      sans: ["Inter", "sans-serif"],
+      heading: ["Inter", "sans-serif"]
+    },
   },
   // eslint-disable-next-line no-undef
   plugins: [require("daisyui"), require("@tailwindcss/typography")],
