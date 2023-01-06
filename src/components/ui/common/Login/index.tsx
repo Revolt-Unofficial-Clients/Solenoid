@@ -5,6 +5,7 @@ import {
   Accessor,
   batch,
   onMount,
+  Show,
 } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import type { user, settings } from "../../../../types";
@@ -58,7 +59,7 @@ const Login: Component<LoginComponent> = ({
         .login({
           email: email,
           password: password,
-          friendly_name: "Solenoid Client Beta",
+          friendly_name: "Solenoid Client",
         })
         .catch((e) => {
           throw e;
@@ -104,9 +105,22 @@ const Login: Component<LoginComponent> = ({
     <>
       {!logged() && (
         <>
-          <div class="absolute w-1/2 h-3/4 top-36 left-6 bg-base-300/40 backdrop-blur-xl container rounded-xl shadow-xl">
+          <div class="lg:absolute lg:w-1/3 lg:h-3/4 md:flex md:flex-col md:absolute sm:absolute h-full w-screen shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/40 backdrop-blur-xl container rounded-xl shadow-xl">
+            <div class="mx-10 my-10 flex items-center gap-2">
+              <div class="w-10">
+                <img src="/favicon.png" />
+              </div>
+              <div class="prose">
+                <h1>Solenoid</h1>
+              </div>
+              <div class="prose self-start">
+                <Show when={window.location.hostname.includes("localhost")}>
+                  <h5>Dev</h5>
+                </Show>
+              </div>
+            </div>
             <form
-              class="ml-10"
+              class="mx-10"
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (email() && password()) {
@@ -122,36 +136,39 @@ const Login: Component<LoginComponent> = ({
                 }
               }}
             >
-              <div>
+              <div class="sm:w-full">
                 <div class="prose m-2">
                   <h3>Login with Email</h3>
                 </div>
-                <input
-                  class="input w-1/2 m-5"
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  value={email() || ""}
-                  onInput={(e: any) => setEmail(e.currentTarget.value)}
-                ></input>
-                <input
-                  class="input w-1/2 ml-5 mt-2"
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  value={password() || ""}
-                  onInput={(e: any) => setPassword(e.currentTarget.value)}
-                ></input>
-                <input
-                  class="input ml-5 mt-2"
-                  id="mfa"
-                  type="text"
-                  placeholder="2fa Token (Optional, Not yet implemented)"
-                  disabled
-                ></input>
-                <button class="btn w-1/2 m-5" id="submit" type="submit">
-                  Login with Email
-                </button>
+                <div class="flex flex-col">
+                  <input
+                    class="input w-full my-2"
+                    id="email"
+                    type="email"
+                    placeholder="Email"
+                    value={email() || ""}
+                    onInput={(e: any) => setEmail(e.currentTarget.value)}
+                  ></input>
+                  <input
+                    class="input w-full my-2"
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    value={password() || ""}
+                    onInput={(e: any) => setPassword(e.currentTarget.value)}
+                  ></input>
+                  <input
+                    class="input w-full my-2"
+                    id="mfa"
+                    type="text"
+                    placeholder="2fa Token (Optional, Not yet implemented)"
+                    disabled
+                  ></input>
+                  <button class="btn w-full my-2" id="submit" type="submit">
+                    Login with Email
+                  </button>
+                </div>
+
                 {error() && (
                   <span class="solenoid-error">
                     An error has occurred while logging in: {error()}
@@ -161,7 +178,7 @@ const Login: Component<LoginComponent> = ({
             </form>
 
             <form
-            class="ml-10"
+              class="mx-10"
               onSubmit={(e) => {
                 e.preventDefault();
                 logIntoRevolt(token() ?? "");
@@ -171,17 +188,19 @@ const Login: Component<LoginComponent> = ({
                 <div class="prose m-2">
                   <h3 id="subtitle">Login with Token</h3>
                 </div>
-                <input
-                  id="token"
-                  type="text"
-                  class="input w-1/2 m-5"
-                  placeholder="Token"
-                  value={token() || ""}
-                  onInput={(e: any) => setToken(e.currentTarget.value)}
-                ></input>
-                <button class="btn w-1/2 ml-5 mt-2" id="submit" type="submit">
-                  Login
-                </button>
+                <div class="flex flex-col">
+                  <input
+                    id="token"
+                    type="text"
+                    class="input w-full my-2"
+                    placeholder="Token"
+                    value={token() || ""}
+                    onInput={(e: any) => setToken(e.currentTarget.value)}
+                  ></input>
+                  <button class="btn w-full my-2" id="submit" type="submit">
+                    Login
+                  </button>
+                </div>
               </div>
             </form>
             {solenoid_config.session && (
@@ -194,10 +213,21 @@ const Login: Component<LoginComponent> = ({
             )}
           </div>
           <div>
-            <div class="absolute bottom-10 right-10 text-white">
-              <p>Picture by Sebastian Svenson on <a class="underline text-blue-400" href="https://unsplash.com/photos/D1BZo9JlKjM">Unsplash</a></p>
+            <div class="hidden lg:block lg:absolute lg:bottom-10 lg:right-10 text-white">
+              <p>
+                Picture by Sebastian Svenson on{" "}
+                <a
+                  class="underline text-blue-400"
+                  href="https://unsplash.com/photos/D1BZo9JlKjM"
+                >
+                  Unsplash
+                </a>
+              </p>
             </div>
-            <img class="w-screen h-screen" src="https://images.unsplash.com/photo-1660306630560-0ca0e7f47508?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHJlbmRlciUyMG51bGx8ZW58MHx8MHx8&auto=format&fit=crop&w=900&q=60" />
+            <img
+              class="hidden lg:block lg:w-screen lg:h-screen lg:-z-10"
+              src="https://images.unsplash.com/photo-1660306630560-0ca0e7f47508?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHJlbmRlciUyMG51bGx8ZW58MHx8MHx8&auto=format&fit=crop&w=900&q=60"
+            />
           </div>
         </>
       )}
