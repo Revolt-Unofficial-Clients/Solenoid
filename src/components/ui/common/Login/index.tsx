@@ -127,7 +127,7 @@ const Login: Component<LoginComponent> = ({
                   <h3>Login with Email</h3>
                 </div>
                 <input
-                  class="textarea w-1/2 m-5"
+                  class="input w-1/2 m-5"
                   id="email"
                   type="email"
                   placeholder="Email"
@@ -135,7 +135,7 @@ const Login: Component<LoginComponent> = ({
                   onInput={(e: any) => setEmail(e.currentTarget.value)}
                 ></input>
                 <input
-                  class="textarea w-1/2 ml-5 mt-2"
+                  class="input w-1/2 ml-5 mt-2"
                   id="password"
                   type="password"
                   placeholder="Password"
@@ -143,7 +143,7 @@ const Login: Component<LoginComponent> = ({
                   onInput={(e: any) => setPassword(e.currentTarget.value)}
                 ></input>
                 <input
-                  class="textarea ml-5 mt-2"
+                  class="input ml-5 mt-2"
                   id="mfa"
                   type="text"
                   placeholder="2fa Token (Optional, Not yet implemented)"
@@ -174,7 +174,7 @@ const Login: Component<LoginComponent> = ({
                 <input
                   id="token"
                   type="text"
-                  class="textarea w-1/2 m-5"
+                  class="input w-1/2 m-5"
                   placeholder="Token"
                   value={token() || ""}
                   onInput={(e: any) => setToken(e.currentTarget.value)}
