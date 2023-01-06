@@ -1,4 +1,4 @@
-import { createMemo, createSignal } from "solid-js";
+import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
 import * as Solenoid from "../../../../lib/solenoid";
 import { ulid } from "ulid";
 import Axios from "axios";
@@ -7,11 +7,13 @@ import { debounce } from "../../../../utils";
 
 import type { AxiosRequestConfig } from "axios";
 import type { Component } from "solid-js";
+import type { User } from "revolt.js";
 import { BiSolidCog, BiSolidFileImage, BiSolidSend } from "solid-icons/bi";
 import classNames from "classnames";
 
-
 const [sending, setSending] = createSignal<boolean>(false);
+const [typing, setTyping] = createSignal<(User | undefined)[]>([]);
+
 async function uploadFile(
   autummURL: string,
   tag: string,
@@ -83,20 +85,24 @@ async function sendMessage(message: string) {
       if (Solenoid.images()) {
         await sendFile(message);
       } else if (Solenoid.replies()) {
-        Solenoid.servers.current_channel?.sendMessage({
-          content: message,
-          replies: Solenoid.replies(),
-          nonce,
-        }).catch((e) => {
-          throw e;
-        });
+        Solenoid.servers.current_channel
+          ?.sendMessage({
+            content: message,
+            replies: Solenoid.replies(),
+            nonce,
+          })
+          .catch((e) => {
+            throw e;
+          });
       } else {
-        Solenoid.servers.current_channel?.sendMessage({
-          content: message,
-          nonce,
-        }).catch((e) => {
-          throw e;
-        });
+        Solenoid.servers.current_channel
+          ?.sendMessage({
+            content: message,
+            nonce,
+          })
+          .catch((e) => {
+            throw e;
+          });
       }
     }
     Solenoid.setNewMessage("");
@@ -136,21 +142,71 @@ async function getStatus() {
   Solenoid.setSettings("status", userinfo.status?.presence);
 }
 
+revolt.on("packet", async (p) => {
+  if (
+    p.type === "ChannelStartTyping" &&
+    p.id === Solenoid.servers.current_channel?._id
+  ) {
+    setTyping(Solenoid.servers.current_channel!.typing);
+  } else if (
+    p.type === "ChannelStopTyping" &&
+    p.id === Solenoid.servers.current_channel?._id
+  ) {
+    const filtered = typing().filter((c) => c?._id === p.id);
+    setTyping([...filtered]);
+  }
+});
+
 const Userbar: Component = () => {
   return (
     <div class="sticky bottom-0 left-0 w-full h-full form-control">
+      <Show when={typing().length > 0 }>
+        <div class="flex flex-row items-center gap-2 bg-base-100 relative top-0 left-0 w-full h-10">
+          <div class="avatar-group -space-x-6">
+            <For each={typing()}>
+              {(user) => (
+                <div class="avatar">
+                  <div class="w-8">
+                    <img
+                      src={user?.generateAvatarURL() || user?.defaultAvatarURL}
+                      width={32}
+                      height={32}
+                    />
+                  </div>
+                </div>
+              )}
+            </For>
+          </div>
+          <div>
+            <Switch>
+              <Match when={typing().length === 1}>
+                <span>{typing()[0]?.username} is typing...</span>
+              </Match>
+              <Match when={typing().length === 2}>
+                <span>{typing()[0]?.username} and {typing()[1]?.username} are typing...</span>
+              </Match>
+              <Match when={typing().length === 3}>
+                <span>{typing()[0]?.username}, {typing()[1]?.username} and {typing()[2]?.username} are typing...</span>
+              </Match>
+              <Match when={typing().length > 3}>
+                <span>Panic!</span>
+              </Match>
+            </Switch>
+          </div>
+        </div>
+      </Show>
       <div class="flex input-group">
         <button
           class="btn"
           aria-label="Username"
           onClick={() => {
             if (Solenoid.settings.show) {
-                Solenoid.setSettings("show", false)
+              Solenoid.setSettings("show", false);
             } else {
-                getStatus()
-                Solenoid.setSettings("show", true)
+              getStatus();
+              Solenoid.setSettings("show", true);
             }
-        }}
+          }}
           title={`Logged in as ${Solenoid.usr.username}, Click for Settings`}
         >
           <BiSolidCog />
@@ -175,8 +231,8 @@ const Userbar: Component = () => {
         />
         <button
           class={classNames({
-            "btn": true,
-            "btn-disabled": sending()
+            btn: true,
+            "btn-disabled": sending(),
           })}
           aria-label="Send"
           disabled={sending()}

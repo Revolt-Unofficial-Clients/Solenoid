@@ -2,6 +2,7 @@ import { styled } from "solid-styled-components";
 import emojiRegex from "emoji-regex";
 
 import { createComponent, CustomComponentProps } from "./remarkRegexComponent";
+import { settings } from "../../../lib/solenoid";
 
 export const Emoji = styled.img`
   object-fit: contain;
@@ -65,7 +66,7 @@ export function RenderUnicodeEmoji(props: CustomComponentProps) {
       class="emoji"
       alt={props.str}
       draggable={false}
-      src={`https://static.revolt.chat/emoji/mutant/${toCodepoint(
+      src={`https://static.revolt.chat/emoji/${settings.emoji || "mutant"}/${toCodepoint(
         props.str
       )}.svg?v=1`}
     />
