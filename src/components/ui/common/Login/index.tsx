@@ -103,29 +103,10 @@ const Login: Component<LoginComponent> = ({
   return (
     <>
       {!logged() && (
-        <div class="solenoid-login">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              logIntoRevolt(token() ?? "");
-            }}
-          >
-            <div class="token">
-              <label id="subtitle">Login with Token</label>
-              <input
-                id="token"
-                type="text"
-                class="textarea"
-                placeholder="Token"
-                value={token() || ""}
-                onInput={(e: any) => setToken(e.currentTarget.value)}
-              ></input>
-              <button id="submit" type="submit">
-                Login
-              </button>
-            </div>
-          </form>
+        <>
+          <div class="absolute w-1/2 h-3/4 top-36 left-6 bg-base-300/40 backdrop-blur-xl container rounded-xl shadow-xl">
             <form
+              class="ml-10"
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (email() && password()) {
@@ -142,9 +123,11 @@ const Login: Component<LoginComponent> = ({
               }}
             >
               <div>
-                <label id="subtitle">Login with Email</label>
+                <div class="prose m-2">
+                  <h3>Login with Email</h3>
+                </div>
                 <input
-                  class="textarea"
+                  class="textarea w-1/2 m-5"
                   id="email"
                   type="email"
                   placeholder="Email"
@@ -152,7 +135,7 @@ const Login: Component<LoginComponent> = ({
                   onInput={(e: any) => setEmail(e.currentTarget.value)}
                 ></input>
                 <input
-                  class="textarea"
+                  class="textarea w-1/2 ml-5 mt-2"
                   id="password"
                   type="password"
                   placeholder="Password"
@@ -160,14 +143,14 @@ const Login: Component<LoginComponent> = ({
                   onInput={(e: any) => setPassword(e.currentTarget.value)}
                 ></input>
                 <input
-                  class="textarea"
+                  class="textarea ml-5 mt-2"
                   id="mfa"
                   type="text"
                   placeholder="2fa Token (Optional, Not yet implemented)"
                   disabled
                 ></input>
-                <button id="submit" type="submit">
-                  Login
+                <button class="btn w-1/2 m-5" id="submit" type="submit">
+                  Login with Email
                 </button>
                 {error() && (
                   <span class="solenoid-error">
@@ -176,15 +159,44 @@ const Login: Component<LoginComponent> = ({
                 )}
               </div>
             </form>
-          {solenoid_config.session && (
-            <button
-              id="existingsession"
-              onClick={() => loginWithSession(solenoid_config.session)}
+
+            <form
+            class="ml-10"
+              onSubmit={(e) => {
+                e.preventDefault();
+                logIntoRevolt(token() ?? "");
+              }}
             >
-              Use Existing Session
-            </button>
-          )}
-        </div>
+              <div class="flex flex-col">
+                <div class="prose m-2">
+                  <h3 id="subtitle">Login with Token</h3>
+                </div>
+                <input
+                  id="token"
+                  type="text"
+                  class="textarea w-1/2 m-5"
+                  placeholder="Token"
+                  value={token() || ""}
+                  onInput={(e: any) => setToken(e.currentTarget.value)}
+                ></input>
+                <button class="btn w-1/2 ml-5 mt-2" id="submit" type="submit">
+                  Login
+                </button>
+              </div>
+            </form>
+            {solenoid_config.session && (
+              <button
+                id="existingsession"
+                onClick={() => loginWithSession(solenoid_config.session)}
+              >
+                Use Existing Session
+              </button>
+            )}
+          </div>
+          <div>
+            <img class="w-screen h-screen" src="https://images.unsplash.com/photo-1660306630560-0ca0e7f47508?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHJlbmRlciUyMG51bGx8ZW58MHx8MHx8&auto=format&fit=crop&w=900&q=60" />
+          </div>
+        </>
       )}
     </>
   );
