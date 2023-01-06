@@ -354,15 +354,20 @@ const debouncedStopTyping = createMemo(
   debounce(stopTyping as (...args: unknown[]) => void, 1000)
 );
 
-client.on("message/delete", (id) => {
-  const newArray = Solenoid.servers.messages?.filter((e) => id == e._id);
-  Solenoid.setServers("messages", newArray);
+client.on("message/delete", async (id) => {
+  Solenoid.setServers("messages", produce(messages => messages?.filter((e) => id == e._id)));
 });
+
+client.on("message/updated", async (message) => {
+  const index = Solenoid.servers.messages?.findIndex(o => o._id === message._id);
+  Solenoid.setServers("messages", produce(messages => messages?.splice(index || 0, 1, message)));
+  console.log(index)
+})
 
 // Mobx magic (Thanks Insert :D)
 let id = 0;
 enableExternalSource((fn, trigger) => {
-  const reaction = new Reaction(`externalSource@${++id}`, trigger);
+  const reaction: any = new Reaction(`externalSource@${++id}`, trigger);
   return {
     track: (x) => {
       let next;
