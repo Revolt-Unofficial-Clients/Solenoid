@@ -105,7 +105,7 @@ const Login: Component<LoginComponent> = ({
     <>
       {!logged() && (
         <>
-          <div class="lg:absolute lg:w-1/3 lg:h-3/4 md:flex md:flex-col md:absolute sm:absolute h-full w-screen shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/40 backdrop-blur-xl container rounded-xl shadow-xl">
+          <div class="lg:absolute lg:w-1/3 lg:h-3/4 flex flex-col h-full w-full shadow-none  lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/40 backdrop-blur-xl container rounded-xl shadow-xl">
             <div class="mx-10 my-10 flex items-center gap-2">
               <div class="w-10">
                 <img src="/favicon.png" />
@@ -142,7 +142,7 @@ const Login: Component<LoginComponent> = ({
                 </div>
                 <div class="flex flex-col">
                   <input
-                    class="input w-full my-2"
+                    class="input input-bordered w-full my-2"
                     id="email"
                     type="email"
                     placeholder="Email"
@@ -150,7 +150,7 @@ const Login: Component<LoginComponent> = ({
                     onInput={(e: any) => setEmail(e.currentTarget.value)}
                   ></input>
                   <input
-                    class="input w-full my-2"
+                    class="input input-bordered w-full my-2"
                     id="password"
                     type="password"
                     placeholder="Password"
@@ -192,7 +192,7 @@ const Login: Component<LoginComponent> = ({
                   <input
                     id="token"
                     type="text"
-                    class="input w-full my-2"
+                    class="input input-bordered w-full my-2"
                     placeholder="Token"
                     value={token() || ""}
                     onInput={(e: any) => setToken(e.currentTarget.value)}
