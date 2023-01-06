@@ -194,6 +194,9 @@ const Login: Component<LoginComponent> = ({
             )}
           </div>
           <div>
+            <div class="absolute bottom-10 right-10 text-white">
+              <p> Wallpaper by Sebastian Svenson in <a class="underline text-blue-400" href="https://unsplash.com/photos/D1BZo9JlKjM">Unsplash</a></p>
+            </div>
             <img class="w-screen h-screen" src="https://images.unsplash.com/photo-1660306630560-0ca0e7f47508?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHJlbmRlciUyMG51bGx8ZW58MHx8MHx8&auto=format&fit=crop&w=900&q=60" />
           </div>
         </>
