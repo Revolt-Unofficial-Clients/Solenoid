@@ -1,18 +1,30 @@
 import { Client, Message as MSG } from "revolt.js";
 import {
-  Accessor, Component, createSignal, For, Match, Setter, Show,
-  Switch
+  Accessor,
+  Component,
+  createResource,
+  createSignal,
+  For,
+  Match,
+  Setter,
+  Show,
+  Switch,
 } from "solid-js";
 import { css } from "solid-styled-components";
 import type { reply, settings } from "../../../../types";
 
-
 import classNames from "classnames";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { BiSolidLeftArrowAlt, BiSolidRightArrowAlt, BiSolidShieldX, BiSolidUserX } from "solid-icons/bi";
+import {
+  BiSolidLeftArrowAlt,
+  BiSolidRightArrowAlt,
+  BiSolidShieldX,
+  BiSolidUserX,
+} from "solid-icons/bi";
 import { Markdown } from "../../../markdown";
 import RevoltEmbeds from "../embeds";
+import { servers, settings as config } from "../../../../lib/solenoid";
 
 dayjs.extend(relativeTime);
 
@@ -45,20 +57,52 @@ const Message: Component<MessageComponent> = ({
   textbox,
   setTextbox,
 }) => {
+  async function findReplies() {
+    try {
+      //
+      // eslint-disable-next-line prefer-const
+      let msgs: (MSG | undefined)[] = [];
+      message.reply_ids?.forEach(async (id) => {
+        msgs.push(await message.channel?.client.messages.get(id));
+      });
+
+      return msgs;
+    } catch (why) {
+      console.error(why);
+    }
+  }
+
+  function getrolecolour(message?: MSG) {
+    if (!message) return "inherit";
+    if (!message.member) return "inherit";
+    for (const [, { colour }] of message.member.orderedRoles) {
+      if (config.debug) console.log(colour);
+      if (colour) {
+        return colour;
+      }
+    }
+  }
+
+  const [replies] = createResource(findReplies);
+
   return (
     <div
       class={classNames({
         chat: true,
         "chat-end": message.author?._id === client.user?._id,
         "chat-start": message.author?._id !== client.user?._id,
-        "mx-2": true
+        "mx-2": true,
       })}
     >
       <div class="chat-image avatar">
         <div class="w-10 h-10 rounded-full">
           <Switch>
             <Match when={message.system}>
-              <img src={"https://autumn.revolt.chat/attachments/download/ItfupS-VXfijXY80h0uQuFjB24eG2BC1aG5bTBcv_m"} />
+              <img
+                src={
+                  "https://autumn.revolt.chat/attachments/download/ItfupS-VXfijXY80h0uQuFjB24eG2BC1aG5bTBcv_m"
+                }
+              />
             </Match>
             <Match when={!message.system}>
               <img
@@ -74,6 +118,45 @@ const Message: Component<MessageComponent> = ({
         </div>
       </div>
       <div class="chat-header">
+        <Show when={!replies.loading}>
+          <div class="flex flex-col gap-2">
+            <For each={replies()}>
+              {(reply) => {
+                const roleColour = getrolecolour(reply);
+                return (
+                  <div class="p-2 bg-base-200 my-1 flex items-center gap-2">
+                    <img
+                      src={
+                        reply?.member?.generateAvatarURL() ||
+                        reply?.author?.generateAvatarURL()
+                      }
+                      class="w-4 h-4 rounded-full"
+                    />{" "}
+                    <span
+                      class={
+                        roleColour && roleColour.includes("gradient")
+                          ? css`
+                              background: ${roleColour};
+                              background-clip: text;
+                              -webkit-background-clip: text;
+                              -webkit-text-fill-color: transparent;
+                            `
+                          : css`
+                              color: ${colour || '#fff'};
+                            `
+                      }
+                    >
+                      {reply?.masquerade?.name ||
+                        reply?.member?.nickname ||
+                        reply?.author?.username}
+                    </span>
+                    <Markdown content={reply?.content?.substring(0, 70) || ""} />
+                  </div>
+                );
+              }}
+            </For>
+          </div>
+        </Show>
         <span
           class={
             colour && colour.includes("gradient")
@@ -84,7 +167,7 @@ const Message: Component<MessageComponent> = ({
                   -webkit-text-fill-color: transparent;
                 `
               : css`
-                  color: inherit;
+                  color: ${colour || "inherit"};
                 `
           }
         >
@@ -115,7 +198,7 @@ const Message: Component<MessageComponent> = ({
             </Match>
             <Match when={message.asSystemMessage.type === "user_left"}>
               <p class="flex items-center gap-1">
-              <BiSolidLeftArrowAlt />
+                <BiSolidLeftArrowAlt />
                 {message.asSystemMessage.type === "user_left" &&
                   message.asSystemMessage.user?.username}{" "}
                 left
