@@ -70,7 +70,6 @@ const components = {
   `,
   pre: RenderCodeblock,
   code: styled.code`
-    color: #fff;
     background: inherit;
     font-size: 90%;
     font-family: var(--monospace-font), monospace;

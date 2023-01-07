@@ -5,6 +5,7 @@ import { styled } from "solid-styled-components";
  * Base codeblock styles
  */
 const Base = styled.pre`
+  color: inherit;
   padding: 1em;
   overflow-x: scroll;
   border-radius: 6px;
@@ -16,7 +17,7 @@ const Base = styled.pre`
 const Lang = styled.div`
   width: fit-content;
   padding-bottom: 8px;
-  font-family: var(--monospace-font);
+  font-family: "Jetbrains Mono", monospace;
   a {
     color: #070707;
     cursor: pointer;
@@ -51,7 +52,7 @@ export function RenderCodeblock(props: {
   let ref: HTMLPreElement | undefined;
 
   return (
-    <Base class="bg-base-200" ref={ref}>
+    <Base class="bg-base-200 text-neutral" ref={ref}>
         <Lang>
           <a
             onClick={() => {
@@ -59,6 +60,7 @@ export function RenderCodeblock(props: {
               //text && modalController.writeText(text);
               alert(text);
             }}
+            
           >
             {lang}
           </a>

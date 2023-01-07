@@ -21,7 +21,7 @@ const RevoltEmbeds: Component<ComponentProps> = (props) => {
                 </figure>
               </Show>
               <Show when={embed.title || embed.description}>
-                <div class={`card-body rounded-bl-2xl break-words`}>
+                <div class={`card-body rounded-bl-2xl break-words text-neutral`}>
                   <span class="flex items-center gap-2">
                     <Show when={!canLoadIcon()}>
                       <img
@@ -30,7 +30,7 @@ const RevoltEmbeds: Component<ComponentProps> = (props) => {
                         onError={() => setCanLoadIcon(false)}
                       />
                     </Show>
-                    <h2 class="card-title break-normal">{embed.title}</h2>
+                    <h2 class="text-current card-title break-normal">{embed.title}</h2>
                   </span>
                   <Show when={embed.description}>
                     <Markdown content={embed.description || ""} />
@@ -53,9 +53,10 @@ const RevoltEmbeds: Component<ComponentProps> = (props) => {
           return (
             <div class="card w-96 m:w-auto bg-base-100">
               <div
-                class={`card-body border-l-2 border-[${
-                  embed.colour || "#7ccbff"
-                }] rounded-l-2xl`}
+                class={`card-body border-l-2 rounded-l-2xl text-neutral`}
+                style={{
+                  "border-left-color": embed.colour || "#7ccbff",
+                }}
               >
                 <h2 class="card-title">{embed.title}</h2>
                 <Markdown content={embed.description || ""} />
