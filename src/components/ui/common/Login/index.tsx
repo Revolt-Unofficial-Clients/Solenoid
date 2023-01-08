@@ -105,7 +105,7 @@ const Login: Component<LoginComponent> = ({
     <>
       {!logged() && (
         <>
-          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:shadow-xl  lg:top-20 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/40 backdrop-blur-xl container rounded-xl">
+          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:shadow-lg  lg:top-20 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/40 backdrop-blur-xl container rounded-xl border-base-100/50 border-2">
             <div class="mx-10 my-10 flex items-center gap-2">
               <div class="w-10">
                 <img src="/favicon.png" />
@@ -205,6 +205,7 @@ const Login: Component<LoginComponent> = ({
             </form>
             {solenoid_config.session && (
               <button
+                class="btn block mr-auto ml-auto my-2"
                 id="existingsession"
                 onClick={() => loginWithSession(solenoid_config.session)}
               >
