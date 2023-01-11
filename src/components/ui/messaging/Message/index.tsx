@@ -92,6 +92,7 @@ const Message: Component<MessageComponent> = ({
         "chat-end": message.author?._id === client.user?._id,
         "chat-start": message.author?._id !== client.user?._id,
         "mx-2": true,
+        "transition-all": true
       })}
     >
       <div class="chat-image avatar">
@@ -230,7 +231,7 @@ const Message: Component<MessageComponent> = ({
               <Show when={attachment.metadata.type === "Image"}>
                 <img
                   src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
-                  class="w-auto max-h-64"
+                  class="w-auto max-h-64 rounded-lg my-2"
                 />
               </Show>
             )}
