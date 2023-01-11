@@ -158,7 +158,7 @@ const Login: Component<LoginComponent> = ({
                     onInput={(e: any) => setPassword(e.currentTarget.value)}
                   ></input>
                   <input
-                    class="input w-full my-2"
+                    class="input w-full my-2 mb-2"
                     id="mfa"
                     type="text"
                     placeholder="2fa Token (Optional, Not yet implemented)"
@@ -205,6 +205,7 @@ const Login: Component<LoginComponent> = ({
             </form>
             {solenoid_config.session && (
               <button
+                class="btn block mr-auto ml-auto my-2"
                 id="existingsession"
                 onClick={() => loginWithSession(solenoid_config.session)}
               >

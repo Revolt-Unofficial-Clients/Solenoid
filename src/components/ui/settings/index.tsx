@@ -384,7 +384,7 @@ const Settings: Component = () => {
       >
         <h2 class="text-center text-xl">Experiments</h2>
         <div class="prose">
-          <h3>Emoji Picker</h3>
+          <h3>Emoji Picker (Experimental)</h3>
         </div>
         <div>
           <p>Enable experimental emoji/gif picker.</p>

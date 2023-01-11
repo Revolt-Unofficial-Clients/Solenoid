@@ -1,18 +1,37 @@
+// Solid.js
 import { createMemo, createSignal, For, Match, Show, Switch } from "solid-js";
+
+// Solenoid and Revolt Library
 import * as Solenoid from "../../../../lib/solenoid";
-import { ulid } from "ulid";
-import Axios from "axios";
 import { revolt } from "../../../../lib/revolt";
 import { debounce } from "../../../../utils";
 
+// I don't know what this is
+import { ulid } from "ulid";
+
+// Axios & Revolt.js Dependecies
+import Axios from "axios";
 import type { AxiosRequestConfig } from "axios";
 import type { Component } from "solid-js";
 import type { User } from "revolt.js";
+
+// Icons
 import { BiSolidCog, BiSolidFileImage, BiSolidSend } from "solid-icons/bi";
+import { FaSolidFaceGrinWide } from 'solid-icons/fa'
+
+// ClassNames
 import classNames from "classnames";
 
+// Experiments
+import { Picker } from "../../experiments/Picker/picker";
+
+// Variables
 const [sending, setSending] = createSignal<boolean>(false);
 const [typing, setTyping] = createSignal<(User | undefined)[]>([]);
+
+// TODO: Add Emoji Picker (Experiemental!)
+const [showPicker, setShowPicker] = createSignal<boolean>(false);
+const [pickerType, setPickerType] = createSignal<"react" | "emoji">("emoji");
 
 async function uploadFile(
   autummURL: string,
@@ -160,8 +179,8 @@ revolt.on("packet", async (p) => {
 const Userbar: Component = () => {
   return (
     <div class="sticky bottom-0 left-0 w-full h-full form-control">
-      <Show when={typing().length > 0 }>
-        <div class="flex flex-row items-center gap-2 bg-base-100 relative top-0 left-0 w-full h-10">
+      <Show when={typing().length > 0}>
+        <div class="flex flex-row items-center gap-2 bg-base-200 drop-shadow-md m-2 p-3 relative top-0 left-0 w-auto h-14 rounded-full">
           <div class="avatar-group -space-x-6">
             <For each={typing()}>
               {(user) => (
@@ -229,17 +248,24 @@ const Userbar: Component = () => {
           maxlength={2000}
           autofocus
         />
-        <button
-          class={classNames({
-            btn: true,
-            "btn-disabled": sending(),
-          })}
-          aria-label="Send"
-          disabled={sending()}
-          onClick={() => sendMessage(Solenoid.newMessage())}
-        >
-          <BiSolidSend />
-        </button>
+        {Solenoid.servers.current_server && Solenoid.settings.experiments.picker && (
+          <>
+            <button class="btn" onClick={() => {
+              showPicker() ? setShowPicker(false) : setShowPicker(true);
+              setPickerType("emoji");
+            }}>
+              <FaSolidFaceGrinWide />
+            </button>
+
+            {showPicker() && Solenoid.settings.experiments.picker && (
+              <Picker
+                type={pickerType()}
+                setOpen={setShowPicker}
+              />
+            )}
+          </>
+        )}
+
         <input
           class="hidden"
           type="file"
@@ -252,6 +278,17 @@ const Userbar: Component = () => {
         <label for="files" role="button" class="btn">
           <BiSolidFileImage />
         </label>
+        <button
+          class={classNames({
+            btn: true,
+            "btn-disabled": sending(),
+          })}
+          aria-label="Send"
+          disabled={sending()}
+          onClick={() => sendMessage(Solenoid.newMessage())}
+        >
+          <BiSolidSend />
+        </button>
       </div>
     </div>
   );

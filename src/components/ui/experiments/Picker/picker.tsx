@@ -17,8 +17,8 @@ const [tab, setTab] = createSignal<number>(0);
 
 export const Picker: Component<props> = (props) => {
   return (
-    <div class="flex flex-col w-64 h-56">
-      <div class="flex flex-row tabs w-full">
+    <div class="absolute bottom-[50px] right-5 rounded-lg shadow-lg bg-base-100 flex flex-col w-72 h-64 border border-base-300">
+      <div class="flex flex-row tab w-full mt-1">
           <div
             class={
               ClassNames({
