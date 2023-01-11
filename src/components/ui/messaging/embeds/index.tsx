@@ -14,7 +14,7 @@ const RevoltEmbeds: Component<ComponentProps> = (props) => {
       {(embed) => {
         if (embed.type === "Website") {
           return (
-            <div class="card w-full bg-base-100">
+            <div class="card shadow-md w-full bg-base-100">
               <Show when={embed.image}>
                 <figure>
                   <img src={embed.image?.url || ""} />
@@ -39,7 +39,7 @@ const RevoltEmbeds: Component<ComponentProps> = (props) => {
                     <div class="card-actions justify-end">
                       <a
                         href={embed.original_url || ""}
-                        class="btn btn-primary"
+                        class="btn"
                       >
                         Go to {embed.site_name}
                       </a>
@@ -51,7 +51,7 @@ const RevoltEmbeds: Component<ComponentProps> = (props) => {
           );
         } else if (embed.type === "Text") {
           return (
-            <div class="card w-96 m:w-auto bg-base-100">
+            <div class="card shadow-md w-96 m:w-auto bg-base-100">
               <div
                 class={`card-body border-l-2 border-[${
                   embed.colour || "#7ccbff"

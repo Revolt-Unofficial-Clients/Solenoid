@@ -8,11 +8,15 @@ import { debounce } from "../../../../utils";
 import type { AxiosRequestConfig } from "axios";
 import type { Component } from "solid-js";
 import type { User } from "revolt.js";
-import { BiSolidCog, BiSolidFileImage, BiSolidSend } from "solid-icons/bi";
+import { BiRegularInfoCircle, BiSolidCog, BiSolidFileImage, BiSolidSend } from "solid-icons/bi";
 import classNames from "classnames";
 
 const [sending, setSending] = createSignal<boolean>(false);
 const [typing, setTyping] = createSignal<(User | undefined)[]>([]);
+
+// TODO: Add Emoji Picker (Experiemental!)
+const [showPicker, setShowPicker] = createSignal<boolean>(false);
+const [pickerType, setPickerType] = createSignal<"react" | "emoji">("emoji");
 
 async function uploadFile(
   autummURL: string,
@@ -229,17 +233,14 @@ const Userbar: Component = () => {
           maxlength={2000}
           autofocus
         />
-        <button
-          class={classNames({
-            btn: true,
-            "btn-disabled": sending(),
-          })}
-          aria-label="Send"
-          disabled={sending()}
-          onClick={() => sendMessage(Solenoid.newMessage())}
-        >
-          <BiSolidSend />
-        </button>
+        {Solenoid.servers.current_server && Solenoid.settings.experiments.picker && (
+          <button class="btn" onClick={() => {
+            showPicker() ? setShowPicker(false) : setShowPicker(true);
+            setPickerType("emoji");
+          }}>
+            <BiRegularInfoCircle/>  
+          </button>
+        )}
         <input
           class="hidden"
           type="file"
@@ -252,6 +253,17 @@ const Userbar: Component = () => {
         <label for="files" role="button" class="btn">
           <BiSolidFileImage />
         </label>
+        <button
+          class={classNames({
+            btn: true,
+            "btn-disabled": sending(),
+          })}
+          aria-label="Send"
+          disabled={sending()}
+          onClick={() => sendMessage(Solenoid.newMessage())}
+        >
+          <BiSolidSend />
+        </button>
       </div>
     </div>
   );
