@@ -8,11 +8,15 @@ import { debounce } from "../../../../utils";
 import type { AxiosRequestConfig } from "axios";
 import type { Component } from "solid-js";
 import type { User } from "revolt.js";
-import { BiSolidCog, BiSolidFileImage, BiSolidSend } from "solid-icons/bi";
+import { BiSolidCog, BiSolidFileImage, BiSolidHappy, BiSolidSend } from "solid-icons/bi";
 import classNames from "classnames";
+import { Picker } from "../../experiments/Picker/picker";
 
 const [sending, setSending] = createSignal<boolean>(false);
 const [typing, setTyping] = createSignal<(User | undefined)[]>([]);
+
+const [pickerType, setPickerType] = createSignal<"react" | "emoji">("emoji");
+const [showPicker, setShowPicker] = createSignal<boolean>(false);
 
 async function uploadFile(
   autummURL: string,
@@ -160,7 +164,7 @@ revolt.on("packet", async (p) => {
 const Userbar: Component = () => {
   return (
     <div class="sticky bottom-0 left-0 w-full h-full form-control">
-      <Show when={typing().length > 0 }>
+      <Show when={typing().length > 0}>
         <div class="flex flex-row items-center gap-2 bg-base-100 relative top-0 left-0 w-full h-10">
           <div class="avatar-group -space-x-6">
             <For each={typing()}>
@@ -229,17 +233,20 @@ const Userbar: Component = () => {
           maxlength={2000}
           autofocus
         />
-        <button
-          class={classNames({
-            btn: true,
-            "btn-disabled": sending(),
-          })}
-          aria-label="Send"
-          disabled={sending()}
-          onClick={() => sendMessage(Solenoid.newMessage())}
-        >
-          <BiSolidSend />
-        </button>
+        {showPicker() && Solenoid.settings.experiments.picker && (
+          <Picker
+            setMessage={Solenoid.setNewMessage}
+            message={Solenoid.newMessage}
+            type={pickerType()}
+            setOpen={setShowPicker}
+          />
+        )}
+        {Solenoid.settings.experiments.picker && (
+          <button class="btn" onClick={() => { showPicker() ? setShowPicker(false) : setShowPicker(true); setPickerType("emoji"); }}>
+            <BiSolidHappy />
+          </button>
+        )
+        }
         <input
           class="hidden"
           type="file"
@@ -252,6 +259,17 @@ const Userbar: Component = () => {
         <label for="files" role="button" class="btn">
           <BiSolidFileImage />
         </label>
+        <button
+          class={classNames({
+            btn: true,
+            "btn-disabled": sending(),
+          })}
+          aria-label="Send"
+          disabled={sending()}
+          onClick={() => sendMessage(Solenoid.newMessage())}
+        >
+          <BiSolidSend />
+        </button>
       </div>
     </div>
   );
