@@ -230,7 +230,7 @@ const Message: Component<MessageComponent> = ({
               <Show when={attachment.metadata.type === "Image"}>
                 <img
                   src={`https://autumn.revolt.chat/attachments/${attachment._id}`}
-                  class="w-auto max-h-64"
+                  class="w-auto max-h-64 rounded-lg"
                 />
               </Show>
             )}
