@@ -9,7 +9,7 @@ import {
 } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import type { user, settings } from "../../../../types";
-import type { Client } from "revolt.js";
+import type { Client } from "revolt-toolset";
 
 interface LoginComponent {
   client: Client;
@@ -36,7 +36,7 @@ const Login: Component<LoginComponent> = ({
   // Login With Token and Enable Bot Mode
   async function logIntoRevolt(token: string) {
     try {
-      await client.loginBot(token);
+      await client.login(token, "bot");
     } catch (e: any) {
       if (solenoid_config.debug === true) {
         console.log(e);
@@ -56,7 +56,7 @@ const Login: Component<LoginComponent> = ({
   async function loginWithEmail(email: string, password: string) {
     try {
       await client
-        .login({
+        .authenticate({
           email: email,
           password: password,
           friendly_name: "Solenoid Client",
@@ -80,9 +80,9 @@ const Login: Component<LoginComponent> = ({
       }
     }
   }
-  async function loginWithSession(session: any & { action: "LOGIN" }) {
+  async function loginWithSession(session: any & { action: "LOGIN", token: string }) {
     try {
-      await client.useExistingSession(session).catch((e) => {
+      await client.login(session, "user").catch((e) => {
         throw e;
       });
       batch(() => {

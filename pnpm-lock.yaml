@@ -28,7 +28,7 @@ specifiers:
   remark-math: ^5.1.1
   remark-parse: ^10.0.1
   remark-rehype: ^10.1.0
-  revolt-toolset: ^0.0.21
+  revolt-toolset: ^1.0.21
   revolt.js: ^6.0.18
   solid-hcaptcha: ^0.2.5
   solid-icons: ^1.0.2
@@ -46,6 +46,7 @@ specifiers:
   vfile: ^5.3.6
   vite: latest
   vite-plugin-solid: latest
+  ws: ^8.12.0
 
 dependencies:
   '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
@@ -70,7 +71,7 @@ dependencies:
   remark-math: 5.1.1
   remark-parse: 10.0.1
   remark-rehype: 10.1.0
-  revolt-toolset: 0.0.21
+  revolt-toolset: 1.0.21_ws@8.12.0
   revolt.js: 6.0.18
   solid-hcaptcha: 0.2.5_solid-js@1.5.1
   solid-icons: 1.0.2_solid-js@1.5.1
@@ -84,6 +85,7 @@ dependencies:
   unist: 8.0.11
   unist-util-visit: 4.1.1
   vfile: 5.3.6
+  ws: 8.12.0
 
 devDependencies:
   '@typescript-eslint/eslint-plugin': 5.40.1_xobkauamhepyumrsyeq6yonh5i
@@ -93,8 +95,8 @@ devDependencies:
   postcss: 8.4.20
   tailwindcss: 3.2.4_postcss@8.4.20
   typescript: 4.9.4
-  vite: 4.0.3
-  vite-plugin-solid: 2.5.0_solid-js@1.5.1+vite@4.0.3
+  vite: 4.0.4
+  vite-plugin-solid: 2.5.0_solid-js@1.5.1+vite@4.0.4
 
 packages:
 
@@ -655,12 +657,12 @@ packages:
     resolution: {integrity: sha512-0lsMVexkZ7dHpQlPrTZDRsm42hZ4/CzKxP1hbAEJH8IaEwrIEhhTKJuFxPuLOi2TwPImuocncjYHpGpwVNOemQ==}
     dev: false
 
-  /@insertish/isomorphic-ws/4.0.1_ws@8.8.1:
+  /@insertish/isomorphic-ws/4.0.1_ws@8.12.0:
     resolution: {integrity: sha512-kFD/p8T4Hkqr992QrdkbW/cQ/W/q2d9MPCobwzBv2PwTKLkCD9RaYDy6m17qRnSLQQ5PU0kHCG8kaOwAqzj1vQ==}
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.8.1
+      ws: 8.12.0
     dev: false
 
   /@insertish/oapi/0.1.18:
@@ -771,6 +773,10 @@ packages:
     resolution: {integrity: sha512-DUlIj2nk0YnJdlWgsFuVKcX27MLW0KbKmGVoUHmFr+74FYYNUDAaj9ZqTADvsbE8rfxuVmSFc7KczYn5Y09ozg==}
     dev: false
 
+  /@types/luxon/3.2.0:
+    resolution: {integrity: sha512-lGmaGFoaXHuOLXFvuju2bfvZRqxAqkHPx9Y9IQdQABrinJJshJwfNCKV+u7rR3kJbiqfTF/NhOkcxxAFrObyaA==}
+    dev: false
+
   /@types/mdast/3.0.10:
     resolution: {integrity: sha512-W864tg/Osz1+9f4lrGTZpCSO5/z4608eUp19tbozkq2HJK6i3z1kT0H9tlADXuYIb1YYOBByU4Jsqkk75q48qA==}
     dependencies:
@@ -799,6 +805,12 @@ packages:
 
   /@types/unist/2.0.6:
     resolution: {integrity: sha512-PBjIUxZHOuj0R15/xuwJYjFi+KZdNFrehocChv4g5hu6aFroHue8m0lBP0POdK2nKzbw0cgV1mws8+V/JAcEkQ==}
+    dev: false
+
+  /@types/ws/8.5.4:
+    resolution: {integrity: sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==}
+    dependencies:
+      '@types/node': 18.11.18
     dev: false
 
   /@typescript-eslint/eslint-plugin/5.40.1_xobkauamhepyumrsyeq6yonh5i:
@@ -1539,6 +1551,10 @@ packages:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
     dev: false
 
+  /eventemitter3/5.0.0:
+    resolution: {integrity: sha512-riuVbElZZNXLeLEoprfNYoDSwTBRR44X3mnhdI1YcnENpWTCsTTVZ2zFuqQcpoyqPQIUXdiPEU0ECAq0KQRaHg==}
+    dev: false
+
   /extend/3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
     dev: false
@@ -2003,6 +2019,10 @@ packages:
     resolution: {integrity: sha512-9RTUNjK60eJbx3uz+TEGF7fUr29ZDxR5QzXcyDpeSfeH28S9ycINflOgOlppit5U+4kNTe83KQnMEerw7GmE8w==}
     dev: false
 
+  /long/5.2.1:
+    resolution: {integrity: sha512-GKSNGeNAtw8IryjjkhZxuKB3JzlcLTwjtiQCHKvqQet81I93kXslhDQruGI/QsddO83mcDToBVy7GqGS/zYf/A==}
+    dev: false
+
   /longest-streak/3.0.1:
     resolution: {integrity: sha512-cHlYSUpL2s7Fb3394mYxwTYj8niTaNHUCLr0qdiCXQfSjfuA7CKofpX2uSwEfFDQ0EB7JcnMnm+GjbqqoinYYg==}
     dev: false
@@ -2019,6 +2039,11 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /luxon/3.2.1:
+    resolution: {integrity: sha512-QrwPArQCNLAKGO/C+ZIilgIuDnEnKx5QYODdDtbFaxzsbZcc/a7WFq7MhsVYgRlwawLtvOUESTlfJ+hc/USqPg==}
+    engines: {node: '>=12'}
+    dev: false
 
   /markdown-table/3.0.2:
     resolution: {integrity: sha512-y8j3a5/DkJCmS5x4dMCQL+OR0+2EAq3DOtio1COSHsmW2BGXnNCK3v12hJt1LrUz5iZH5g0LmuYOjDdI+czghA==}
@@ -2849,23 +2874,40 @@ packages:
       - debug
     dev: false
 
-  /revolt-toolset/0.0.21:
-    resolution: {integrity: sha512-P663RlS2SkrcRd5u2gN95y5oGlBCEPZ03+/09bxFxsEowQe4OsPK/e7k/Kew01rkSQrycdUpzC+6bAEZcBzx3Q==}
+  /revolt-api/0.5.5-5:
+    resolution: {integrity: sha512-H8O1vty8pJikWZ1JIc/QFe49YPov/309G8AUUfR/EsJccjAxw8Pw1XT2dvOreCF6CrQx8k0uX0RIRcw0wS7XRA==}
     dependencies:
-      axios: 1.1.3
-      form-data: 4.0.0
-      revolt.js: 6.0.18
+      '@insertish/oapi': 0.1.18
+      axios: 0.26.1
+      lodash.defaultsdeep: 4.6.1
     transitivePeerDependencies:
-      - bufferutil
       - debug
-      - utf-8-validate
+    dev: false
+
+  /revolt-toolset/1.0.21_ws@8.12.0:
+    resolution: {integrity: sha512-B1ag4HcOmdNECC2atU89MG2vGPa2CjBt1FvTH6fCcEEJgNs+Cm0RGQyIGM3X6QM00Id7sT8ShHAATPycJH7y0A==}
+    dependencies:
+      '@insertish/exponential-backoff': 3.1.0-patch.2
+      '@insertish/isomorphic-ws': 4.0.1_ws@8.12.0
+      '@types/luxon': 3.2.0
+      '@types/ws': 8.5.4
+      axios: 1.1.3
+      eventemitter3: 5.0.0
+      form-data: 4.0.0
+      long: 5.2.1
+      luxon: 3.2.1
+      revolt-api: 0.5.5-5
+      ulid: 2.3.0
+    transitivePeerDependencies:
+      - debug
+      - ws
     dev: false
 
   /revolt.js/6.0.18:
     resolution: {integrity: sha512-NOmIzam1VYLKIYKDRgCeFbu6IcLXXtaQ5RwuqDhhCehCDFXzRyhYYXvl/l0Piz5E0ykMMDEG/G3GdIe/ZHrvlA==}
     dependencies:
       '@insertish/exponential-backoff': 3.1.0-patch.2
-      '@insertish/isomorphic-ws': 4.0.1_ws@8.8.1
+      '@insertish/isomorphic-ws': 4.0.1_ws@8.12.0
       axios: 0.21.4
       eventemitter3: 4.0.7
       lodash.defaultsdeep: 4.6.1
@@ -2875,7 +2917,7 @@ packages:
       mobx: 6.6.2
       revolt-api: 0.5.5-4
       ulid: 2.3.0
-      ws: 8.8.1
+      ws: 8.12.0
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -3310,7 +3352,7 @@ packages:
       vfile-message: 3.1.2
     dev: false
 
-  /vite-plugin-solid/2.5.0_solid-js@1.5.1+vite@4.0.3:
+  /vite-plugin-solid/2.5.0_solid-js@1.5.1+vite@4.0.4:
     resolution: {integrity: sha512-VneGd3RyFJvwaiffsqgymeMaofn0IzQLPwDzafTV2f1agoWeeJlk5VrI5WqT9BTtLe69vNNbCJWqLhHr9fOdDw==}
     peerDependencies:
       solid-js: ^1.3.17 || ^1.4.0 || ^1.5.0 || ^1.6.0
@@ -3322,14 +3364,14 @@ packages:
       merge-anything: 5.1.4
       solid-js: 1.5.1
       solid-refresh: 0.4.1_solid-js@1.5.1
-      vite: 4.0.3
-      vitefu: 0.2.4_vite@4.0.3
+      vite: 4.0.4
+      vitefu: 0.2.4_vite@4.0.4
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /vite/4.0.3:
-    resolution: {integrity: sha512-HvuNv1RdE7deIfQb8mPk51UKjqptO/4RXZ5yXSAvurd5xOckwS/gg8h9Tky3uSbnjYTgUm0hVCet1cyhKd73ZA==}
+  /vite/4.0.4:
+    resolution: {integrity: sha512-xevPU7M8FU0i/80DMR+YhgrzR5KS2ORy1B4xcX/cXLsvnUWvfHuqMmVU6N0YiJ4JWGRJJsLCgjEzKjG9/GKoSw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -3361,7 +3403,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitefu/0.2.4_vite@4.0.3:
+  /vitefu/0.2.4_vite@4.0.4:
     resolution: {integrity: sha512-fanAXjSaf9xXtOOeno8wZXIhgia+CZury481LsDaV++lSvcU2R9Ch2bPh3PYFyoHW+w9LqAeYRISVQjUIew14g==}
     peerDependencies:
       vite: ^3.0.0 || ^4.0.0
@@ -3369,7 +3411,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.0.3
+      vite: 4.0.4
     dev: true
 
   /web-namespaces/2.0.1:
@@ -3393,12 +3435,12 @@ packages:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
 
-  /ws/8.8.1:
-    resolution: {integrity: sha512-bGy2JzvzkPowEJV++hF07hAD6niYSr0JzBNo/J29WsB57A2r7Wlc1UFcTR9IzrPvuNVO4B8LGqF8qcpsVOhJCA==}
+  /ws/8.12.0:
+    resolution: {integrity: sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
-      utf-8-validate: ^5.0.2
+      utf-8-validate: '>=5.0.2'
     peerDependenciesMeta:
       bufferutil:
         optional: true

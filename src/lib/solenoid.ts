@@ -3,7 +3,7 @@ import { createStore } from "solid-js/store";
 import { createLocalStore, createLocalSignal } from "../utils";
 
 import type { user, server, reply, settings as config, status } from "../types";
-import type { Message } from "revolt.js";
+import type { BaseMessage } from "revolt-toolset";
 
 export const [newMessage, setNewMessage] = createSignal<string>("");
 export const [loggedIn, setLoggedIn] = createSignal<boolean>(false);
@@ -17,7 +17,7 @@ export const [servers, setServers] = createStore<server>({
   isHome: true,
 });
 
-export const [messages, setMessages] = createSignal<(Message | undefined)[]>();
+export const [messages, setMessages] = createSignal<(BaseMessage | undefined)[]>();
 export const [replies, setReplies] = createSignal<reply[]>([]);
 
 export const [images, setImages] = createSignal<any[] | null | undefined>(undefined);

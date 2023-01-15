@@ -5,9 +5,9 @@ import { Markdown } from "../../../markdown";
 
 async function getMessagesFromChannel() {
   await Solenoid.servers.current_channel
-    ?.fetchMessagesWithUsers()
-    .then(({ messages }) =>
-      Solenoid.setServers("messages", messages.reverse())
+    ?.messages.fetchMultiple({"include_users": true})
+    .then(messages =>
+      Solenoid.setMessages(messages)
     );
   Solenoid.setServers("isHome", false);
 }
@@ -19,28 +19,19 @@ const ChannelNavigation: Component = () => {
       <div class="prose flex items-center justify-center py-2">
         <h2>{Solenoid.servers.current_server?.name}</h2>
       </div>
-      <For each={Solenoid.servers.current_server_channels}>
-        {(channel) => (
-          <Show when={channel?.channel_type === "TextChannel"}>
-            <button
-              class={classNames({
-                btn: true,
-                "btn-sm": true,
-                "w-full": true,
-                "my-1": true,
-                "btn-accent": Solenoid.servers.current_channel === channel,
-                "break-all": true,
-              })}
-              onClick={() => {
-                Solenoid.setServers("current_channel", channel);
-                Solenoid.setServers("isHome", false);
-                Solenoid.setServers("messages", []);
-                getMessagesFromChannel();
-              }}
-            >
-              <Markdown disallowBigEmoji content={channel?.name || ""} />
-            </button>
-          </Show>
+      <For each={Solenoid.servers.current_server?.orderedChannels}>
+        {category => (
+          <div class="flex flex-col gap-2">
+            <p>{category.name}</p>
+            <For each={category.channels}>
+              {channel => (
+                <button class="btn" onClick={() => {
+                  Solenoid.setServers("current_channel", channel)
+                  getMessagesFromChannel()
+                }}>{channel.name}</button>
+              )}
+            </For>
+          </div>
         )}
       </For>
     </div>

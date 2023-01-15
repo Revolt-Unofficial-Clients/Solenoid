@@ -1,23 +1,21 @@
 import { Component, Match, Switch } from "solid-js";
-import type { Server } from "revolt.js";
+import type { Server } from "revolt-toolset";
 import { createSignal, For } from "solid-js";
 import { revolt } from "../../../../lib/revolt";
 import { setServers, servers } from "../../../../lib/solenoid";
 import classNames from "classnames";
 import { BiSolidHome } from "solid-icons/bi"
 
-const [serverlist, setServerList] = createSignal<Server[] | undefined>();
+const [serverlist, setServerList] = createSignal<Server[]>([]);
 
 const Navigation: Component = () => {
-  setServerList(Array.from(revolt.servers.values()));
+  setServerList(revolt.servers.items());
   return (
     <div class="flex flex-col h-screen bg-base-300 px-4">
       <button
         onClick={() => {
           setServers("current_server", undefined);
           setServers("current_channel", undefined);
-          setServers("messages", []);
-          setServers("current_server_channels", undefined);
           setServers("isHome", true);
         }}
         class={classNames({
@@ -41,9 +39,7 @@ const Navigation: Component = () => {
             }
             onClick={() => {
               setServers("current_server", server);
-              setServers("current_server_channels", server.channels)
               setServers("isHome", false);
-              setServers("messages", []);
             }}
           >
             <Switch>

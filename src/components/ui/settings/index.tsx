@@ -1,7 +1,6 @@
 import { Component, For } from "solid-js";
 
 import classNames from "classnames";
-import { uploadAttachment } from "revolt-toolset";
 import { revolt } from "../../../lib/revolt";
 import * as Solenoid from "../../../lib/solenoid";
 
@@ -25,8 +24,8 @@ function updateStatus(
   } else {
     revolt.api.patch("/users/@me", {
       status: {
-        presence: Solenoid.settings.status || revolt.user?.status?.presence,
-        text: Solenoid.settings.statusText,
+        presence: Solenoid.settings.status || revolt.user?.presence,
+        text: Solenoid.settings.statusText || revolt.user?.status,
       },
     });
   }
@@ -44,7 +43,7 @@ function logoutFromRevolt() {
   Solenoid.setServers("isHome", false);
   Solenoid.setServers("server_list", undefined);
   Solenoid.setSettings("show", false);
-  if (revolt.session) revolt.logout();
+  if (revolt.session) revolt.destroy();
 }
 
 const Settings: Component = () => {
@@ -74,8 +73,8 @@ const Settings: Component = () => {
             <img
               src={
                 revolt.user?.avatar
-                  ? `${revolt.configuration?.features.autumn.url}/avatars/${revolt.user?.avatar?._id}`
-                  : `https://api.revolt.chat/users/${revolt.user?._id}/default_avatar`
+                  ? `${revolt.config?.features.autumn.url}/avatars/${revolt.user?.avatar?.id}`
+                  : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
               }
               class="block m-3 ml-auto mr-auto rounded-full"
               width={56}
@@ -93,8 +92,8 @@ const Settings: Component = () => {
             onSubmit={async (e) => {
               console.log("Clicked");
               e.preventDefault();
-              const file = await uploadAttachment(
-                `solenoid-avatar-${revolt.user?._id}`,
+              const file = await revolt.uploadAttachment(
+                `solenoid-avatar-${revolt.user?.id}`,
                 Solenoid.avatarImage(),
                 "avatars"
               );
@@ -152,9 +151,9 @@ const Settings: Component = () => {
                         revolt.user?.avatar
                       ? `https://autumn.revolt.chat/avatars/${
                           Solenoid.servers.current_server.member?.avatar?._id ||
-                          revolt.user?.avatar?._id
+                          revolt.user?.avatar?.id
                         }`
-                      : `https://api.revolt.chat/users/${revolt.user?._id}/default_avatar`
+                      : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
                   }
                   width={64}
                   height={64}
