@@ -17,7 +17,7 @@ export const [servers, setServers] = createStore<server>({
   isHome: true,
 });
 
-export const [messages, setMessages] = createSignal<(BaseMessage | undefined)[]>();
+export const [messages, setMessages] = createStore<(BaseMessage | undefined)[]>([]);
 export const [replies, setReplies] = createSignal<reply[]>([]);
 
 export const [images, setImages] = createSignal<any[] | null | undefined>(undefined);

@@ -10,6 +10,8 @@ import {
 import { SetStoreFunction } from "solid-js/store";
 import type { user, settings } from "../../../../types";
 import type { Client } from "revolt-toolset";
+import { setSettings } from "../../../../lib/solenoid";
+import { revolt } from "../../../../lib/revolt";
 
 interface LoginComponent {
   client: Client;
@@ -204,12 +206,25 @@ const Login: Component<LoginComponent> = ({
               </div>
             </form>
             {solenoid_config.session && (
+              <div class="flex flex-col w-full items-center gap-2">
               <button
-                id="existingsession"
+                class="btn btn-success w-60"
                 onClick={() => loginWithSession(solenoid_config.session)}
               >
-                Use Existing Session
+                {revolt.ws.ready ? "Loading..." :  "Use Existing Session"}
               </button>
+              <button
+                class="btn btn-error w-60"
+                onClick={() => {
+                  setSettings("session", undefined)
+                  if (revolt.ws.ready) {
+                    revolt.ws.disconnect()
+                  }
+                }}
+              >
+                Remove last session
+              </button>
+              </div>
             )}
           </div>
           <div>

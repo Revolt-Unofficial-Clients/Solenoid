@@ -14,8 +14,8 @@ declare interface loginValues {
 }
 
 declare interface server {
-    current_server?: Server | undefined;
-    current_channel?: Channel | undefined;
+    current_server?: Server;
+    current_channel?: Channel;
     isHome: boolean | undefined;
 }
 

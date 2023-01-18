@@ -7,7 +7,7 @@ async function getMessagesFromChannel() {
   await Solenoid.servers.current_channel
     ?.messages.fetchMultiple({"include_users": true})
     .then(messages =>
-      Solenoid.setMessages(messages)
+      Solenoid.setMessages(messages.reverse())
     );
   Solenoid.setServers("isHome", false);
 }

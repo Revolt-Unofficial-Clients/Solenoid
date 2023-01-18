@@ -1,4 +1,4 @@
-import { Component, For } from "solid-js";
+import { Component, For, createResource, createSignal } from "solid-js";
 
 import classNames from "classnames";
 import { revolt } from "../../../lib/revolt";
@@ -39,11 +39,18 @@ function logoutFromRevolt() {
   Solenoid.setUser("session_type", undefined);
   Solenoid.setServers("current_channel", undefined);
   Solenoid.setServers("current_server", undefined);
-  Solenoid.setServers("current_server_channels", undefined);
   Solenoid.setServers("isHome", false);
-  Solenoid.setServers("server_list", undefined);
   Solenoid.setSettings("show", false);
   if (revolt.session) revolt.destroy();
+}
+
+const [member_avatar_url, set_member_avatar_url] = createSignal<String>()
+
+if (Solenoid.servers.current_server) {
+  Solenoid.servers.current_server.fetchMe().then(me => {
+    set_member_avatar_url(me.generateAvatarURL());
+    // ^?
+  })
 }
 
 const Settings: Component = () => {
@@ -98,10 +105,10 @@ const Settings: Component = () => {
                 "avatars"
               );
               console.log(file);
-              Solenoid.servers.current_server?.member?.edit({
+              Solenoid.servers.current_server?.me?.edit({
                 avatar:
                   file ||
-                  Solenoid.servers.current_server.member.avatar?._id ||
+                  Solenoid.servers.current_server.me.avatar?.id ||
                   null,
                 nickname: Solenoid.nickname() || null,
               });
@@ -126,7 +133,7 @@ const Settings: Component = () => {
                 class="input"
                 id="nick"
                 placeholder={
-                  Solenoid.servers.current_server.member?.nickname ||
+                  Solenoid.servers.current_server.me?.nickname ||
                   revolt.user?.username ||
                   "New Nickname"
                 }
@@ -147,10 +154,10 @@ const Settings: Component = () => {
                   src={
                     Solenoid.avatarImage()
                       ? URL.createObjectURL(Solenoid.avatarImage())
-                      : Solenoid.servers.current_server.member?.avatar ||
+                      :  member_avatar_url() ||
                         revolt.user?.avatar
                       ? `https://autumn.revolt.chat/avatars/${
-                          Solenoid.servers.current_server.member?.avatar?._id ||
+                          Solenoid.servers.current_server.me?.avatar?.id ||
                           revolt.user?.avatar?.id
                         }`
                       : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
