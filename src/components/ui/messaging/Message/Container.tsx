@@ -27,7 +27,6 @@ const MessageContainer: Component = () => {
                 } else if (message?.isUser()) {
                     return (
                         <div>
-                            <p>User Message Id {message.id}</p>
                             <UserMessageBase message={message} />
                         </div>
                     )
