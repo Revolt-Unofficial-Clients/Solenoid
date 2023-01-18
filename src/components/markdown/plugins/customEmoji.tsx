@@ -20,7 +20,7 @@ function parseEmoji(emoji: string) {
 export function RenderCustomEmoji({ match }: CustomComponentProps) {
   const [exists, setExists] = createSignal(true);
   const url = RE_ULID.test(match)
-    ? `${revolt?.configuration?.features.autumn.url}/emojis/${match}`
+    ? `${revolt?.config?.features.autumn.url}/emojis/${match}`
     : parseEmoji(
         match in emojiDictionary
           ? emojiDictionary[match as keyof typeof emojiDictionary]
