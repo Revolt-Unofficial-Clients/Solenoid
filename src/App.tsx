@@ -8,7 +8,9 @@ import {
   createSignal,
   enableExternalSource,
   For,
+  Match,
   Show,
+  Switch,
 } from "solid-js";
 import { produce } from "solid-js/store";
 import { ulid } from "ulid";
@@ -51,6 +53,7 @@ import Userbar from "./components/ui/navigation/Userbar";
 import Settings from "./components/ui/settings";
 import Navigation from "./components/ui/navigation/navbar/servers";
 import ChannelNavigation from "./components/ui/navigation/navbar/channels";
+import { BiRegularErrorAlt } from "solid-icons/bi";
 
 // Way to know if user notifications are enabled
 let notification_access: boolean;
@@ -404,38 +407,83 @@ const App: Component = () => {
       />
       {Solenoid.loggedIn() && (
         <>
-          <div class="flex h-full">
+          <div class="flex h-full overflow-auto">
             <Navigation />
             <Show when={Solenoid.servers.current_server}>
               <ChannelNavigation />
             </Show>
-            <div class="container block w-full overflow-y-scroll">
+
+            <div class="container block w-screen overflow-y-scroll">
               {Solenoid.servers.isHome && (
-                <div class="home">
-                  <h1>Solenoid (Beta)</h1>
-                  {window.location.hostname === "localhost" && (
-                    <h3>Running on Local Server</h3>
-                  )}
-                  <p>A lightweight client for revolt.chat made with SolidJS</p>
-                  <br />
-                  <h3>Contributors</h3>
-                  <hr />
-                  <p>Insert: Helped me with Mobx and Revolt.js issues</p>
-                  <p>
-                    RyanSolid:{" "}
-                    <a href="https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js">
-                      This
-                    </a>{" "}
-                    code snippet
-                  </p>
-                  <p>
-                    VeiledProduct80: Help me realize i forgot the masquerade
-                    part
-                  </p>
-                  <p>
-                    Mclnooted: <b>sex</b>
-                  </p>
-                </div>
+                <Switch fallback={<>L</>}>
+                  <Match when={Solenoid.servers.isHome && Solenoid.settings.experiments.newhome}>
+                    <div class="bg-base-300 w-auto mx-24 my-24 p-3 rounded-xl shadow-md">
+                      <h1 class="text-2xl text-center font-bold"><span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-blue-500">Solenoid</span> (Beta)</h1>
+                      <p class="text-center text-xl font-bold">A lightweight client for revolt.chat made with SolidJS</p>
+                      {window.location.hostname === "localhost" && (
+                        <div class="block mx-1 bg-red-300 text-black dark:bg-red-800 dark:text-white p-2 rounded-md">
+                          <h3 class="text-center font-bold">Running on Local Server</h3>
+                        </div>
+                      )}
+                      <div class="bg-base-100 p-2 m-1 rounded-md">
+                        <h3 class="prose font-bold text-xl">Contributors</h3>
+                        <div>
+                          <p><span class="bg-clip-text font-bold text-transparent bg-gradient-to-r from-orange-600 to-orange-800">Insert</span>: Helped me with Mobx and Revolt.js issues</p>
+                          <p>
+                            RyanSolid:{" "}
+                            <a href="https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js">
+                              This
+                            </a>{" "}
+                            code snippet
+                          </p>
+                          <p>
+                            <span class="text-blue-500">VeiledProduct80</span>: Help me realize i forgot the masquerade
+                            part
+                          </p>
+                          <p>
+                            Mclnooted: <b>sex</b>
+                          </p>
+                          <div class="border p-1 w-16">
+                            <p>
+                              Bloom: "CSS is awesome"
+                            </p>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 my-5">
+                          <a href="https://app.revolt.chat"><button class="transition-all h-20 bg-base-300 w-full p-2 rounded-lg hover:font-bold hover:bg-base-200">Open Official Revolt Client</button></a>
+                          <a href="https://github.com/Revolt-Unofficial-Clients/Solenoid"><button class="transition-all h-20 bg-base-300 w-full p-2 rounded-lg hover:font-bold hover:bg-base-200">Source Code</button></a>
+                        </div>
+                      </div>
+                    </div>
+                  </Match>
+                  <Match when={Solenoid.servers.isHome && !Solenoid.settings.experiments.newhome}>
+                    <div class="home">
+                      <h1>Solenoid (Beta)</h1>
+                      {window.location.hostname === "localhost" && (
+                        <h3>Running on Local Server</h3>
+                      )}
+                      <p>A lightweight client for revolt.chat made with SolidJS</p>
+                      <br />
+                      <h3>Contributors</h3>
+                      <hr />
+                      <p>Insert: Helped me with Mobx and Revolt.js issues</p>
+                      <p>
+                        RyanSolid:{" "}
+                        <a href="https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js">
+                          This
+                        </a>{" "}
+                        code snippet
+                      </p>
+                      <p>
+                        VeiledProduct80: Help me realize i forgot the masquerade
+                        part
+                      </p>
+                      <p>
+                        Mclnooted: <b>sex</b>
+                      </p>
+                    </div>
+                  </Match>
+                </Switch>
               )}
               <div>
                 <div>
@@ -468,9 +516,10 @@ const App: Component = () => {
             </div>
           </div>
         </>
-      )}
+      )
+      }
       {Solenoid.settings.show && <Settings />}
-    </div>
+    </div >
   );
 };
 

@@ -67,7 +67,7 @@ const Settings: Component = () => {
       >
         <div>
           <div>
-            <h3>Logged In as {revolt.user?.username}</h3>
+            <h3 class="font-bold">Logged In as {revolt.user?.username}</h3>
           </div>
 
           <div>
@@ -427,6 +427,20 @@ const Settings: Component = () => {
             Solenoid.settings.experiments.disappear
               ? Solenoid.setSettings("experiments", "disappear", false)
               : Solenoid.setSettings("experiments", "disappear", true)
+          }
+        />
+        <div class="prose">
+          <h3>New Home Page</h3>
+        </div>
+        <p>Enables the refreshed home</p>
+        <input
+          type="checkbox"
+          class="toggle"
+          checked={Solenoid.settings.experiments.newhome}
+          onChange={() =>
+            Solenoid.settings.experiments.newhome
+              ? Solenoid.setSettings("experiments", "newhome", false)
+              : Solenoid.setSettings("experiments", "newhome", true)
           }
         />
         <div class="prose">
