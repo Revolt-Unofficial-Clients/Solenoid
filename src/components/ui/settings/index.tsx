@@ -432,7 +432,7 @@ const Settings: Component = () => {
         <div class="prose">
           <h3>New Home Page</h3>
         </div>
-        <p>Enables the new home</p>
+        <p>Enables the new home page</p>
         <input
           type="checkbox"
           class="toggle"
