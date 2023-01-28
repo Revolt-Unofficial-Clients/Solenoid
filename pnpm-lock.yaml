@@ -28,7 +28,7 @@ specifiers:
   remark-math: ^5.1.1
   remark-parse: ^10.0.1
   remark-rehype: ^10.1.0
-  revolt-toolset: ^1.0.21
+  revolt-toolset: ^1.0.51
   revolt.js: ^6.0.18
   solid-hcaptcha: ^0.2.5
   solid-icons: ^1.0.2
@@ -71,7 +71,7 @@ dependencies:
   remark-math: 5.1.1
   remark-parse: 10.0.1
   remark-rehype: 10.1.0
-  revolt-toolset: 1.0.21_ws@8.12.0
+  revolt-toolset: 1.0.51_ws@8.12.0
   revolt.js: 6.0.18
   solid-hcaptcha: 0.2.5_solid-js@1.5.1
   solid-icons: 1.0.2_solid-js@1.5.1
@@ -2884,8 +2884,8 @@ packages:
       - debug
     dev: false
 
-  /revolt-toolset/1.0.21_ws@8.12.0:
-    resolution: {integrity: sha512-B1ag4HcOmdNECC2atU89MG2vGPa2CjBt1FvTH6fCcEEJgNs+Cm0RGQyIGM3X6QM00Id7sT8ShHAATPycJH7y0A==}
+  /revolt-toolset/1.0.51_ws@8.12.0:
+    resolution: {integrity: sha512-wWI4dH5KqrcZ0W78Gle795IeFip2ZUsAmVA9nCY+DDbEce/KVFvGwDpXBLX7BoRQaJvsLKwde0fBL6Z4VPerfw==}
     dependencies:
       '@insertish/exponential-backoff': 3.1.0-patch.2
       '@insertish/isomorphic-ws': 4.0.1_ws@8.12.0
