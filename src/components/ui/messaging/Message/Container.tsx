@@ -10,8 +10,8 @@ import { SystemMessageBase } from "./SystemBase";
 import { setSolenoidServer, solenoidServer } from "../../../../lib/store/solenoidServerStore";
 
 revolt.on("message", async m => {
-    if(m.channelID && solenoidServer.channel?.current.id) {
-        setSolenoidServer("channel", "messages", produce((old) => old.push(m)))
+    if(m.channel.id === solenoidServer.channel?.current.id) {
+        setSolenoidServer("channel", "messages", [...solenoidServer.channel.messages, m])
     }
 })
 
