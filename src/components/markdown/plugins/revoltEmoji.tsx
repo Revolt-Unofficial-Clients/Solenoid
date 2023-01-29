@@ -2,7 +2,7 @@ import { Emoji } from "./unicodeEmoji";
 import { createSignal, Match, Switch } from "solid-js";
 import { createComponent, CustomComponentProps } from "./remarkRegexComponent";
 import { emojiDictionary } from "../../../assets/emoji";
-import { settings } from "../../../lib/solenoid";
+import { EMOJI_PACKS, userSettings } from "../../../lib/store/solenoidSettingsStore";
 
 export const RE_EMOJI = /:([a-zA-Z0-9_+]+):/g;
 const RE_ULID = /:([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}):/g;
@@ -58,7 +58,7 @@ function parseEmoji(emoji: string) {
 export function RenderCustomEmoji({ match }: CustomComponentProps) {
   const [exists, setExists] = createSignal(true);
   const url = RE_ULID.test(match)
-    ?  `https://static.revolt.chat/emoji/${settings.emoji}/${toCodepoint(match)}.svg?v=1`
+    ?  `https://static.revolt.chat/emoji/${userSettings.client.emoji || EMOJI_PACKS.FLUENT}/${toCodepoint(match)}.svg?v=1`
     : parseEmoji(
         match in emojiDictionary
           ? emojiDictionary[match as keyof typeof emojiDictionary]

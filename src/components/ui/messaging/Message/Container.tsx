@@ -1,6 +1,5 @@
 import { UserMessageBase } from "./UserBase";
 import { For, Switch, Match} from "solid-js"
-import { messages, servers, setMessages } from "../../../../lib/solenoid";
 import { BaseMessage, SystemMessage, SystemMessageType } from "revolt-toolset";
 
 import type { Component } from "solid-js";
@@ -8,14 +7,17 @@ import { Markdown } from "../../../markdown";
 import { revolt } from "../../../../lib/revolt";
 import { produce } from "solid-js/store";
 import { SystemMessageBase } from "./SystemBase";
+import { setSolenoidServer, solenoidServer } from "../../../../lib/store/solenoidServerStore";
 
 revolt.on("message", async m => {
-    setMessages(produce((old) => old.push(m)))
+    if(m.channelID && solenoidServer.channel?.current.id) {
+        setSolenoidServer("channel", "messages", produce((old) => old.push(m)))
+    }
 })
 
 const MessageContainer: Component = () => {
     return (
-        <For each={messages?.reverse()}>
+        <For each={solenoidServer.channel?.messages?.reverse()}>
             {message => {
                 if (message?.isSystem()) {
                     return (

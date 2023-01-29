@@ -1,10 +1,10 @@
-import { Component, Match, Switch } from "solid-js";
-import type { Server } from "revolt-toolset";
-import { createSignal, For } from "solid-js";
-import { revolt } from "../../../../lib/revolt";
-import { setServers, servers } from "../../../../lib/solenoid";
 import classNames from "classnames";
-import { BiSolidHome } from "solid-icons/bi"
+import type { Server } from "revolt-toolset";
+import { BiSolidHome } from "solid-icons/bi";
+import { Component, createSignal, For, Match, Switch } from "solid-js";
+import { revolt } from "../../../../lib/revolt";
+import { setSolenoidServer, solenoidServer } from "../../../../lib/store/solenoidServerStore";
+import { setShowSettingsPanel } from "../../../../lib/store/solenoidSettingsStore";
 
 const [serverlist, setServerList] = createSignal<Server[]>([]);
 
@@ -14,13 +14,13 @@ const Navigation: Component = () => {
     <div class="flex flex-col h-screen bg-base-300 px-4">
       <button
         onClick={() => {
-          setServers("current_server", undefined);
-          setServers("current_channel", undefined);
-          setServers("isHome", true);
+          setSolenoidServer("current", undefined)
+          setSolenoidServer("channel", undefined)
+          setSolenoidServer("displayHomescreen", true)
         }}
         class={classNames({
           btn: true,
-          "btn-active": servers.isHome,
+          "btn-active": solenoidServer.displayHomescreen,
           "my-2": true,
           "w-full": true
         })}
@@ -33,13 +33,15 @@ const Navigation: Component = () => {
             class={
               classNames({
                 btn: true,
-                "btn-active": servers.current_server === server,
+                "btn-active": solenoidServer.current === server,
                 "my-2": true
               })
             }
             onClick={() => {
-              setServers("current_server", server);
-              setServers("isHome", false);
+              setSolenoidServer("current", server);
+              setSolenoidServer("channel", {})
+              setSolenoidServer("channel", "list", server.orderedChannels)
+              setSolenoidServer("displayHomescreen", false);
             }}
           >
             <Switch>
@@ -61,6 +63,9 @@ const Navigation: Component = () => {
           </button>
         )}
       </For>
+      <div class="mt-auto" onClick={() => setShowSettingsPanel(true)}>
+        S
+      </div>
     </div>
   );
 };

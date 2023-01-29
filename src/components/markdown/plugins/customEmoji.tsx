@@ -3,7 +3,7 @@ import { createSignal, Match, Switch } from "solid-js";
 import { createComponent, CustomComponentProps } from "./remarkRegexComponent";
 import { revolt } from "../../../lib/revolt";
 import { emojiDictionary } from "../../../assets/emoji";
-import { settings } from "../../../lib/solenoid";
+import { EMOJI_PACKS, userSettings } from "../../../lib/store/solenoidSettingsStore";
 
 export const RE_CUSTOM_EMOJI = /:([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}):/g;
 const RE_ULID = /^[0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}$/;
@@ -14,7 +14,7 @@ function parseEmoji(emoji: string) {
   }
 
   const codepoint = toCodepoint(emoji);
-  return `https://static.revolt.chat/emoji/${settings.emoji}/${codepoint}.svg?v=1`;
+  return `https://static.revolt.chat/emoji/${userSettings.client.emoji || EMOJI_PACKS.FLUENT}/${codepoint}.svg?v=1`;
 }
 
 export function RenderCustomEmoji({ match }: CustomComponentProps) {
