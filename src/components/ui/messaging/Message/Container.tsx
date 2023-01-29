@@ -1,13 +1,10 @@
+import { For } from "solid-js";
 import { UserMessageBase } from "./UserBase";
-import { For, Switch, Match} from "solid-js"
-import { BaseMessage, SystemMessage, SystemMessageType } from "revolt-toolset";
 
 import type { Component } from "solid-js";
-import { Markdown } from "../../../markdown";
 import { revolt } from "../../../../lib/revolt";
-import { produce } from "solid-js/store";
-import { SystemMessageBase } from "./SystemBase";
 import { setSolenoidServer, solenoidServer } from "../../../../lib/store/solenoidServerStore";
+import { SystemMessageBase } from "./SystemBase";
 
 revolt.on("message", async m => {
     if(m.channel.id === solenoidServer.channel?.current.id) {
@@ -38,4 +35,5 @@ const MessageContainer: Component = () => {
     )
 }
 
-export { MessageContainer }
+export { MessageContainer };
+

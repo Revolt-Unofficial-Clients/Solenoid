@@ -73,7 +73,7 @@ const Login: Component = () => {
     <>
       {!revoltUserInfo.isLoggedIn && (
         <>
-          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 backdrop-blur-xl container rounded-xl shadow-xl">
+          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 backdrop-blur-xl container">
             <div class="mx-10 my-10 flex items-center gap-2">
               <div class="w-10">
                 <img src="/favicon.png" />
