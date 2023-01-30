@@ -8,11 +8,11 @@ import type {
 
 interface SolenoidServerStore {
     list?: Server[]
-    current?: Server
+    current?: Server | null
     channel?: {
-        list: Category[],
-        current: ServerChannel
-        messages: BaseMessage[]
+        list: Category[] | null,
+        current: ServerChannel | null
+        messages: BaseMessage[] | null
     }
     displayHomescreen: boolean
 }

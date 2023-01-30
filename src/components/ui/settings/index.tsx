@@ -1,10 +1,12 @@
-import { Component, For, createResource, createSignal } from "solid-js";
+import { Component, For, createResource, createSignal, Show } from "solid-js";
 
 import classNames from "classnames";
 import { revolt } from "../../../lib/revolt";
 import { revoltUserInfo, setRevoltUserInfo, UserPresence } from "../../../lib/store/solenoidUserStore";
 import { solenoidServer } from "../../../lib/store/solenoidServerStore";
 import { EMOJI_PACKS, setShowSettingsPanel, setUserSettings, userSettings } from "../../../lib/store/solenoidSettingsStore";
+import type { SolenoidSettingsStore } from "../../../lib/store/solenoidSettingsStore";
+import { DEFAULT_THEME } from "revolt-toolset";
 
 const [avatar, setAvatar] = createSignal<any>();
 const [nickname, setNickname] = createSignal<string>();
@@ -36,6 +38,49 @@ if (solenoidServer.current) {
   solenoidServer.current.fetchMe().then(me => {
     set_member_avatar_url(me.generateAvatarURL());
     // ^?
+  })
+}
+
+function setSyncSettings() {
+  const settingsFromObject: SolenoidSettingsStore = {
+    appearance: {
+      theme: userSettings.appearance.theme
+    },
+    client: {
+      developer: {
+        debug: userSettings.client.developer.debug
+      },
+      disableMarkdown: userSettings.client.disableMarkdown,
+      emoji: userSettings.client.emoji,
+      shouldUseCompactMode: userSettings.client.shouldUseCompactMode,
+      showAttachments: userSettings.client.showAttachments,
+      showBadges: userSettings.client.showBadges,
+      showProfilePictures: userSettings.client.showProfilePictures
+    },
+    experiments: {
+      disableTypingEvent: userSettings.experiments.disableTypingEvent,
+      enableChangeIdentity: userSettings.experiments.enableChangeIdentity,
+      enableEmojiPicker: userSettings.experiments.enableEmojiPicker,
+      enableNewHomescreen: userSettings.experiments.enableNewHomescreen,
+      enableServerSettings: userSettings.experiments.enableServerSettings
+    },
+    user: {
+      status: {
+        prefabList: userSettings.user.status.prefabList
+      }
+    }
+  }
+    revolt.syncSetSettings({["solenoid:settings"]: JSON.stringify(settingsFromObject)}).then(() => {
+      console.log(settingsFromObject);
+      console.log("Check settings on revite");
+    })
+}
+
+function getSyncSettings() {
+  revolt.syncFetchSettings(["solenoid:settings"]).then((s: any) => {
+    const syncedSettings: SolenoidSettingsStore = JSON.parse(s["solenoid:settings"][1])
+    console.log(syncedSettings)
+    //^?
   })
 }
 
@@ -412,6 +457,22 @@ const Settings: Component = () => {
           Log Out
         </button>
       </div>
+      <Show when={userSettings.client.developer.debug}>
+        <div class="flex gap-2 ml-auto mr-auto mb-5 prose">
+          <button
+            class="btn btn-warning"
+            onClick={setSyncSettings}
+          >
+            DEBUG: Set Sync Settings
+          </button>
+          <button
+            class="btn btn-warning"
+            onClick={getSyncSettings}
+          >
+            DEBUG: Get Sync Settings
+          </button>
+        </div>
+      </Show>
     </div>
   );
 };

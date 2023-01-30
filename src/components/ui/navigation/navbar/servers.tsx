@@ -12,57 +12,51 @@ const Navigation: Component = () => {
   setServerList(revolt.servers.items());
   return (
     <div class="flex flex-col h-screen bg-base-300 px-4">
-      <button
-        onClick={() => {
-          setSolenoidServer("current", undefined)
-          setSolenoidServer("channel", undefined)
+      <div class="flex flex-col gap-3 my-2">
+        <div class="avatar" onClick={() => {
+          setSolenoidServer("current", null)
+          setSolenoidServer("channel", "list", null)
           setSolenoidServer("displayHomescreen", true)
-        }}
-        class={classNames({
-          btn: true,
-          "btn-active": solenoidServer.displayHomescreen,
-          "my-2": true,
-          "w-full": true
-        })}
-      >
-        <BiSolidHome />
-      </button>
-      <For each={serverlist()}>
-        {(server) => (
-          <button
-            class={
-              classNames({
-                btn: true,
-                "btn-active": solenoidServer.current === server,
-                "my-2": true
-              })
-            }
-            onClick={() => {
-              setSolenoidServer("current", server);
-              setSolenoidServer("channel", {})
-              setSolenoidServer("channel", "list", server.orderedChannels)
-              setSolenoidServer("displayHomescreen", false);
-            }}
-          >
+        }}>
+          <div class="w-12 h-12 rounded-full">
+            <img src={revolt.user.generateAvatarURL()} />
+          </div>
+        </div>
+        <hr />
+      </div>
+      <div>
+
+      </div>
+      <div class="flex flex-col gap-2">
+        <For each={serverlist()}>
+          {(server) => (
             <Switch>
               <Match when={server.icon}>
-                <div class="avatar">
-                  <div class="w-8 rounded-full">
-                    <img src={server.generateIconURL({max_side: 256})} />
+                <div class="avatar" onClick={() => {
+                  setSolenoidServer("current", server)
+                  setSolenoidServer("channel", "list", server.orderedChannels)
+                  setSolenoidServer("displayHomescreen", false)
+                }}>
+                  <div class="w-12 h-12 rounded-full">
+                    <img src={server.generateIconURL()} />
                   </div>
                 </div>
               </Match>
               <Match when={!server.icon}>
-                <div class="avatar placeholder">
-                  <div class="bg-neutral-focus text-neutral-content rounded-full w-8">
-                    <span class="text-xs">{server.name.substring(0,2)}</span>
+                <div class="avatar placeholder" onClick={() => {
+                  setSolenoidServer("current", server)
+                  setSolenoidServer("channel", "list", server.orderedChannels)
+                  setSolenoidServer("displayHomescreen", false)
+                }}>
+                  <div class="w-12 h-12 bg-neutral-focus font-bold rounded-full">
+                    <span>{server.name[0]}</span>
                   </div>
                 </div>
               </Match>
             </Switch>
-          </button>
-        )}
-      </For>
+          )}
+        </For>
+      </div>
       <div class="mt-auto" onClick={() => setShowSettingsPanel(true)}>
         S
       </div>

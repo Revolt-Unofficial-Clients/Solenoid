@@ -22,19 +22,24 @@ const ChannelNavigation: Component = () => {
       </div>
       <For each={solenoidServer.channel?.list}>
         {category => (
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-1">
             <p class="font-semibold m-2">{category.name}</p>
             <For each={category.channels}>
               {channel => (
                 <button class={classNames({
-                  "btn": true,
+                  "w-full": true,
+                  "h-auto": true,
+                  "bg-neutral": true,
+                  "items-center": true,
+                  "p-[0.35rem]": true,
                   "flex": true,
                   "gap-2": true,
-                  "btn-primary": channel.id === solenoidServer.channel?.current?.id
+                  "rounded-md": true,
+                  "font-medium": true,
                 })} onClick={() => {
                   setSolenoidServer("channel", "current", channel)
                   getMessagesFromChannel()
-                }}><Markdown content={channel.name} /> {channel.unread && <div class="w-2 h-2 bg-white ml-auto rounded-full"></div>}</button>
+                }}><Markdown content={channel.name} /> {channel.unread && <div class="w-2 h-2 bg-white ml-auto mr-2 rounded-full"></div>}</button>
               )}
             </For>
           </div>
