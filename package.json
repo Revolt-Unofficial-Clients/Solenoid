@@ -44,7 +44,7 @@
     "remark-math": "^5.1.1",
     "remark-parse": "^10.0.1",
     "remark-rehype": "^10.1.0",
-    "revolt-toolset": "^0.0.21",
+    "revolt-toolset": "^1.0.51",
     "revolt.js": "^6.0.18",
     "solid-hcaptcha": "^0.2.5",
     "solid-icons": "^1.0.2",
@@ -57,6 +57,7 @@
     "unified": "^10.1.2",
     "unist": "^8.0.11",
     "unist-util-visit": "^4.1.1",
-    "vfile": "^5.3.6"
+    "vfile": "^5.3.6",
+    "ws": "^8.12.0"
   }
 }

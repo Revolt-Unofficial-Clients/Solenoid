@@ -9,7 +9,9 @@ import {
 } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import type { user, settings } from "../../../../types";
-import type { Client } from "revolt.js";
+import type { Client } from "revolt-toolset";
+import { setSettings } from "../../../../lib/solenoid";
+import { revolt } from "../../../../lib/revolt";
 
 interface LoginComponent {
   client: Client;
@@ -36,7 +38,7 @@ const Login: Component<LoginComponent> = ({
   // Login With Token and Enable Bot Mode
   async function logIntoRevolt(token: string) {
     try {
-      await client.loginBot(token);
+      await client.login(token, "bot");
     } catch (e: any) {
       if (solenoid_config.debug === true) {
         console.log(e);
@@ -56,7 +58,7 @@ const Login: Component<LoginComponent> = ({
   async function loginWithEmail(email: string, password: string) {
     try {
       await client
-        .login({
+        .authenticate({
           email: email,
           password: password,
           friendly_name: "Solenoid Client",
@@ -80,9 +82,9 @@ const Login: Component<LoginComponent> = ({
       }
     }
   }
-  async function loginWithSession(session: any & { action: "LOGIN" }) {
+  async function loginWithSession(session: any & { action: "LOGIN", token: string }) {
     try {
-      await client.useExistingSession(session).catch((e) => {
+      await client.login(session, "user").catch((e) => {
         throw e;
       });
       batch(() => {
@@ -105,7 +107,7 @@ const Login: Component<LoginComponent> = ({
     <>
       {!logged() && (
         <>
-          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 backdrop-blur-xl container rounded-xl shadow-xl">
+          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 backdrop-blur-xl container">
             <div class="mx-10 my-10 flex items-center gap-2">
               <div class="w-10">
                 <img src="/favicon.png" />
@@ -204,12 +206,25 @@ const Login: Component<LoginComponent> = ({
               </div>
             </form>
             {solenoid_config.session && (
+              <div class="flex flex-col w-full items-center gap-2">
               <button
-                id="existingsession"
+                class="btn btn-success w-60"
                 onClick={() => loginWithSession(solenoid_config.session)}
               >
-                Use Existing Session
+                {revolt.ws.ready ? "Loading..." :  "Use Existing Session"}
               </button>
+              <button
+                class="btn btn-error w-60"
+                onClick={() => {
+                  setSettings("session", undefined)
+                  if (revolt.ws.ready) {
+                    revolt.ws.disconnect()
+                  }
+                }}
+              >
+                Remove last session
+              </button>
+              </div>
             )}
           </div>
           <div>
