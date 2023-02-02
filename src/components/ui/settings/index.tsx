@@ -44,7 +44,7 @@ function logoutFromRevolt() {
   if (revolt.session) revolt.destroy();
 }
 
-const [member_avatar_url, set_member_avatar_url] = createSignal<String>()
+const [member_avatar_url, set_member_avatar_url] = createSignal<string>()
 
 if (Solenoid.servers.current_server) {
   Solenoid.servers.current_server.fetchMe().then(me => {
