@@ -12,13 +12,13 @@ const EmojiTab: Component<props> = (props) => {
     props.setMessage(props.message() + s);
   }
   return (
-    <div class="grid grid-cols-4 w-48 h-56 overflow-scroll bg-base-300">
+    <div class="grid grid-cols-4 w-auto h-56 overflow-auto bg-base-200 rounded-bl-lg rounded-br-lg">
       <For each={Object.entries(emojiDictionary)}>
         {(emoji) => {
           console.log(emoji);
           if (emoji[1].startsWith("custom:")) {
             return (
-              <div class="flex w-6 h-6">
+              <div class="btn btn-ghost m-1">
                 {/* Support for legasy custom emotes */}
                 <img
                   src={`https://dl.insrt.uk/projects/revolt/emotes/${emoji[1].substring(
@@ -36,7 +36,7 @@ const EmojiTab: Component<props> = (props) => {
             return (
               <span
                 title={":" + emoji[0] + ":"}
-                class="emoji"
+                class="btn btn-ghost m-1"
                 onClick={() => {
                     addToText(`:${emoji[0]}:`);
                 }}

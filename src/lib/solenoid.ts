@@ -49,6 +49,7 @@ export const [settings, setSettings] = createLocalStore<config>("settings", {
   experiments: {
     picker: false,
     compact: false,
+    newhome: false,
     nick: false,
     edited_format: "default",
     disappear: false,

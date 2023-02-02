@@ -170,9 +170,11 @@ const Login: Component<LoginComponent> = ({
                 </div>
 
                 {error() && (
-                  <span class="solenoid-error">
-                    An error has occurred while logging in: {error()}
-                  </span>
+                  <div class="bg-red-300 text-black dark:bg-red-700 dark:text-white p-2 m-2">
+                    <span class="solenoid-error">
+                      An error has occurred while logging in: {error()}
+                    </span>
+                  </div>
                 )}
               </div>
             </form>
