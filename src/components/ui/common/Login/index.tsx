@@ -7,24 +7,40 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { revolt as client } from "../../../../lib/revolt";
-import { setRevoltUserSession } from "../../../../lib/store/solenoidSessionStore";
-import { userSettings } from "../../../../lib/store/solenoidSettingsStore";
-import { revoltUserInfo, setRevoltUserInfo } from "../../../../lib/store/solenoidUserStore";
+import { SetStoreFunction } from "solid-js/store";
+import type { user, settings } from "../../../../types";
+import type { Client } from "revolt-toolset";
+import { setSettings } from "../../../../lib/solenoid";
+import { revolt } from "../../../../lib/revolt";
 
+interface LoginComponent {
+  client: Client;
+  userSetter: SetStoreFunction<user>;
+  logSetter: Setter<boolean>;
+  logged: Accessor<boolean>;
+  configSetter: SetStoreFunction<settings>;
+  solenoid_config: settings;
+}
 const [token, setToken] = createSignal<string>();
 const [email, setEmail] = createSignal<string>();
 const [password, setPassword] = createSignal<string>();
 const [error, setError] = createSignal<string>();
 
-const Login: Component = () => {
+const Login: Component<LoginComponent> = ({
+  client,
+  userSetter,
+  configSetter,
+  solenoid_config,
+  logSetter,
+  logged,
+}) => {
   // Functions
   // Login With Token and Enable Bot Mode
   async function logIntoRevolt(token: string) {
     try {
       await client.login(token, "bot");
     } catch (e: any) {
-      if (userSettings.client.developer.debug === true) {
+      if (solenoid_config.debug === true) {
         console.log(e);
         setError(e);
       } else {
@@ -32,9 +48,9 @@ const Login: Component = () => {
         setError(e);
       }
     } finally {
-      setRevoltUserInfo("isLoggedIn", true);
-      setRevoltUserSession("token", client.session.token);
-      setRevoltUserSession("type", client.session.type);
+      logSetter(true);
+      userSetter("session_type", "token");
+      configSetter("session", client.session);
     }
   }
 
@@ -47,20 +63,18 @@ const Login: Component = () => {
           password: password,
           friendly_name: "Solenoid Client",
         })
-        .then(() => {
-          setRevoltUserInfo("isLoggedIn", true);
-        })
         .catch((e) => {
           throw e;
         })
         .finally(() => {
-          batch(() => {  
-            setRevoltUserSession("type", client.session.type);
-            setRevoltUserSession("token", client.session.token);
+          batch(() => {
+            logSetter(true);
+            userSetter("session_type", "email");
+            configSetter("session", client.session);
           });
         });
     } catch (e: any) {
-      if (userSettings.client.developer.debug) {
+      if (solenoid_config.debug) {
         console.log(e);
         setError(e);
       } else {
@@ -68,10 +82,30 @@ const Login: Component = () => {
       }
     }
   }
+  async function loginWithSession(session: any & { action: "LOGIN", token: string }) {
+    try {
+      await client.login(session, "user").catch((e) => {
+        throw e;
+      });
+      batch(() => {
+        configSetter("session_type", "email");
+        configSetter("session", session);
+        logSetter(true);
+      });
+    } catch (e: any) {
+      setError(e);
+    }
+  }
+
+  onMount(() => {
+    if (solenoid_config.session) {
+      loginWithSession(solenoid_config.session);
+    }
+  });
 
   return (
     <>
-      {!revoltUserInfo.isLoggedIn && (
+      {!logged() && (
         <>
           <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 backdrop-blur-xl container">
             <div class="mx-10 my-10 flex items-center gap-2">
@@ -171,6 +205,27 @@ const Login: Component = () => {
                 </div>
               </div>
             </form>
+            {solenoid_config.session && (
+              <div class="flex flex-col w-full items-center gap-2">
+              <button
+                class="btn btn-success w-60"
+                onClick={() => loginWithSession(solenoid_config.session)}
+              >
+                {revolt.ws.ready ? "Loading..." :  "Use Existing Session"}
+              </button>
+              <button
+                class="btn btn-error w-60"
+                onClick={() => {
+                  setSettings("session", undefined)
+                  if (revolt.ws.ready) {
+                    revolt.ws.disconnect()
+                  }
+                }}
+              >
+                Remove last session
+              </button>
+              </div>
+            )}
           </div>
           <div>
             <div class="hidden lg:block lg:absolute lg:bottom-10 lg:right-10 text-white">

@@ -2,40 +2,52 @@ import { Component, For, createResource, createSignal, Show } from "solid-js";
 
 import classNames from "classnames";
 import { revolt } from "../../../lib/revolt";
-import { revoltUserInfo, setRevoltUserInfo, UserPresence } from "../../../lib/store/solenoidUserStore";
-import { solenoidServer } from "../../../lib/store/solenoidServerStore";
-import { EMOJI_PACKS, setShowSettingsPanel, setUserSettings, userSettings } from "../../../lib/store/solenoidSettingsStore";
-import type { SolenoidSettingsStore } from "../../../lib/store/solenoidSettingsStore";
-import { DEFAULT_THEME } from "revolt-toolset";
-
-const [avatar, setAvatar] = createSignal<any>();
-const [nickname, setNickname] = createSignal<string>();
-const [status, setStatus] = createSignal<string>();
-const [presence, setPresence] = createSignal<UserPresence>();
+import * as Solenoid from "../../../lib/solenoid";
 
 const onAvatarChange = (
   e: Event & { currentTarget: HTMLInputElement; target: Element }
 ) => {
-  if (e.currentTarget.files) setAvatar(e.currentTarget.files);
+  if (e.currentTarget.files) Solenoid.setAvatarImage(e.currentTarget.files);
 };
 
-function updateStatus() {
-  revolt.api.patch("/users/@me", {
-    status: {
-      presence: presence() || revolt.user?.presence,
-      text: status() || revolt.user?.status,
-    },
-  });
+function updateStatus(
+  mode?: "Online" | "Focus" | "Idle" | "Busy" | "Invisible" | null | undefined,
+  status?: string
+) {
+  if (mode && status) {
+    revolt.api.patch("/users/@me", {
+      status: {
+        presence: mode,
+        text: status,
+      },
+    });
+  } else {
+    revolt.api.patch("/users/@me", {
+      status: {
+        presence: Solenoid.settings.status || revolt.user?.presence,
+        text: Solenoid.settings.statusText || revolt.user?.status,
+      },
+    });
+  }
 }
 
 function logoutFromRevolt() {
-  revolt.destroy();
+  Solenoid.setLoggedIn(false);
+  Solenoid.setSettings("session", undefined);
+  Solenoid.setUser("user_id", undefined);
+  Solenoid.setUser("username", undefined);
+  Solenoid.setUser("session_type", undefined);
+  Solenoid.setServers("current_channel", undefined);
+  Solenoid.setServers("current_server", undefined);
+  Solenoid.setServers("isHome", false);
+  Solenoid.setSettings("show", false);
+  if (revolt.session) revolt.destroy();
 }
 
 const [member_avatar_url, set_member_avatar_url] = createSignal<String>()
 
-if (solenoidServer.current) {
-  solenoidServer.current.fetchMe().then(me => {
+if (Solenoid.servers.current_server) {
+  Solenoid.servers.current_server.fetchMe().then(me => {
     set_member_avatar_url(me.generateAvatarURL());
     // ^?
   })
@@ -93,7 +105,7 @@ const Settings: Component = () => {
       <div class="transition-all flex bg-base-200 rounded-full w-10 h-10 absolute z-30 top-0 right-0 m-5 hover:scale-125 border-2 border-base-100">
         <button
           class="w-full h-full"
-          onClick={() => setShowSettingsPanel(false)}
+          onClick={() => Solenoid.setSettings("show", false)}
         >
           X
         </button>
@@ -123,37 +135,32 @@ const Settings: Component = () => {
       </div>
 
       {/* TODO: Add server username/avatar changing */}
-      {solenoidServer.current && userSettings.experiments.enableChangeIdentity && (
+      {Solenoid.servers.current_server && Solenoid.settings.experiments.nick && (
         <div class="bg-base-200 m-3 p-3 rounded-lg">
           <form
             class="solenoid-server-username"
             onSubmit={async (e) => {
               console.log("Clicked");
               e.preventDefault();
-              if (avatar() && nickname()) {
-                revolt.uploadAttachment("profile", avatar(), "avatars").then(id => {
-                  solenoidServer.current?.me?.edit({
-                    avatar: id,
-                    nickname: nickname()
-                  })  
-                })
-              } else if (avatar()) {
-                revolt.uploadAttachment("profile", avatar(), "avatars").then(id => {
-                  solenoidServer.current?.me?.edit({
-                    avatar: id
-                  })  
-                })
-              } else if (nickname()) {
-                solenoidServer.current?.me?.edit({
-                  nickname: nickname()
-                })
-              }
+              const file = await revolt.uploadAttachment(
+                `solenoid-avatar-${revolt.user?.id}`,
+                Solenoid.avatarImage(),
+                "avatars"
+              );
+              console.log(file);
+              Solenoid.servers.current_server?.me?.edit({
+                avatar:
+                  file ||
+                  Solenoid.servers.current_server.me.avatar?.id ||
+                  null,
+                nickname: Solenoid.nickname() || null,
+              });
             }}
           >
             <div class="item prose" id="1">
               <h3>Server Identity</h3>
               <p class="mt-2">
-                Edit how you look in the {solenoidServer.current.name}{" "}
+                Edit how you look in the {Solenoid.servers.current_server.name}{" "}
                 server
               </p>
             </div>
@@ -169,12 +176,12 @@ const Settings: Component = () => {
                 class="input"
                 id="nick"
                 placeholder={
-                  solenoidServer.current.me?.nickname ||
+                  Solenoid.servers.current_server.me?.nickname ||
                   revolt.user?.username ||
                   "New Nickname"
                 }
-                value={nickname() || ""}
-                onChange={(e) => setNickname(e.currentTarget.value)}
+                value={Solenoid.nickname() || ""}
+                onChange={(e) => Solenoid.setNickname(e.currentTarget.value)}
               />
             </div>
             <div class="item" id="3">
@@ -188,12 +195,12 @@ const Settings: Component = () => {
                 <img
                   class="rounded-full bg-clip-border w-28 h-28"
                   src={
-                    avatar()
-                      ? URL.createObjectURL(avatar())
+                    Solenoid.avatarImage()
+                      ? URL.createObjectURL(Solenoid.avatarImage())
                       :  member_avatar_url() ||
                         revolt.user?.avatar
                       ? `https://autumn.revolt.chat/avatars/${
-                          solenoidServer.current.me?.avatar?.id ||
+                          Solenoid.servers.current_server.me?.avatar?.id ||
                           revolt.user?.avatar?.id
                         }`
                       : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
@@ -211,7 +218,7 @@ const Settings: Component = () => {
                   accept="image/png,image/jpeg,image/gif"
                   onChange={(e) => {
                     onAvatarChange(e);
-                    console.log(avatar());
+                    console.log(Solenoid.avatarImage());
                   }}
                 />
                 <button role="button" class="btn">
@@ -222,6 +229,51 @@ const Settings: Component = () => {
           </form>
         </div>
       )}
+      <div
+        class="bg-base-200 m-3 p-3 rounded-lg"
+        id="solenoid-setting solenoid-showUsernames"
+      >
+        <div class="prose">
+          <h3>Suffix Style</h3>
+        </div>
+        <div>
+          <p>Change how suffixes look.</p>
+          <button
+            class="btn mt-5"
+            onClick={() => {
+              if (Solenoid.settings.newShowSuffix) {
+                Solenoid.setSettings("newShowSuffix", false);
+              } else {
+                Solenoid.setSettings("newShowSuffix", true);
+              }
+            }}
+          >
+            {Solenoid.settings.newShowSuffix ? "Says:" : ":"}
+          </button>
+        </div>
+      </div>
+      <div
+        class="bg-base-200 m-3 p-3 rounded-lg"
+        id="solenoid-setting solenoid-nosuffix"
+      >
+        <div class="prose">
+          <h3>Toggle Suffix</h3>
+        </div>
+        <p>
+          Whether to show a suffix after a message. Works better with compact
+          mode.
+        </p>
+        <input
+          type="checkbox"
+          class="toggle"
+          checked={Solenoid.settings.suffix}
+          onChange={() =>
+            Solenoid.settings.suffix
+              ? Solenoid.setSettings("suffix", false)
+              : Solenoid.setSettings("suffix", true)
+          }
+        />
+      </div>
       <div
         class="flex flex-col gap-2 bg-base-200 m-3 p-3 rounded-lg"
         id="solenoid-setting solenoid-status"
@@ -234,35 +286,35 @@ const Settings: Component = () => {
             type="button"
             class={classNames({
               btn: true,
-              "btn-info": revoltUserInfo.status === "Focus",
-              "btn-error": revoltUserInfo.status === "Busy",
-              "btn-success": revoltUserInfo.status === "Online",
-              "btn-ghost": revoltUserInfo.status === "Invisible",
+              "btn-info": Solenoid.settings.status === "Focus",
+              "btn-error": Solenoid.settings.status === "Busy",
+              "btn-success": Solenoid.settings.status === "Online",
+              "btn-ghost": Solenoid.settings.status === "Invisible",
             })}
             onClick={() => {
-              if (revoltUserInfo.status === "Online") {
-                setRevoltUserInfo("presence", "Busy");
+              if (Solenoid.settings.status === "Online") {
+                Solenoid.setSettings("status", "Busy");
                 updateStatus();
-              } else if (revoltUserInfo.status === "Busy") {
-                setRevoltUserInfo("presence", "Focus");
+              } else if (Solenoid.settings.status === "Busy") {
+                Solenoid.setSettings("status", "Focus");
                 updateStatus();
-              } else if (revoltUserInfo.status === "Focus") {
-                setRevoltUserInfo("presence", "Invisible");
+              } else if (Solenoid.settings.status === "Focus") {
+                Solenoid.setSettings("status", "Invisible");
                 updateStatus();
-              } else if (revoltUserInfo.status === "Invisible") {
-                setRevoltUserInfo("presence", "Online");
+              } else if (Solenoid.settings.status === "Invisible") {
+                Solenoid.setSettings("status", "Online");
                 updateStatus();
               }
             }}
           >
-            {revoltUserInfo.status}
+            {Solenoid.settings.status}
           </button>
           <input
             type=""
             class="mx-2 input"
-            value={status() || ""}
+            value={Solenoid.settings.statusText}
             onChange={(e: any) =>
-              setRevoltUserInfo("status", e.currentTarget.value)
+              Solenoid.setSettings("statusText", e.currentTarget.value)
             }
           />
         </div>
@@ -275,26 +327,19 @@ const Settings: Component = () => {
           <h3>Status Prefabs</h3>
         </div>
         <p>Some prefabs for quick status changing</p>
-        <For each={userSettings.user.status.prefabList}>
+        <For each={Solenoid.statuslist()}>
           {(prefab) => (
             <div class="flex gap-2">
               <button
                 class="btn"
-                onClick={() => {
-                  revolt.user.update({
-                    status: {
-                      presence: prefab?.presence,
-                      text: prefab?.status
-                    }
-                  })
-                }}
+                onClick={() => updateStatus(prefab.mode, prefab.text)}
               >
-                {prefab?.presence} {"| " && prefab?.status}
+                {prefab.mode} | {prefab.text}
               </button>{" "}
               <button
                 onClick={() => {
-                  setUserSettings("user", "status", "prefabList",
-                    userSettings.user.status.prefabList.filter((obj) => obj?.id !== prefab?.id)
+                  Solenoid.setStatusList(
+                    Solenoid.statuslist().filter((obj) => obj.id !== prefab.id)
                   );
                 }}
                 class="btn btn-error"
@@ -308,32 +353,32 @@ const Settings: Component = () => {
         <div class="flex gap-2">
           <select
             class="input"
-            onChange={(e: any) => setPresence(e.currentTarget.value as UserPresence)}
-            value={status() || "Online"}
+            onChange={(e: any) => Solenoid.setNewMode(e.currentTarget.value)}
+            value={Solenoid.newMode() || "Online"}
           >
             <option value="Online">Online</option>
             <option value="Focus">Focus</option>
             <option value="Busy">Busy</option>
-            <option value="Idle">Idle</option>
             <option value="Invisible">Invisible</option>
           </select>
           <input
             class="input"
-            onChange={(e: any) => setStatus(e.currentTarget.value)}
-            value={status() || ""}
+            onChange={(e: any) => Solenoid.setNewStatus(e.currentTarget.value)}
+            value={Solenoid.newStatus() || ""}
             placeholder="Custom Status"
           />
           <button
             class="btn btn-primary"
             onClick={() => {
-              setUserSettings("user", "status", "prefabList", [
-                ...userSettings.user.status.prefabList,
+              Solenoid.setStatusList([
+                ...Solenoid.statuslist(),
                 {
-                  id: userSettings.user.status.prefabList.length,
-                  presence: presence() || "Online",
-                  status: status(),
+                  id: Solenoid.statuslist().length,
+                  mode: Solenoid.newMode(),
+                  text: Solenoid.newStatus() ?? "",
                 },
               ]);
+              console.log(Solenoid.statuslist());
             }}
           >
             Add Prefab
@@ -354,9 +399,11 @@ const Settings: Component = () => {
         <input
           type="checkbox"
           class="toggle"
-          checked={userSettings.client.showAttachments}
+          checked={Solenoid.settings.showImages}
           onChange={() =>
-            setUserSettings("client", "showAttachments", !userSettings.client.showAttachments)
+            Solenoid.settings.showImages
+              ? Solenoid.setSettings("showImages", false)
+              : Solenoid.setSettings("showImages", true)
           }
         />
       </div>
@@ -372,9 +419,11 @@ const Settings: Component = () => {
         <input
           type="checkbox"
           class="toggle"
-          checked={userSettings.client.developer.debug}
+          checked={Solenoid.settings.debug}
           onChange={() =>
-            setUserSettings("client", "developer", "debug", !userSettings.client.developer.debug)
+            Solenoid.settings.debug
+              ? Solenoid.setSettings("debug", false)
+              : Solenoid.setSettings("debug", true)
           }
         />
       </div>
@@ -391,9 +440,11 @@ const Settings: Component = () => {
           <input
             type="checkbox"
             class="toggle"
-            checked={userSettings.experiments.enableEmojiPicker}
+            checked={Solenoid.settings.experiments.picker}
             onChange={() =>
-              setUserSettings("experiments", "enableEmojiPicker", !userSettings.experiments.enableEmojiPicker)
+              Solenoid.settings.experiments.picker
+                ? Solenoid.setSettings("experiments", "picker", false)
+                : Solenoid.setSettings("experiments", "picker", true)
             }
           />
         </div>
@@ -405,9 +456,11 @@ const Settings: Component = () => {
           <input
             type="checkbox"
             class="toggle"
-            checked={userSettings.experiments.enableServerSettings}
+            checked={Solenoid.settings.experiments.nick}
             onChange={() =>
-              setUserSettings("experiments", "enableServerSettings", !userSettings.experiments.enableServerSettings)
+              Solenoid.settings.experiments.nick
+                ? Solenoid.setSettings("experiments", "nick", false)
+                : Solenoid.setSettings("experiments", "nick", true)
             }
           />
         </div>
@@ -418,11 +471,36 @@ const Settings: Component = () => {
         <input
           type="checkbox"
           class="toggle"
-          checked={userSettings.experiments.disableTypingEvent}
+          checked={Solenoid.settings.experiments.disappear}
           onChange={() =>
-            setUserSettings("experiments", "disableTypingEvent", !userSettings.experiments.disableTypingEvent)
+            Solenoid.settings.experiments.disappear
+              ? Solenoid.setSettings("experiments", "disappear", false)
+              : Solenoid.setSettings("experiments", "disappear", true)
           }
         />
+        <div class="prose">
+          <h3>Edit indicator Format</h3>
+        </div>
+        <div>
+          <p>Change how edit indicators show dates.</p>
+          <select
+            id="indicator"
+            title="Options: ISO, UTC or Default"
+            class="select"
+            onChange={(e) =>
+              Solenoid.setSettings(
+                "experiments",
+                "edited_format",
+                e.currentTarget.value
+              )
+            }
+            value={Solenoid.settings.experiments.edited_format || "default"}
+          >
+            <option value={"ISO"}>ISO Format</option>
+            <option value={"UTC"}>UTC Format</option>
+            <option value={"default"}>Browser default</option>
+          </select>
+        </div>
         <div class="prose">
           <h3>Emoji Pack</h3>
         </div>
@@ -432,13 +510,16 @@ const Settings: Component = () => {
             title="Options: Fluent 3D, Mutant or Twemoji"
             class="select"
             onChange={(e) =>
-              setUserSettings("client", "emoji", e.currentTarget.value as EMOJI_PACKS)
+              Solenoid.setSettings(
+                "emoji",
+                e.currentTarget.value
+              )
             }
-            value={userSettings.client.emoji || EMOJI_PACKS.DEFAULT}
+            value={Solenoid.settings.emoji || "mutant"}
           >
-            <option value={EMOJI_PACKS.DEFAULT}>Mutant Remix (By Revolt)</option>
-            <option value={EMOJI_PACKS.TWEMOJI}>Twemoji (By Twitter)</option>
-            <option value={EMOJI_PACKS.FLUENT}>Fluent 3D (By Microsoft)</option>
+            <option value={"mutant"}>Mutant Remix (By Revolt)</option>
+            <option value={"twemoji"}>Twemoji (By Twitter)</option>
+            <option value={"fluent-3d"}>Fluent 3D (By Microsoft)</option>
           </select>
         </div>
       </div>
@@ -446,7 +527,7 @@ const Settings: Component = () => {
       <div class="block ml-auto mr-auto mb-5 prose">
         <button
           class="btn btn-error w-full "
-          title={`Log Out from ${revolt.user.username}`}
+          title={`Log Out from ${Solenoid.usr.username}`}
           aria-role="logout"
           onClick={(e) => {
             e.preventDefault;

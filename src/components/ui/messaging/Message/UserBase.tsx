@@ -22,6 +22,7 @@ import {
   BiSolidShieldX,
   BiSolidUserX
 } from "solid-icons/bi";
+import { servers, settings as config } from "../../../../lib/solenoid";
 import { Markdown } from "../../../markdown";
 import RevoltEmbeds from "../embeds";
 import { revolt } from "../../../../lib/revolt";

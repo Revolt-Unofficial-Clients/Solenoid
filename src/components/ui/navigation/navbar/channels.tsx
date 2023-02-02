@@ -1,16 +1,16 @@
 import classNames from "classnames";
 import { Component, For, Show } from "solid-js";
 import { className } from "solid-js/web/types";
-import { setSolenoidServer, solenoidServer } from "../../../../lib/store/solenoidServerStore";
+import * as Solenoid from "../../../../lib/solenoid";
 import { Markdown } from "../../../markdown";
 
 async function getMessagesFromChannel() {
-  await solenoidServer.channel?.current
+  await Solenoid.servers.current_channel
     ?.messages.fetchMultiple({"include_users": true})
     .then(messages =>
-      setSolenoidServer("channel", "messages", messages.reverse())
+      Solenoid.setMessages(messages.reverse())
     );
-  setSolenoidServer("displayHomescreen", false);
+  Solenoid.setServers("isHome", false);
 }
 
 const ChannelNavigation: Component = () => {
@@ -18,9 +18,9 @@ const ChannelNavigation: Component = () => {
   return (
     <div class="relative bottom-0 left-0 container w-96 h-screen bg-base-200 px-4 overflow-scroll overflow-x-hidden">
       <div class="prose py-2">
-        <h2>{solenoidServer.current?.name}</h2>
+        <h2>{Solenoid.servers.current_server?.name}</h2>
       </div>
-      <For each={solenoidServer.channel?.list}>
+      <For each={Solenoid.servers.current_server?.orderedChannels}>
         {category => (
           <div class="flex flex-col gap-1">
             <p class="font-semibold m-2">{category.name}</p>
@@ -34,10 +34,9 @@ const ChannelNavigation: Component = () => {
                   "p-[0.35rem]": true,
                   "flex": true,
                   "gap-2": true,
-                  "rounded-md": true,
-                  "font-medium": true,
+                  "btn-primary": channel.id === Solenoid.servers.current_channel?.id
                 })} onClick={() => {
-                  setSolenoidServer("channel", "current", channel)
+                  Solenoid.setServers("current_channel", channel)
                   getMessagesFromChannel()
                 }}><Markdown content={channel.name} /> {channel.unread && <div class="w-2 h-2 bg-white ml-auto mr-2 rounded-full"></div>}</button>
               )}
