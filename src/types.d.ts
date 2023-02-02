@@ -1,4 +1,4 @@
-import type { Server, Message, Channel } from "revolt.js";
+import type { Server, Channel } from "revolt-toolset";
 
 declare interface user {
     user_id: string | undefined;
@@ -14,11 +14,8 @@ declare interface loginValues {
 }
 
 declare interface server {
-    server_list?: Server[] | undefined;
-    current_server?: Server | undefined;
-    current_server_channels?: (Channel | undefined)[];
-    current_channel?: Channel | undefined;
-    messages?: Message[] | undefined;
+    current_server?: Server;
+    current_channel?: Channel;
     isHome: boolean | undefined;
 }
 

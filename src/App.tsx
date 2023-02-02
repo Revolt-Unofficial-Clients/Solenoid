@@ -1,56 +1,30 @@
 import Axios from "axios";
 import { Reaction, runInAction } from "mobx";
-import type { Message } from "revolt.js";
 import {
   Component,
-  createEffect,
-  createMemo,
-  createSignal,
-  enableExternalSource,
+  createEffect, enableExternalSource,
   For,
-  Show,
+  Show
 } from "solid-js";
 import { produce } from "solid-js/store";
 import { ulid } from "ulid";
 import "./styles/main.css";
-import { createLocalSignal, createLocalStore, debounce } from "./utils";
-
-import { uploadAttachment } from "revolt-toolset";
 
 // Components
-import { ChannelList } from "./components/ui/navigation/ChannelList";
 import { Login as LoginComponent } from "./components/ui/common/Login";
-import { Message as MessageComponent } from "./components/ui/messaging/Message";
-import { Picker } from "./components/ui/experiments/Picker/picker";
-import { ServerList } from "./components/ui/navigation/ServerList";
-
+import { MessageContainer } from "./components/ui/messaging/Message/Container";
 // Types
 import type { AxiosRequestConfig } from "axios";
-import type { reply, server, settings as config, status, user } from "./types";
-
-// Icons
-import {
-  FiLogOut,
-  FiPlusCircle,
-  FiSend,
-  FiSettings,
-  FiSmile,
-  FiUpload,
-  FiXCircle,
-} from "solid-icons/fi";
-
-import { AiOutlineStop } from "solid-icons/ai";
 
 // Revolt Client
 import { revolt as client } from "./lib/revolt";
-import classNames from "classnames";
 
 // Import signals and stores
-import * as Solenoid from "./lib/solenoid";
+import ChannelNavigation from "./components/ui/navigation/navbar/channels";
+import Navigation from "./components/ui/navigation/navbar/servers";
 import Userbar from "./components/ui/navigation/Userbar";
 import Settings from "./components/ui/settings";
-import Navigation from "./components/ui/navigation/navbar/servers";
-import ChannelNavigation from "./components/ui/navigation/navbar/channels";
+import * as Solenoid from "./lib/solenoid";
 
 // Way to know if user notifications are enabled
 let notification_access: boolean;
@@ -69,7 +43,7 @@ const onAvatarChange = (
 client.on("ready", async () => {
   Solenoid.setLoggedIn(true);
   Solenoid.setUser("username", client.user?.username);
-  Solenoid.setUser("user_id", client.user?._id);
+  Solenoid.setUser("user_id", client.user?.id);
   if (Solenoid.settings.debug && Solenoid.settings.session_type === "token") {
     console.info(`Logged In as ${client.user?.username} (Bot Mode)`);
   } else if (
@@ -82,37 +56,11 @@ client.on("ready", async () => {
 
 // Update Status Automatically
 client.on("packet", async (info) => {
-  if (info.type === "UserUpdate" && info.id === client.user?._id) {
+  if (info.type === "UserUpdate" && info.id === client.user?.id) {
     Solenoid.setSettings("status", info.data.status?.presence);
     Solenoid.setSettings("statusText", info.data.status?.text);
   }
 });
-
-// Logout from current session and reset server properties
-function logoutFromRevolt() {
-  Solenoid.setLoggedIn(false);
-  Solenoid.setSettings("session", undefined);
-  Solenoid.setUser("user_id", undefined);
-  Solenoid.setUser("username", undefined);
-  Solenoid.setUser("session_type", undefined);
-  Solenoid.setServers("current_channel", undefined);
-  Solenoid.setServers("current_server", undefined);
-  Solenoid.setServers("current_server_channels", undefined);
-  Solenoid.setServers("isHome", false);
-  Solenoid.setServers("server_list", undefined);
-  Solenoid.setSettings("show", false);
-  if (client.session) client.logout();
-}
-
-// Get Messages from current selected channel
-async function getMessagesFromChannel() {
-  await Solenoid.servers.current_channel
-    ?.fetchMessagesWithUsers()
-    .then(({ messages }) =>
-      Solenoid.setServers("messages", messages.reverse())
-    );
-  Solenoid.setServers("isHome", false);
-}
 
 // Image Attaching
 createEffect(() => {
@@ -143,10 +91,6 @@ async function uploadFile(
   return res.data.id;
 }
 
-function deleteMessage(message: Message) {
-  message.delete();
-}
-
 // Send message with file
 async function sendFile(content: string) {
   const attachments: string[] = [];
@@ -160,7 +104,7 @@ async function sendFile(content: string) {
       attachments.push(
         await uploadFile(
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          client.configuration!.features.autumn.url,
+          client.config.features.autumn.url,
           "attachments",
           file,
           {
@@ -181,7 +125,7 @@ async function sendFile(content: string) {
   const nonce = ulid();
 
   try {
-    await Solenoid.servers.current_channel?.sendMessage({
+    await Solenoid.servers.current_channel?.send({
       content,
       nonce,
       attachments,
@@ -199,13 +143,13 @@ async function sendMessage(message: string) {
     if (Solenoid.images()) {
       await sendFile(message);
     } else if (Solenoid.replies()) {
-      Solenoid.servers.current_channel?.sendMessage({
+      Solenoid.servers.current_channel?.send({
         content: message,
         replies: Solenoid.replies(),
         nonce,
       });
     } else {
-      Solenoid.servers.current_channel?.sendMessage({
+      Solenoid.servers.current_channel?.send({
         content: message,
         nonce,
       });
@@ -217,89 +161,11 @@ async function sendMessage(message: string) {
   Solenoid.setShowPicker(false);
 }
 
-// Channel Switching
-function setChannel(channel_id: string) {
-  Solenoid.setServers(
-    "current_channel",
-    Solenoid.servers.current_server_channels?.find((channel) => {
-      if (channel) return channel["_id"] === channel_id;
-    })
-  );
-  getMessagesFromChannel();
-  if (Solenoid.settings.debug) console.log(Solenoid.servers.current_channel);
-}
-// Fetch Channels from Server
-function fetchChannels() {
-  Solenoid.setServers(
-    "current_server_channels",
-    Solenoid.servers.current_server?.channels
-  );
-  if (Solenoid.settings.debug)
-    console.log(Solenoid.servers.current_server_channels);
-}
-// Server Switching
-function setServer(server_id: string) {
-  Solenoid.setServers(
-    "current_server",
-    Solenoid.servers.server_list?.find((server) => server["_id"] === server_id)
-  );
-  fetchChannels();
-  if (Solenoid.settings.debug) console.log(Solenoid.servers.current_server);
-}
-// Get Current Status from API
-async function getStatus() {
-  const userinfo = await client.api.get("/users/@me");
-  Solenoid.setSettings("statusText", userinfo.status?.text);
-  Solenoid.setSettings("status", userinfo.status?.presence);
-}
-
-// Show Settings Centre
-function showSettings() {
-  // Update current status to show properly and don't show undefined on a button
-  getStatus();
-  Solenoid.setSettings("show", Solenoid.settings.show ? false : true);
-}
-
-// Set settings
-function setCurrentSettings() {
-  if (Solenoid.settings.newShowSuffix === true) {
-    Solenoid.setSettings("showSuffix", true);
-  } else if (Solenoid.settings.newShowSuffix === false) {
-    Solenoid.setSettings("showSuffix", false);
-  }
-
-  updateStatus();
-  Solenoid.setServers("messages", []);
-  getMessagesFromChannel();
-}
-
-// Update status
-function updateStatus(
-  mode?: "Online" | "Focus" | "Idle" | "Busy" | "Invisible" | null | undefined,
-  status?: string
-) {
-  if (mode && status) {
-    client.api.patch("/users/@me", {
-      status: {
-        presence: mode,
-        text: status,
-      },
-    });
-  } else {
-    client.api.patch("/users/@me", {
-      status: {
-        presence: Solenoid.settings.status || client.user?.status?.presence,
-        text: Solenoid.settings.statusText,
-      },
-    });
-  }
-}
-
 // AutoLogin
-async function loginWithSession(session: unknown & { action: "LOGIN" }) {
+async function loginWithSession(session: unknown & { action: "LOGIN", token: string }) {
   try {
     if (Solenoid.usr.session_type === "email" && session) {
-      await client.useExistingSession(session).catch((e) => {
+      await client.login(session.token, "user").catch((e) => {
         throw e;
       });
       Solenoid.setSettings("session_type", "email");
@@ -316,54 +182,6 @@ async function loginWithSession(session: unknown & { action: "LOGIN" }) {
   }
 }
 
-// Get Role Colour from Message
-function getrolecolour(message: Message) {
-  if (!message.member) return "#fff";
-  for (const [, { colour }] of message.member.orderedRoles) {
-    if (Solenoid.settings.debug) console.log(colour);
-    if (colour) {
-      return colour;
-    }
-  }
-}
-
-// Send Notifications
-client.on("message", (msg) => {
-  if ((Solenoid.servers.current_channel && Solenoid.servers.messages) && (Solenoid.servers.current_channel._id === msg.channel?._id)) {
-    Solenoid.setServers(produce((store) => store.messages?.push(msg)));
-  }
-});
-
-function stopTyping() {
-  if (!Solenoid.settings.experiments.disappear)
-    client.websocket.send({
-      type: "EndTyping",
-      channel: Solenoid.servers.current_channel?._id,
-    });
-}
-
-function startTyping() {
-  if (!Solenoid.settings.experiments.disappear)
-    client.websocket.send({
-      type: "BeginTyping",
-      channel: Solenoid.servers.current_channel?._id,
-    });
-}
-
-const debouncedStopTyping = createMemo(
-  debounce(stopTyping as (...args: unknown[]) => void, 1000)
-);
-
-client.on("message/delete", async (id) => {
-  Solenoid.setServers("messages", produce(messages => messages?.filter((e) => id == e._id)));
-});
-
-client.on("message/updated", async (message) => {
-  const index = Solenoid.servers.messages?.findIndex(o => o._id === message._id);
-  Solenoid.setServers("messages", produce(messages => messages?.splice(index || 0, 1, message)));
-  console.log(index)
-})
-
 // Mobx magic (Thanks Insert :D)
 let id = 0;
 enableExternalSource((fn, trigger) => {
@@ -378,14 +196,6 @@ enableExternalSource((fn, trigger) => {
   };
 });
 
-// Update ServerList when logged in
-setInterval(() => {
-  if (Solenoid.loggedIn()) {
-    runInAction(() => {
-      Solenoid.setServers("server_list", Array.from(client.servers.values()));
-    });
-  }
-}, 2000);
 
 // Automatically log in when session is found and not logged in
 if (Solenoid.settings.session && !Solenoid.loggedIn())
@@ -438,31 +248,7 @@ const App: Component = () => {
                 </div>
               )}
               <div>
-                <div>
-                  <For each={Solenoid.servers.messages}>
-                    {(message) => {
-                      if (Solenoid.settings.debug)
-                        console.log(message.attachments);
-                      if (Solenoid.settings.debug) console.log(message);
-                      if (Solenoid.settings.debug)
-                        console.log(message.member?.orderedRoles);
-                      const colour = getrolecolour(message);
-                      return (
-                        <MessageComponent
-                          client={client}
-                          message={message}
-                          colour={colour}
-                          settings={Solenoid.settings}
-                          setter={Solenoid.setReplies}
-                          signal={Solenoid.replies}
-                          deleteFunction={deleteMessage}
-                          textbox={Solenoid.newMessage}
-                          setTextbox={Solenoid.setNewMessage}
-                        />
-                      );
-                    }}
-                  </For>
-                </div>
+                <MessageContainer />
                 {Solenoid.servers.current_channel && <Userbar />}
               </div>
             </div>
