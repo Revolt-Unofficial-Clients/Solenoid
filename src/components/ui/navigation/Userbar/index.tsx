@@ -8,7 +8,7 @@ import { debounce } from "../../../../utils";
 import type { AxiosRequestConfig } from "axios";
 import type { Component } from "solid-js";
 import type { User } from "revolt.js";
-import { BiSolidCog, BiSolidFileImage, BiSolidSend } from "solid-icons/bi";
+import { BiSolidCog, BiSolidFileImage, BiSolidSend, BiSolidHappyBeaming } from "solid-icons/bi";
 import classNames from "classnames";
 
 const [sending, setSending] = createSignal<boolean>(false);
@@ -45,7 +45,7 @@ async function sendFile(content: string) {
       attachments.push(
         await uploadFile(
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          revolt.configuration!.features.autumn.url,
+          revolt.config!.features.autumn.url,
           "attachments",
           file,
           {
@@ -66,7 +66,7 @@ async function sendFile(content: string) {
   const nonce = ulid();
 
   try {
-    await Solenoid.servers.current_channel?.sendMessage({
+    await Solenoid.servers.current_channel?.send({
       content,
       nonce,
       attachments,
@@ -86,7 +86,7 @@ async function sendMessage(message: string) {
         await sendFile(message);
       } else if (Solenoid.replies()) {
         Solenoid.servers.current_channel
-          ?.sendMessage({
+          ?.send({
             content: message,
             replies: Solenoid.replies(),
             nonce,
@@ -96,7 +96,7 @@ async function sendMessage(message: string) {
           });
       } else {
         Solenoid.servers.current_channel
-          ?.sendMessage({
+          ?.send({
             content: message,
             nonce,
           })
@@ -118,17 +118,17 @@ async function sendMessage(message: string) {
 
 function stopTyping() {
   if (!Solenoid.settings.experiments.disappear)
-    revolt.websocket.send({
+    revolt.ws.send({
       type: "EndTyping",
-      channel: Solenoid.servers.current_channel?._id,
+      channel: Solenoid.servers.current_channel?.id || "",
     });
 }
 
 function startTyping() {
   if (!Solenoid.settings.experiments.disappear)
-    revolt.websocket.send({
+    revolt.ws.send({
       type: "BeginTyping",
-      channel: Solenoid.servers.current_channel?._id,
+      channel: Solenoid.servers.current_channel?.id || "",
     });
 }
 
@@ -141,21 +141,6 @@ async function getStatus() {
   Solenoid.setSettings("statusText", userinfo.status?.text);
   Solenoid.setSettings("status", userinfo.status?.presence);
 }
-
-revolt.on("packet", async (p) => {
-  if (
-    p.type === "ChannelStartTyping" &&
-    p.id === Solenoid.servers.current_channel?._id
-  ) {
-    setTyping(Solenoid.servers.current_channel!.typing);
-  } else if (
-    p.type === "ChannelStopTyping" &&
-    p.id === Solenoid.servers.current_channel?._id
-  ) {
-    const filtered = typing().filter((c) => c?._id === p.id);
-    setTyping([...filtered]);
-  }
-});
 
 const Userbar: Component = () => {
   return (
