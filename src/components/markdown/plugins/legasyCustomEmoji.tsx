@@ -8,7 +8,7 @@ export const RE_CUSTOM_EMOJI = /:([0123456789ABCDEFGHJKMNPQRSTVWXYZ]{26}):/g;
 export function RenderCustomEmoji({ match }: CustomComponentProps) {
   const [exists, setExists] = createSignal(true);
   const url = `${
-    revolt?.configuration?.features.autumn.url
+    revolt?.config?.features.autumn.url
   }/emojis/${match}`;
 
   return (

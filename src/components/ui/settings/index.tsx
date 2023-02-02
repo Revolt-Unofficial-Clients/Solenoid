@@ -1,7 +1,6 @@
-import { Component, For } from "solid-js";
+import { Component, For, createResource, createSignal, Show } from "solid-js";
 
 import classNames from "classnames";
-import { uploadAttachment } from "revolt-toolset";
 import { revolt } from "../../../lib/revolt";
 import * as Solenoid from "../../../lib/solenoid";
 
@@ -25,8 +24,8 @@ function updateStatus(
   } else {
     revolt.api.patch("/users/@me", {
       status: {
-        presence: Solenoid.settings.status || revolt.user?.status?.presence,
-        text: Solenoid.settings.statusText,
+        presence: Solenoid.settings.status || revolt.user?.presence,
+        text: Solenoid.settings.statusText || revolt.user?.status,
       },
     });
   }
@@ -40,11 +39,61 @@ function logoutFromRevolt() {
   Solenoid.setUser("session_type", undefined);
   Solenoid.setServers("current_channel", undefined);
   Solenoid.setServers("current_server", undefined);
-  Solenoid.setServers("current_server_channels", undefined);
   Solenoid.setServers("isHome", false);
-  Solenoid.setServers("server_list", undefined);
   Solenoid.setSettings("show", false);
-  if (revolt.session) revolt.logout();
+  if (revolt.session) revolt.destroy();
+}
+
+const [member_avatar_url, set_member_avatar_url] = createSignal<string>()
+
+if (Solenoid.servers.current_server) {
+  Solenoid.servers.current_server.fetchMe().then(me => {
+    set_member_avatar_url(me.generateAvatarURL());
+    // ^?
+  })
+}
+
+function setSyncSettings() {
+  const settingsFromObject: SolenoidSettingsStore = {
+    appearance: {
+      theme: userSettings.appearance.theme
+    },
+    client: {
+      developer: {
+        debug: userSettings.client.developer.debug
+      },
+      disableMarkdown: userSettings.client.disableMarkdown,
+      emoji: userSettings.client.emoji,
+      shouldUseCompactMode: userSettings.client.shouldUseCompactMode,
+      showAttachments: userSettings.client.showAttachments,
+      showBadges: userSettings.client.showBadges,
+      showProfilePictures: userSettings.client.showProfilePictures
+    },
+    experiments: {
+      disableTypingEvent: userSettings.experiments.disableTypingEvent,
+      enableChangeIdentity: userSettings.experiments.enableChangeIdentity,
+      enableEmojiPicker: userSettings.experiments.enableEmojiPicker,
+      enableNewHomescreen: userSettings.experiments.enableNewHomescreen,
+      enableServerSettings: userSettings.experiments.enableServerSettings
+    },
+    user: {
+      status: {
+        prefabList: userSettings.user.status.prefabList
+      }
+    }
+  }
+    revolt.syncSetSettings({["solenoid:settings"]: JSON.stringify(settingsFromObject)}).then(() => {
+      console.log(settingsFromObject);
+      console.log("Check settings on revite");
+    })
+}
+
+function getSyncSettings() {
+  revolt.syncFetchSettings(["solenoid:settings"]).then((s: any) => {
+    const syncedSettings: SolenoidSettingsStore = JSON.parse(s["solenoid:settings"][1])
+    console.log(syncedSettings)
+    //^?
+  })
 }
 
 const Settings: Component = () => {
@@ -74,8 +123,8 @@ const Settings: Component = () => {
             <img
               src={
                 revolt.user?.avatar
-                  ? `${revolt.configuration?.features.autumn.url}/avatars/${revolt.user?.avatar?._id}`
-                  : `https://api.revolt.chat/users/${revolt.user?._id}/default_avatar`
+                  ? `${revolt.config?.features.autumn.url}/avatars/${revolt.user?.avatar?.id}`
+                  : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
               }
               class="block m-3 ml-auto mr-auto rounded-full"
               width={56}
@@ -93,16 +142,16 @@ const Settings: Component = () => {
             onSubmit={async (e) => {
               console.log("Clicked");
               e.preventDefault();
-              const file = await uploadAttachment(
-                `solenoid-avatar-${revolt.user?._id}`,
+              const file = await revolt.uploadAttachment(
+                `solenoid-avatar-${revolt.user?.id}`,
                 Solenoid.avatarImage(),
                 "avatars"
               );
               console.log(file);
-              Solenoid.servers.current_server?.member?.edit({
+              Solenoid.servers.current_server?.me?.edit({
                 avatar:
                   file ||
-                  Solenoid.servers.current_server.member.avatar?._id ||
+                  Solenoid.servers.current_server.me.avatar?.id ||
                   null,
                 nickname: Solenoid.nickname() || null,
               });
@@ -127,7 +176,7 @@ const Settings: Component = () => {
                 class="input"
                 id="nick"
                 placeholder={
-                  Solenoid.servers.current_server.member?.nickname ||
+                  Solenoid.servers.current_server.me?.nickname ||
                   revolt.user?.username ||
                   "New Nickname"
                 }
@@ -148,13 +197,13 @@ const Settings: Component = () => {
                   src={
                     Solenoid.avatarImage()
                       ? URL.createObjectURL(Solenoid.avatarImage())
-                      : Solenoid.servers.current_server.member?.avatar ||
+                      :  member_avatar_url() ||
                         revolt.user?.avatar
                       ? `https://autumn.revolt.chat/avatars/${
-                          Solenoid.servers.current_server.member?.avatar?._id ||
-                          revolt.user?.avatar?._id
+                          Solenoid.servers.current_server.me?.avatar?.id ||
+                          revolt.user?.avatar?.id
                         }`
-                      : `https://api.revolt.chat/users/${revolt.user?._id}/default_avatar`
+                      : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
                   }
                   width={64}
                   height={64}
@@ -489,6 +538,22 @@ const Settings: Component = () => {
           Log Out
         </button>
       </div>
+      <Show when={userSettings.client.developer.debug}>
+        <div class="flex gap-2 ml-auto mr-auto mb-5 prose">
+          <button
+            class="btn btn-warning"
+            onClick={setSyncSettings}
+          >
+            DEBUG: Set Sync Settings
+          </button>
+          <button
+            class="btn btn-warning"
+            onClick={getSyncSettings}
+          >
+            DEBUG: Get Sync Settings
+          </button>
+        </div>
+      </Show>
     </div>
   );
 };
