@@ -45,9 +45,9 @@ const Navigation: Component = () => {
             <Switch>
               <Match when={server.icon}>
                 <div class="avatar" onClick={() => {
-                  setSolenoidServer("current", server)
-                  setSolenoidServer("channel", "list", server.orderedChannels)
-                  setSolenoidServer("displayHomescreen", false)
+                  setServers("current_server", server);
+                  setServers("current_channel", undefined);
+                  setServers("isHome", false);
                 }}>
                   <div class="w-12 h-12 rounded-full">
                     <img src={server.generateIconURL()} />
@@ -56,9 +56,9 @@ const Navigation: Component = () => {
               </Match>
               <Match when={!server.icon}>
                 <div class="avatar placeholder" onClick={() => {
-                  setSolenoidServer("current", server)
-                  setSolenoidServer("channel", "list", server.orderedChannels)
-                  setSolenoidServer("displayHomescreen", false)
+                  setServers("current_server", server);
+                  setServers("current_channel", undefined);
+                  setServers("isHome", false);
                 }}>
                   <div class="w-12 h-12 bg-neutral-focus font-bold rounded-full">
                     <span>{server.name[0]}</span>
