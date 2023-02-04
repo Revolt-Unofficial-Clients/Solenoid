@@ -9,7 +9,7 @@ import { produce } from "solid-js/store";
 import { SystemMessageBase } from "./SystemBase";
 
 revolt.on("message", async m => {
-    setMessages(produce((old) => old.push(m)))
+    if (m.channelID === servers.current_channel?.id) setMessages(produce((old) => old.push(m)))
 })
 
 const MessageContainer: Component = () => {
@@ -19,7 +19,6 @@ const MessageContainer: Component = () => {
                 if (message?.isSystem()) {
                     return (
                     <div>
-                        <p> System Message id {message.id}</p>
                         <SystemMessageBase sysmessage={message} />
                     </div>
                 )
