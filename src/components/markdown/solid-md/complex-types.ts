@@ -5,7 +5,7 @@
  */
 
 import { Component, JSX } from "solid-js";
-import type { Position } from "unist";
+import type { Position } from "./ast-to-solid";
 import type { Element } from "hast";
 
 /* File for types which are not handled correctly in JSDoc mode */

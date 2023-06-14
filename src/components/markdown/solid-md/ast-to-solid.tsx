@@ -4,7 +4,10 @@
  * https://github.com/andi23rosca/solid-markdown/blob/master/license
  */
 
-import type { Position } from "unist";
+export type Position = {
+  start: { line: number | null, column: number | null, offset: number | null },
+  end: { line: number | null, column: number | null, offset: number | null },
+}
 import type {
   Element,
   ElementContent,
