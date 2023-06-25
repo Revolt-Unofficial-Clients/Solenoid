@@ -3,7 +3,7 @@ import { Component, For, createSignal } from "solid-js";
 import classNames from "classnames";
 import { revolt } from "../../../lib/revolt";
 import * as Solenoid from "../../../lib/solenoid";
-import type { User } from "revkit";
+import { Member } from "revkit";
 
 const onAvatarChange = (
   e: Event & { currentTarget: HTMLInputElement; target: Element }
@@ -48,7 +48,7 @@ function logoutFromRevolt() {
 const [member_avatar_url, set_member_avatar_url] = createSignal<string>();
 
 if (Solenoid.servers.current_server) {
-  Solenoid.servers.current_server.fetchMe().then((me: User) => {
+  Solenoid.servers.current_server.fetchMe().then((me: Member) => {
     set_member_avatar_url(me.generateAvatarURL());
     // ^?
   });

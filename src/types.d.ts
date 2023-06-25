@@ -1,4 +1,4 @@
-import type { Server, Channel } from "revolt-toolset";
+import type { Server, Channel } from "revkit";
 
 declare interface user {
     user_id: string | undefined;
