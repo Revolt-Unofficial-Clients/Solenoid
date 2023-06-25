@@ -26,4 +26,4 @@ export function RenderCustomEmoji({ match }: CustomComponentProps) {
   );
 }
 
-export const remarkLegasyCustomEmoji = createComponent("lcemoji", RE_CUSTOM_EMOJI);
+export const remarkLegacyCustomEmoji = createComponent("lcemoji", RE_CUSTOM_EMOJI);
