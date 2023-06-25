@@ -1,5 +1,5 @@
 import { Emoji } from "./unicodeEmoji";
-import { createSignal, Match, Switch } from "solid-js";
+import { createSignal } from "solid-js";
 import { createComponent, CustomComponentProps } from "./remarkRegexComponent";
 import { emojiDictionary } from "../../../assets/emoji";
 import { settings } from "../../../lib/solenoid";
@@ -56,9 +56,11 @@ function parseEmoji(emoji: string) {
 }
 
 export function RenderCustomEmoji({ match }: CustomComponentProps) {
-  const [exists, setExists] = createSignal(true);
+  const [, setExists] = createSignal(true);
   const url = RE_ULID.test(match)
-    ?  `https://static.revolt.chat/emoji/${settings.emoji}/${toCodepoint(match)}.svg?v=1`
+    ? `https://static.revolt.chat/emoji/${settings.emoji}/${toCodepoint(
+        match
+      )}.svg?v=1`
     : parseEmoji(
         match in emojiDictionary
           ? emojiDictionary[match as keyof typeof emojiDictionary]
@@ -81,4 +83,8 @@ export function RenderCustomEmoji({ match }: CustomComponentProps) {
   );
 }
 
-export const remarkRevoltEmoji = createComponent("cemoji", RE_EMOJI, (match) => match in emojiDictionary || RE_ULID.test(match));
+export const remarkRevoltEmoji = createComponent(
+  "cemoji",
+  RE_EMOJI,
+  (match) => match in emojiDictionary || RE_ULID.test(match)
+);
