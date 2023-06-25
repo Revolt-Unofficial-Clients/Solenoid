@@ -1,4 +1,4 @@
-import { SystemMessage, SystemMessageType } from "revolt-toolset";
+import { SystemMessage, SystemMessageType } from "revkit";
 import type { Component } from "solid-js";
 import { Markdown } from "../../../markdown";
 

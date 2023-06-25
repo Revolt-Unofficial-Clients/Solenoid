@@ -1,3 +1,3 @@
-import { Client } from "revolt-toolset";
+import { Client } from "revkit";
 
 export const revolt = new Client();
