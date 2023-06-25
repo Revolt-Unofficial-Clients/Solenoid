@@ -1,8 +1,9 @@
-import { Component, For, createResource, createSignal, Show } from "solid-js";
+import { Component, For, createSignal } from "solid-js";
 
 import classNames from "classnames";
 import { revolt } from "../../../lib/revolt";
 import * as Solenoid from "../../../lib/solenoid";
+import type { User } from "revkit";
 
 const onAvatarChange = (
   e: Event & { currentTarget: HTMLInputElement; target: Element }
@@ -44,56 +45,13 @@ function logoutFromRevolt() {
   if (revolt.session) revolt.destroy();
 }
 
-const [member_avatar_url, set_member_avatar_url] = createSignal<string>()
+const [member_avatar_url, set_member_avatar_url] = createSignal<string>();
 
 if (Solenoid.servers.current_server) {
-  Solenoid.servers.current_server.fetchMe().then(me => {
+  Solenoid.servers.current_server.fetchMe().then((me: User) => {
     set_member_avatar_url(me.generateAvatarURL());
     // ^?
-  })
-}
-
-function setSyncSettings() {
-  const settingsFromObject: SolenoidSettingsStore = {
-    appearance: {
-      theme: userSettings.appearance.theme
-    },
-    client: {
-      developer: {
-        debug: userSettings.client.developer.debug
-      },
-      disableMarkdown: userSettings.client.disableMarkdown,
-      emoji: userSettings.client.emoji,
-      shouldUseCompactMode: userSettings.client.shouldUseCompactMode,
-      showAttachments: userSettings.client.showAttachments,
-      showBadges: userSettings.client.showBadges,
-      showProfilePictures: userSettings.client.showProfilePictures
-    },
-    experiments: {
-      disableTypingEvent: userSettings.experiments.disableTypingEvent,
-      enableChangeIdentity: userSettings.experiments.enableChangeIdentity,
-      enableEmojiPicker: userSettings.experiments.enableEmojiPicker,
-      enableNewHomescreen: userSettings.experiments.enableNewHomescreen,
-      enableServerSettings: userSettings.experiments.enableServerSettings
-    },
-    user: {
-      status: {
-        prefabList: userSettings.user.status.prefabList
-      }
-    }
-  }
-    revolt.syncSetSettings({["solenoid:settings"]: JSON.stringify(settingsFromObject)}).then(() => {
-      console.log(settingsFromObject);
-      console.log("Check settings on revite");
-    })
-}
-
-function getSyncSettings() {
-  revolt.syncFetchSettings(["solenoid:settings"]).then((s: any) => {
-    const syncedSettings: SolenoidSettingsStore = JSON.parse(s["solenoid:settings"][1])
-    console.log(syncedSettings)
-    //^?
-  })
+  });
 }
 
 const Settings: Component = () => {
@@ -135,100 +93,100 @@ const Settings: Component = () => {
       </div>
 
       {/* TODO: Add server username/avatar changing */}
-      {Solenoid.servers.current_server && Solenoid.settings.experiments.nick && (
-        <div class="bg-base-200 m-3 p-3 rounded-lg">
-          <form
-            class="solenoid-server-username"
-            onSubmit={async (e) => {
-              console.log("Clicked");
-              e.preventDefault();
-              const file = await revolt.uploadAttachment(
-                `solenoid-avatar-${revolt.user?.id}`,
-                Solenoid.avatarImage(),
-                "avatars"
-              );
-              console.log(file);
-              Solenoid.servers.current_server?.me?.edit({
-                avatar:
-                  file ||
-                  Solenoid.servers.current_server.me.avatar?.id ||
-                  null,
-                nickname: Solenoid.nickname() || null,
-              });
-            }}
-          >
-            <div class="item prose" id="1">
-              <h3>Server Identity</h3>
-              <p class="mt-2">
-                Edit how you look in the {Solenoid.servers.current_server.name}{" "}
-                server
-              </p>
-            </div>
-            <div class="" id="2">
-              <label
-                for="nick"
-                title="Nickname shown to everyone on the server"
-                class="label"
-              >
-                Nickname
-              </label>
-              <input
-                class="input"
-                id="nick"
-                placeholder={
-                  Solenoid.servers.current_server.me?.nickname ||
-                  revolt.user?.username ||
-                  "New Nickname"
-                }
-                value={Solenoid.nickname() || ""}
-                onChange={(e) => Solenoid.setNickname(e.currentTarget.value)}
-              />
-            </div>
-            <div class="item" id="3">
-              <h4
-                title="Avatar shown to everyone on the server"
-                class="mt-2 mb-2"
-              >
-                Avatar
-              </h4>
-              <div>
-                <img
-                  class="rounded-full bg-clip-border w-28 h-28"
-                  src={
-                    Solenoid.avatarImage()
-                      ? URL.createObjectURL(Solenoid.avatarImage())
-                      :  member_avatar_url() ||
-                        revolt.user?.avatar
-                      ? `https://autumn.revolt.chat/avatars/${
-                          Solenoid.servers.current_server.me?.avatar?.id ||
-                          revolt.user?.avatar?.id
-                        }`
-                      : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
-                  }
-                  width={64}
-                  height={64}
-                />
+      {Solenoid.servers.current_server &&
+        Solenoid.settings.experiments.nick && (
+          <div class="bg-base-200 m-3 p-3 rounded-lg">
+            <form
+              class="solenoid-server-username"
+              onSubmit={async (e) => {
+                console.log("Clicked");
+                e.preventDefault();
+                const file = await revolt.uploadAttachment(
+                  `solenoid-avatar-${revolt.user?.id}`,
+                  Solenoid.avatarImage(),
+                  "avatars"
+                );
+                console.log(file);
+                Solenoid.servers.current_server?.me?.edit({
+                  avatar:
+                    file ||
+                    Solenoid.servers.current_server.me.avatar?.id ||
+                    null,
+                  nickname: Solenoid.nickname() || null,
+                });
+              }}
+            >
+              <div class="item prose" id="1">
+                <h3>Server Identity</h3>
+                <p class="mt-2">
+                  Edit how you look in the{" "}
+                  {Solenoid.servers.current_server.name} server
+                </p>
               </div>
-              <div class="flex mt-3 justify-start content-start">
+              <div class="" id="2">
+                <label
+                  for="nick"
+                  title="Nickname shown to everyone on the server"
+                  class="label"
+                >
+                  Nickname
+                </label>
                 <input
-                  class="file-input mr-3"
-                  type="file"
-                  name="avatar-upload"
-                  id="avatar-upload"
-                  accept="image/png,image/jpeg,image/gif"
-                  onChange={(e) => {
-                    onAvatarChange(e);
-                    console.log(Solenoid.avatarImage());
-                  }}
+                  class="input"
+                  id="nick"
+                  placeholder={
+                    Solenoid.servers.current_server.me?.nickname ||
+                    revolt.user?.username ||
+                    "New Nickname"
+                  }
+                  value={Solenoid.nickname() || ""}
+                  onChange={(e) => Solenoid.setNickname(e.currentTarget.value)}
                 />
-                <button role="button" class="btn">
-                  <span>Submit</span>
-                </button>
               </div>
-            </div>
-          </form>
-        </div>
-      )}
+              <div class="item" id="3">
+                <h4
+                  title="Avatar shown to everyone on the server"
+                  class="mt-2 mb-2"
+                >
+                  Avatar
+                </h4>
+                <div>
+                  <img
+                    class="rounded-full bg-clip-border w-28 h-28"
+                    src={
+                      Solenoid.avatarImage()
+                        ? URL.createObjectURL(Solenoid.avatarImage())
+                        : member_avatar_url() || revolt.user?.avatar
+                        ? `https://autumn.revolt.chat/avatars/${
+                            Solenoid.servers.current_server.me?.avatar?.id ||
+                            revolt.user?.avatar?.id
+                          }`
+                        : `https://api.revolt.chat/users/${revolt.user?.id}/default_avatar`
+                    }
+                    width={64}
+                    height={64}
+                  />
+                </div>
+                <div class="flex mt-3 justify-start content-start">
+                  <input
+                    class="file-input mr-3"
+                    type="file"
+                    name="avatar-upload"
+                    id="avatar-upload"
+                    accept="image/png,image/jpeg,image/gif"
+                    onChange={(e) => {
+                      onAvatarChange(e);
+                      console.log(Solenoid.avatarImage());
+                    }}
+                  />
+                  <button role="button" class="btn">
+                    <span>Submit</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        )}
       <div
         class="bg-base-200 m-3 p-3 rounded-lg"
         id="solenoid-setting solenoid-showUsernames"
@@ -505,15 +463,15 @@ const Settings: Component = () => {
           <h3>Emoji Pack</h3>
         </div>
         <div>
-          <p>Change how emojis look in Solenoid (You need to reload the channel after changing the pack)</p>
+          <p>
+            Change how emojis look in Solenoid (You need to reload the channel
+            after changing the pack)
+          </p>
           <select
             title="Options: Fluent 3D, Mutant or Twemoji"
             class="select"
             onChange={(e) =>
-              Solenoid.setSettings(
-                "emoji",
-                e.currentTarget.value
-              )
+              Solenoid.setSettings("emoji", e.currentTarget.value)
             }
             value={Solenoid.settings.emoji || "mutant"}
           >
@@ -538,22 +496,6 @@ const Settings: Component = () => {
           Log Out
         </button>
       </div>
-      <Show when={userSettings.client.developer.debug}>
-        <div class="flex gap-2 ml-auto mr-auto mb-5 prose">
-          <button
-            class="btn btn-warning"
-            onClick={setSyncSettings}
-          >
-            DEBUG: Set Sync Settings
-          </button>
-          <button
-            class="btn btn-warning"
-            onClick={getSyncSettings}
-          >
-            DEBUG: Get Sync Settings
-          </button>
-        </div>
-      </Show>
     </div>
   );
 };
