@@ -9,7 +9,7 @@ import {
 } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import type { user, settings } from "../../../../types";
-import type { Client } from "revolt-toolset";
+import type { Client } from "revkit";
 import { setSettings } from "../../../../lib/solenoid";
 import { revolt } from "../../../../lib/revolt";
 
@@ -82,7 +82,9 @@ const Login: Component<LoginComponent> = ({
       }
     }
   }
-  async function loginWithSession(session: any & { action: "LOGIN", token: string }) {
+  async function loginWithSession(
+    session: any & { action: "LOGIN"; token: string }
+  ) {
     try {
       await client.login(session, "user").catch((e) => {
         throw e;
@@ -107,7 +109,7 @@ const Login: Component<LoginComponent> = ({
     <>
       {!logged() && (
         <>
-          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 backdrop-blur-xl container">
+          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-28 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 lg:backdrop-blur-xl lg:rounded-lg">
             <div class="mx-10 my-10 flex items-center gap-2">
               <div class="w-10">
                 <img src="/favicon.png" />
@@ -180,7 +182,7 @@ const Login: Component<LoginComponent> = ({
             </form>
 
             <form
-              class="mx-10"
+              class="mx-10 my-2"
               onSubmit={(e) => {
                 e.preventDefault();
                 logIntoRevolt(token() ?? "");
@@ -206,24 +208,24 @@ const Login: Component<LoginComponent> = ({
               </div>
             </form>
             {solenoid_config.session && (
-              <div class="flex flex-col w-full items-center gap-2">
-              <button
-                class="btn btn-success w-60"
-                onClick={() => loginWithSession(solenoid_config.session)}
-              >
-                {revolt.ws.ready ? "Loading..." :  "Use Existing Session"}
-              </button>
-              <button
-                class="btn btn-error w-60"
-                onClick={() => {
-                  setSettings("session", undefined)
-                  if (revolt.ws.ready) {
-                    revolt.ws.disconnect()
-                  }
-                }}
-              >
-                Remove last session
-              </button>
+              <div class="flex flex-col w-full items-center gap-2 mt-2 mb-10">
+                <button
+                  class="btn btn-success w-60"
+                  onClick={() => loginWithSession(solenoid_config.session)}
+                >
+                  {revolt.ws.ready ? "Loading..." : "Use Existing Session"}
+                </button>
+                <button
+                  class="btn btn-error w-60"
+                  onClick={() => {
+                    setSettings("session", undefined);
+                    if (revolt.ws.ready) {
+                      revolt.ws.disconnect();
+                    }
+                  }}
+                >
+                  Remove last session
+                </button>
               </div>
             )}
           </div>
