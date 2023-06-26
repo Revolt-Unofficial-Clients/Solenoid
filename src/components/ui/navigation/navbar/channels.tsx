@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { Component, For } from "solid-js";
+import { Component, For, Show } from "solid-js";
 import * as Solenoid from "../../../../lib/solenoid";
 import { Markdown } from "../../../markdown";
 
@@ -19,18 +19,26 @@ const ChannelNavigation: Component = () => {
       <For each={Solenoid.servers.current_server?.orderedChannels}>
         {(category) => (
           <div class="flex flex-col gap-1">
-            <p class="font-semibold m-2">{category.name}</p>
+            <Show when={category.name !== "Default"}>
+              <p class="font-semibold m-2">{category.name}</p>
+            </Show>
+
             <For each={category.channels}>
               {(channel) => (
                 <button
                   class={classNames({
                     "w-full": true,
                     "h-auto": true,
-                    "bg-neutral": true,
+                    "bg-slate-300": true,
+                    "text-black": true,
+                    "dark:bg-slate-900": true,
+                    "dark:text-white": true,
                     "items-center": true,
-                    "p-[0.35rem]": true,
+                    "p-2": true,
+                    "rounded-md": true,
                     flex: true,
-                    "gap-2": true,
+                    "gap-1": true,
+                    "my-2": true,
                     "btn-primary":
                       channel.id === Solenoid.servers.current_channel?.id,
                   })}
