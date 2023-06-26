@@ -1,5 +1,6 @@
 # The Solenoid Contribution Guide
 
+
 1. Make your fork, don't push directly (For repository admins/maintainers)
     - You need to make a fork of Solenoid
       before changing the code, last time I had a
