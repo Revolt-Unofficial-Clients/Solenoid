@@ -1,20 +1,11 @@
-import Axios from "axios";
-import { Reaction, runInAction } from "mobx";
-import {
-  Component,
-  createEffect, enableExternalSource,
-  For,
-  Show
-} from "solid-js";
-import { produce } from "solid-js/store";
-import { ulid } from "ulid";
+import { Reaction } from "mobx";
+import { Component, createEffect, enableExternalSource, Show } from "solid-js";
 import "./styles/main.css";
 
 // Components
 import { Login as LoginComponent } from "./components/ui/common/Login";
 import { MessageContainer } from "./components/ui/messaging/Message/Container";
 // Types
-import type { AxiosRequestConfig } from "axios";
 
 // Revolt Client
 import { revolt as client } from "./lib/revolt";
@@ -25,19 +16,6 @@ import Navigation from "./components/ui/navigation/navbar/servers";
 import Userbar from "./components/ui/navigation/Userbar";
 import Settings from "./components/ui/settings";
 import * as Solenoid from "./lib/solenoid";
-
-// Way to know if user notifications are enabled
-let notification_access: boolean;
-
-// Functions
-const onImageChange = (e: any) => {
-  Solenoid.setImages([...e.target.files]);
-};
-const onAvatarChange = (
-  e: Event & { currentTarget: HTMLInputElement; target: Element }
-) => {
-  if (e.currentTarget.files) Solenoid.setAvatarImage(e.currentTarget.files);
-};
 
 // Setup
 client.on("ready", async () => {
@@ -71,98 +49,10 @@ createEffect(() => {
   Solenoid.setImgUrls(newImageUrls);
 });
 
-// Upload image to autumn.revolt.chat
-async function uploadFile(
-  autummURL: string,
-  tag: string,
-  file: File,
-  config?: AxiosRequestConfig
-) {
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const res = await Axios.post(`${autummURL}/${tag}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    ...config,
-  });
-
-  return res.data.id;
-}
-
-// Send message with file
-async function sendFile(content: string) {
-  const attachments: string[] = [];
-
-  const cancel = Axios.CancelToken.source();
-  const files: any | undefined = Solenoid.images();
-
-  try {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      attachments.push(
-        await uploadFile(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          client.config.features.autumn.url,
-          "attachments",
-          file,
-          {
-            cancelToken: cancel.token,
-          }
-        )
-      );
-      if (Solenoid.settings.debug) console.log(attachments);
-    }
-  } catch (e) {
-    if ((e as any)?.message === "cancel") {
-      return;
-    } else {
-      if (Solenoid.settings.debug) console.log((e as any).message);
-    }
-  }
-
-  const nonce = ulid();
-
-  try {
-    await Solenoid.servers.current_channel?.send({
-      content,
-      nonce,
-      attachments,
-      replies: Solenoid.replies(),
-    });
-  } catch (e: unknown) {
-    if (Solenoid.settings.debug) console.log((e as any).message);
-  }
-}
-
-// Send Message Handler
-async function sendMessage(message: string) {
-  const nonce = ulid();
-  if (Solenoid.servers.current_channel) {
-    if (Solenoid.images()) {
-      await sendFile(message);
-    } else if (Solenoid.replies()) {
-      Solenoid.servers.current_channel?.send({
-        content: message,
-        replies: Solenoid.replies(),
-        nonce,
-      });
-    } else {
-      Solenoid.servers.current_channel?.send({
-        content: message,
-        nonce,
-      });
-    }
-  }
-  Solenoid.setNewMessage("");
-  Solenoid.setReplies([]);
-  Solenoid.setImages(undefined);
-  Solenoid.setShowPicker(false);
-}
-
 // AutoLogin
-async function loginWithSession(session: unknown & { action: "LOGIN", token: string }) {
+async function loginWithSession(
+  session: unknown & { action: "LOGIN"; token: string }
+) {
   try {
     if (Solenoid.usr.session_type === "email" && session) {
       await client.login(session.token, "user").catch((e) => {
@@ -195,7 +85,6 @@ enableExternalSource((fn, trigger) => {
     dispose: () => reaction.dispose(),
   };
 });
-
 
 // Automatically log in when session is found and not logged in
 if (Solenoid.settings.session && !Solenoid.loggedIn())
