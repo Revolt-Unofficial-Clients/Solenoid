@@ -7,8 +7,6 @@ Try it out on [Vercel](https://solenoid.vercel.app), or host it locally using th
 ## Features
 Please check the feature matrix over at [Revolt Wiki](https://wiki.rvlt.gg/index.php/Revolt_Clients)
 
-Please check the official client feature matrix before adding new features.
-
 ## Reasons to use it
 None, unless for some reason the main client is having issues because
 this client lacks proper error handling **B**)
@@ -29,8 +27,9 @@ pnpm i
 
 # Run Solenoid on localhost:3000.
 pnpm dev
-
 ```
+
+Before adding new functionality to the client, please check the [official client feature matrix](https://wiki.rvlt.gg/index.php/Feature_Matrix), which is also available on the revolt wiki.
 
 ## Motivation
 I wanted to learn SolidJS because I heard it was blazingly fast and cool, so I decided to make a revolt.chat client to challenge my brain (and my sanity).
