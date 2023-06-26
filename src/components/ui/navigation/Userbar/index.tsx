@@ -8,7 +8,7 @@ import { debounce } from "../../../../utils";
 import type { AxiosRequestConfig } from "axios";
 import type { Component } from "solid-js";
 import type { User } from "revolt.js";
-import { BiSolidCog, BiSolidFileImage, BiSolidSend, BiSolidHappyBeaming } from "solid-icons/bi";
+import { BiSolidCog, BiSolidFileImage, BiSolidSend } from "solid-icons/bi";
 import classNames from "classnames";
 
 const [sending, setSending] = createSignal<boolean>(false);
