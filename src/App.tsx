@@ -11,11 +11,12 @@ import { MessageContainer } from "./components/ui/messaging/Message/Container";
 import { revolt as client } from "./lib/revolt";
 
 // Import signals and stores
-import ChannelNavigation from "./components/ui/navigation/navbar/channels";
-import Navigation from "./components/ui/navigation/navbar/servers";
+import ChannelNavigation from "./components/ui/navigation/sidebar/channels";
+import Navigation from "./components/ui/navigation/sidebar/servers";
 import Userbar from "./components/ui/navigation/Userbar";
 import Settings from "./components/ui/settings";
 import * as Solenoid from "./lib/solenoid";
+import HomePage from "./pages/Home";
 
 // Setup
 client.on("ready", async () => {
@@ -82,36 +83,14 @@ const App: Component = () => {
               <ChannelNavigation />
             </Show>
             <div class="container block w-full overflow-y-scroll">
-              {Solenoid.servers.isHome && (
-                <div class="home">
-                  <h1>Solenoid (Beta)</h1>
-                  {window.location.hostname === "localhost" && (
-                    <h3>Running on Local Server</h3>
-                  )}
-                  <p>A lightweight client for revolt.chat made with SolidJS</p>
-                  <br />
-                  <h3>Contributors</h3>
-                  <hr />
-                  <p>Insert: Helped me with Mobx and Revolt.js issues</p>
-                  <p>
-                    RyanSolid:{" "}
-                    <a href="https://codesandbox.io/s/mobx-external-source-0vf2l?file=/index.js">
-                      This
-                    </a>{" "}
-                    code snippet
-                  </p>
-                  <p>
-                    VeiledProduct80: Help me realize i forgot the masquerade
-                    part
-                  </p>
-                  <p>
-                    Mclnooted: <b>sex</b>
-                  </p>
-                </div>
-              )}
               <div>
-                <MessageContainer />
-                {Solenoid.servers.current_channel && <Userbar />}
+                <Show when={Solenoid.servers.isHome}>
+                  <HomePage />
+                </Show>
+                <Show when={Solenoid.servers.current_channel}>
+                  <MessageContainer />
+                  <Userbar />
+                </Show>
               </div>
             </div>
           </div>
