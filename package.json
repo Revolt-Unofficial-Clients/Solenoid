@@ -24,6 +24,7 @@
     "vite-plugin-solid": "latest"
   },
   "dependencies": {
+    "@solidjs/router": "^0.8.2",
     "@tailwindcss/typography": "^0.5.9",
     "axios": "^1.4.0",
     "classnames": "^2.3.2",

@@ -1,10 +1,13 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@solidjs/router':
+    specifier: ^0.8.2
+    version: 0.8.2(solid-js@1.7.6)
   '@tailwindcss/typography':
     specifier: ^0.5.9
     version: 0.5.9(tailwindcss@3.3.2)
@@ -824,6 +827,14 @@ packages:
     resolution: {integrity: sha512-ROr6vjYSGZtJ+qrTRumn+a4GwfWQFEq8S7UphRc3bV3z7JcinEL49mEus7XBuBnswGebx5ofANdp91Iv+GtssA==}
     peerDependencies:
       solid-js: ^1.6.0
+    dependencies:
+      solid-js: 1.7.6
+    dev: false
+
+  /@solidjs/router@0.8.2(solid-js@1.7.6):
+    resolution: {integrity: sha512-gUKW+LZqxtX6y/Aw6JKyy4gQ9E7dLqp513oB9pSYJR1HM5c56Pf7eijzyXX+b3WuXig18Cxqah4tMtF0YGu80w==}
+    peerDependencies:
+      solid-js: ^1.5.3
     dependencies:
       solid-js: 1.7.6
     dev: false
