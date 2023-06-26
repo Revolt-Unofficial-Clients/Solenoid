@@ -49,29 +49,6 @@ createEffect(() => {
   Solenoid.setImgUrls(newImageUrls);
 });
 
-// AutoLogin
-async function loginWithSession(
-  session: unknown & { action: "LOGIN"; token: string }
-) {
-  try {
-    if (Solenoid.usr.session_type === "email" && session) {
-      await client.login(session.token, "user").catch((e) => {
-        throw e;
-      });
-      Solenoid.setSettings("session_type", "email");
-      Solenoid.setSettings("session", session);
-      Solenoid.setLoggedIn(true);
-    } else {
-      return;
-    }
-  } catch (e) {
-    Solenoid.setSettings("session", undefined);
-    Solenoid.setUser("session_type", undefined);
-    Solenoid.setUser("user_id", undefined);
-    Solenoid.setUser("username", undefined);
-  }
-}
-
 // Mobx magic (Thanks Insert :D)
 let id = 0;
 enableExternalSource((fn, trigger) => {
