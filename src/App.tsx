@@ -65,7 +65,7 @@ async function loginWithSession(
       return;
     }
   } catch (e) {
-    Solenoid.setSettings("session", null);
+    Solenoid.setSettings("session", undefined);
     Solenoid.setUser("session_type", undefined);
     Solenoid.setUser("user_id", undefined);
     Solenoid.setUser("username", undefined);
@@ -85,10 +85,6 @@ enableExternalSource((fn, trigger) => {
     dispose: () => reaction.dispose(),
   };
 });
-
-// Automatically log in when session is found and not logged in
-if (Solenoid.settings.session && !Solenoid.loggedIn())
-  loginWithSession(Solenoid.settings.session);
 
 const App: Component = () => {
   return (
