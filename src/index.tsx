@@ -4,6 +4,12 @@ import { render } from "solid-js/web";
 import App from "./App";
 import { A, Navigate, Outlet, Route, Router, Routes } from "@solidjs/router";
 
+import { inject } from '@vercel/analytics';
+ 
+inject();
+
+// TODO: Split App into separate pages
+
 render(
   () => (
     <Router>
