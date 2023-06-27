@@ -1,7 +1,6 @@
 import { Component, Match, Switch } from "solid-js";
 import type { Server } from "revkit";
 import { createSignal, For } from "solid-js";
-import { revolt } from "../../../../lib/revolt";
 import {
   setServers,
   servers,
@@ -9,17 +8,22 @@ import {
   setSettings,
 } from "../../../../lib/solenoid";
 import { BiSolidCog } from "solid-icons/bi";
+import { useClient } from "../../../providers/client";
 
 const [serverlist, setServerList] = createSignal<Server[]>([]);
 
-async function showSettingsModal() {
-  const userinfo = await revolt.api.get("/users/@me");
-  setSettings("statusText", userinfo.status?.text);
-  setSettings("status", userinfo.status?.presence);
-  setSettings("show", true);
-}
+
 
 const Navigation: Component = () => {
+
+  const client = useClient();
+
+  const showSettingsModal = async () => {
+    const userinfo = await client.api.get("/users/@me");
+    setSettings("statusText", userinfo.status?.text);
+    setSettings("status", userinfo.status?.presence);
+    setSettings("show", true);
+  }
   const goHome = () => {
     setServers("current_server", undefined);
     setServers("current_channel", undefined);
@@ -35,17 +39,17 @@ const Navigation: Component = () => {
     setServers("isHome", false);
   };
 
-  setServerList(revolt.servers.items());
+  setServerList(client.servers.items());
   return (
     <div class="flex flex-col shrink-0 h-screen bg-base-300 overflow-y-scroll">
       <div class="indicator m-4 self-center">
         <span
           class="indicator-item badge w-2"
           classList={{
-            "badge-success": revolt.user.presence === "Online",
-            "badge-info": revolt.user.presence === "Focus",
-            "badge-warning": revolt.user.presence === "Idle",
-            "badge-content": revolt.user.presence === "Invisible",
+            "badge-success": client.user.presence === "Online",
+            "badge-info": client.user.presence === "Focus",
+            "badge-warning": client.user.presence === "Idle",
+            "badge-content": client.user.presence === "Invisible",
           }}
         />
         <button
@@ -59,7 +63,7 @@ const Navigation: Component = () => {
                 servers.isHome,
             }}
           >
-            <img src={revolt.user.generateAvatarURL({ max_side: 256 })} />
+            <img src={client.user.generateAvatarURL({ max_side: 256 })} />
           </div>
         </button>
       </div>

@@ -9,12 +9,11 @@ import {
 } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import type { user, settings } from "../../../../types";
-import type { Client } from "revkit";
 import { setSettings } from "../../../../lib/solenoid";
-import { revolt } from "../../../../lib/revolt";
+import { useClient } from "../../../providers/client";
+
 
 interface LoginComponent {
-  client: Client;
   userSetter: SetStoreFunction<user>;
   logSetter: Setter<boolean>;
   logged: Accessor<boolean>;
@@ -28,13 +27,14 @@ const [error, setError] = createSignal<string>();
 const [waiting, setWaiting] = createSignal<boolean>();
 
 const Login: Component<LoginComponent> = ({
-  client,
   userSetter,
   configSetter,
   solenoid_config,
   logSetter,
   logged,
 }) => {
+
+  const client = useClient();
   // Functions
   // Login With Token and Enable Bot Mode
   async function logIntoRevolt(token: string) {
@@ -227,8 +227,8 @@ const Login: Component<LoginComponent> = ({
                   class="btn btn-error w-60"
                   onClick={() => {
                     setSettings("session", undefined);
-                    if (revolt.ws.ready) {
-                      revolt.ws.disconnect();
+                    if (client.ws.ready) {
+                      client.ws.disconnect();
                     }
                   }}
                   disabled={waiting()}

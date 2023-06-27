@@ -1,15 +1,10 @@
 import { UserMessageBase } from "./UserBase";
 import { For } from "solid-js";
-import { messages, servers, setMessages } from "../../../../lib/solenoid";
+import { messages } from "../../../../lib/solenoid";
 
 import type { Component } from "solid-js";
-import { revolt } from "../../../../lib/revolt";
 import { SystemMessageBase } from "./SystemBase";
 
-revolt.on("message", async (m) => {
-  if (m.channelID !== servers.current_channel?.id) return;
-  setMessages((old) => [...old, m]);
-});
 
 const MessageContainer: Component = () => {
 
