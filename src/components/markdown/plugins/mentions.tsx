@@ -2,7 +2,7 @@ import { RE_MENTIONS } from "revolt.js";
 import { styled } from "solid-styled-components";
 
 import { createComponent, CustomComponentProps } from "./remarkRegexComponent";
-import { revolt } from "../../../lib/revolt";
+import { client } from "../../providers/client";
 
 const Mention = styled.a`
   gap: 4px;
@@ -29,8 +29,7 @@ const Mention = styled.a`
 `;
 
 export function RenderMention({ match }: CustomComponentProps) {
-
-  const user = revolt.users.get(match)!;
+  const user = client.users.get(match)!;
   return (
     <Mention class="bg-base-300 rounded-full h-max w-max">
       <div class="rounded-full flex w-full items-center gap-2">
@@ -47,5 +46,5 @@ export function RenderMention({ match }: CustomComponentProps) {
 }
 
 export const remarkMention = createComponent("mention", RE_MENTIONS, (match: any) =>
-  revolt.users.has(match)
+  client.users.has(match)
 );

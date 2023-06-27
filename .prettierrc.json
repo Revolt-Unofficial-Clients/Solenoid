@@ -1,0 +1,11 @@
+{
+    "tabWidth": 4,
+    "jsxSingleQuote": true,
+    "endOfLine": "lf",
+    "bracketSameLine": true,
+    "embeddedLanguageFormatting": "auto",
+    "printWidth": 90,
+    "semi": true,
+    "singleQuote": true,
+    "quoteProps": "as-needed"
+}

@@ -1,7 +1,7 @@
 import { Emoji, toCodepoint } from "./unicodeEmoji";
 import { createSignal, Match, Switch } from "solid-js";
 import { createComponent, CustomComponentProps } from "./remarkRegexComponent";
-import { revolt } from "../../../lib/revolt";
+import { client } from "../../providers/client";
 import { emojiDictionary } from "../../../assets/emoji";
 import { settings } from "../../../lib/solenoid";
 
@@ -20,7 +20,7 @@ function parseEmoji(emoji: string) {
 export function RenderCustomEmoji({ match }: CustomComponentProps) {
   const [exists, setExists] = createSignal(true);
   const url = RE_ULID.test(match)
-    ? `${revolt?.config?.features.autumn.url}/emojis/${match}`
+    ? `${client?.config?.features.autumn.url}/emojis/${match}`
     : parseEmoji(
         match in emojiDictionary
           ? emojiDictionary[match as keyof typeof emojiDictionary]

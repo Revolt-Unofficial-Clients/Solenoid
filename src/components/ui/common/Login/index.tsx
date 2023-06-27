@@ -9,12 +9,11 @@ import {
 } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 import type { user, settings } from "../../../../types";
-import type { Client } from "revolt-toolset";
 import { setSettings } from "../../../../lib/solenoid";
-import { revolt } from "../../../../lib/revolt";
+import { useClient } from "../../../providers/client";
+
 
 interface LoginComponent {
-  client: Client;
   userSetter: SetStoreFunction<user>;
   logSetter: Setter<boolean>;
   logged: Accessor<boolean>;
@@ -25,18 +24,21 @@ const [token, setToken] = createSignal<string>();
 const [email, setEmail] = createSignal<string>();
 const [password, setPassword] = createSignal<string>();
 const [error, setError] = createSignal<string>();
+const [waiting, setWaiting] = createSignal<boolean>();
 
 const Login: Component<LoginComponent> = ({
-  client,
   userSetter,
   configSetter,
   solenoid_config,
   logSetter,
   logged,
 }) => {
+
+  const client = useClient();
   // Functions
   // Login With Token and Enable Bot Mode
   async function logIntoRevolt(token: string) {
+    setWaiting(true);
     try {
       await client.login(token, "bot");
     } catch (e: any) {
@@ -48,6 +50,7 @@ const Login: Component<LoginComponent> = ({
         setError(e);
       }
     } finally {
+      setWaiting(false);
       logSetter(true);
       userSetter("session_type", "token");
       configSetter("session", client.session);
@@ -56,6 +59,7 @@ const Login: Component<LoginComponent> = ({
 
   // Login With Email and Password and Enable User Mode
   async function loginWithEmail(email: string, password: string) {
+    setWaiting(true);
     try {
       await client
         .authenticate({
@@ -68,6 +72,7 @@ const Login: Component<LoginComponent> = ({
         })
         .finally(() => {
           batch(() => {
+            setWaiting(false)
             logSetter(true);
             userSetter("session_type", "email");
             configSetter("session", client.session);
@@ -82,15 +87,19 @@ const Login: Component<LoginComponent> = ({
       }
     }
   }
-  async function loginWithSession(session: any & { action: "LOGIN", token: string }) {
+  async function loginWithSession(
+    session: string
+  ) {
+    setWaiting(true)
     try {
       await client.login(session, "user").catch((e) => {
         throw e;
       });
       batch(() => {
         configSetter("session_type", "email");
-        configSetter("session", session);
+        configSetter("session", client.session);
         logSetter(true);
+        setWaiting(false);
       });
     } catch (e: any) {
       setError(e);
@@ -99,7 +108,7 @@ const Login: Component<LoginComponent> = ({
 
   onMount(() => {
     if (solenoid_config.session) {
-      loginWithSession(solenoid_config.session);
+      loginWithSession(solenoid_config.session.token as string);
     }
   });
 
@@ -107,7 +116,7 @@ const Login: Component<LoginComponent> = ({
     <>
       {!logged() && (
         <>
-          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-36 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 backdrop-blur-xl container">
+          <div class="lg:absolute lg:w-1/3 lg:h-auto flex flex-col h-full w-full shadow-none lg:top-28 lg:left-6 md:sm:bg-base-100 lg:bg-base-300/60 lg:backdrop-blur-xl lg:rounded-lg">
             <div class="mx-10 my-10 flex items-center gap-2">
               <div class="w-10">
                 <img src="/favicon.png" />
@@ -166,7 +175,7 @@ const Login: Component<LoginComponent> = ({
                     placeholder="2fa Token (Optional, Not yet implemented)"
                     disabled
                   ></input>
-                  <button class="btn w-full my-2" id="submit" type="submit">
+                  <button class="btn w-full my-2" id="submit" type="submit" disabled={waiting()}>
                     Login with Email
                   </button>
                 </div>
@@ -180,7 +189,7 @@ const Login: Component<LoginComponent> = ({
             </form>
 
             <form
-              class="mx-10"
+              class="mx-10 my-2"
               onSubmit={(e) => {
                 e.preventDefault();
                 logIntoRevolt(token() ?? "");
@@ -199,31 +208,33 @@ const Login: Component<LoginComponent> = ({
                     value={token() || ""}
                     onInput={(e: any) => setToken(e.currentTarget.value)}
                   ></input>
-                  <button class="btn w-full my-2" id="submit" type="submit">
+                  <button class="btn w-full my-2" id="submit" type="submit" disabled={waiting()}>
                     Login
                   </button>
                 </div>
               </div>
             </form>
             {solenoid_config.session && (
-              <div class="flex flex-col w-full items-center gap-2">
-              <button
-                class="btn btn-success w-60"
-                onClick={() => loginWithSession(solenoid_config.session)}
-              >
-                {revolt.ws.ready ? "Loading..." :  "Use Existing Session"}
-              </button>
-              <button
-                class="btn btn-error w-60"
-                onClick={() => {
-                  setSettings("session", undefined)
-                  if (revolt.ws.ready) {
-                    revolt.ws.disconnect()
-                  }
-                }}
-              >
-                Remove last session
-              </button>
+              <div class="flex flex-col w-full items-center gap-2 mt-2 mb-10">
+                <button
+                  class="btn btn-success w-60"
+                  onClick={() => loginWithSession(solenoid_config.session!.token)}
+                  disabled={waiting()}
+                >
+                  {waiting() ? "Loading..." : "Use Existing Session"}
+                </button>
+                <button
+                  class="btn btn-error w-60"
+                  onClick={() => {
+                    setSettings("session", undefined);
+                    if (client.ws.ready) {
+                      client.ws.disconnect();
+                    }
+                  }}
+                  disabled={waiting()}
+                >
+                  Remove last session
+                </button>
               </div>
             )}
           </div>

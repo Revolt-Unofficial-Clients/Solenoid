@@ -45,10 +45,7 @@ const components = {
       padding: 1px 4px;
       flex-shrink: 0;
     }
-    ${(props) =>
-      props["emoji-size"]
-        ? `--emoji-size:3em;`
-        : ""}
+    ${(props) => (props["emoji-size"] ? `--emoji-size:3em;` : "")}
   `,
   h1: styled.h1`
     margin: 0.2em 0;
@@ -99,8 +96,7 @@ const components = {
     padding: 2px 0;
     border-radius: 6px;
     background: #444;
-    border-inline-start: 4px solid
-      #ccc;
+    border-inline-start: 4px solid #ccc;
     > * {
       margin: 0 8px;
     }
@@ -162,10 +158,6 @@ export function Markdown(props: MarkdownProps) {
 
   const hastNode = pipeline.runSync(pipeline.parse(file), file);
 
-  if (hastNode.type !== "root") {
-    throw new TypeError("Expected a `root` node");
-  }
-
   injectEmojiSize(props, hastNode as any);
 
   return childrenToSolid(
@@ -177,7 +169,6 @@ export function Markdown(props: MarkdownProps) {
       schema: html,
       listDepth: 0,
     },
-    // @ts-expect-error this is the correct type
     hastNode
   );
 }
